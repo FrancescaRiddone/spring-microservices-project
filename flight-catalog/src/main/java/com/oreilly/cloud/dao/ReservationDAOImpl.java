@@ -17,7 +17,7 @@ public class ReservationDAOImpl implements ReservationDAO {
 	
 	
 	@Override
-	public JSONObject getReservation(int reservationId) {
+	public JSONObject getReservationJSON(int reservationId) {
 		Session currentSession = sessionFactory.getCurrentSession();
 		Reservation theReservation = currentSession.get(Reservation.class, reservationId);
 		JSONObject theReservationJSON = com.oreilly.cloud.dao.UtilsForObjectsConversion.createJSONForReservation(theReservation);
@@ -26,10 +26,18 @@ public class ReservationDAOImpl implements ReservationDAO {
 	}
 	
 	@Override
-	public JSONObject saveReservation(Flight flight, String userName, String userSurname, String seatClass, int seatNumber) {
+	public Reservation getReservation(int reservationId) {
+		Session currentSession = sessionFactory.getCurrentSession();
+		Reservation theReservation = currentSession.get(Reservation.class, reservationId);
+		
+		return theReservation;
+	}
+	
+	@Override
+	public JSONObject saveReservation(Flight flight, String userName, String userSurname, String seatClass, int seatNumber, boolean confirmed) {
 		Session currentSession = sessionFactory.getCurrentSession();
 		Reservation theNewReservation= new Reservation(flight, userName, userSurname, getPriceForClassAndSeatNumber(flight, seatClass, seatNumber), 
-											seatClass, seatNumber, true);
+											seatClass, seatNumber, confirmed);
 		currentSession.saveOrUpdate(theNewReservation);
 		JSONObject theSavedReservationJSON = com.oreilly.cloud.dao.UtilsForObjectsConversion.createJSONForReservation(theNewReservation);
 		

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oreilly.cloud.entity.Flight;
+import com.oreilly.cloud.entity.Reservation;
 import com.oreilly.cloud.service.FlightService;
 import com.oreilly.cloud.service.ReservationService;
 
@@ -50,7 +51,7 @@ public class FlightCatalogController {
 		
 		List<JSONObject> theReservationsJSON = new ArrayList<>();
 		for(int reservationId: reservationIds) {
-			JSONObject theReservationJSON = reservationService.getReservation(reservationId);
+			JSONObject theReservationJSON = reservationService.getReservationJSON(reservationId);
 			if(theReservationJSON != null) {
 				theReservationsJSON.add(theReservationJSON);
 			}
@@ -60,11 +61,11 @@ public class FlightCatalogController {
 	
 	@GetMapping("/reservations/reservation")
 	public JSONObject getReservation(@RequestParam("reservationId") int reservationId) {
-		return reservationService.getReservation(reservationId);
+		return reservationService.getReservationJSON(reservationId);
 	}
 	
-	@PostMapping("/reservations/reserve")
-	public JSONObject reserveFlight(@RequestParam("flightId") int flightId,
+	@PostMapping("/reservations/newReservation")
+	public JSONObject createReservation(@RequestParam("flightId") int flightId,
 									@RequestParam("userName") String userName,
 									@RequestParam("userSurname") String userSurname,
 									@RequestParam("seatClass") String seatClass,
@@ -75,8 +76,25 @@ public class FlightCatalogController {
 			return new JSONObject();
 		}
 		
-		return reservationService.saveReservation(availableFlight, userName, userSurname, seatClass, seatNumber);
+		return reservationService.saveReservation(availableFlight, userName, userSurname, seatClass, seatNumber, false);
 	}
+	
+	@PostMapping("/reservations/reserve")
+	public JSONObject confirmeReservation(@RequestParam("reservationId") int reservationId) {
+		Reservation theReservation = reservationService.getReservation(reservationId);
+		if(theReservation == null) {
+			return new JSONObject();
+		}
+		Flight availableFlight = flightService.checkFlightAvailability(theReservation.getFlight().getFlightId(), 
+				theReservation.getSeatsType(), theReservation.getSeatsNumber());
+		if(availableFlight == null) {
+			return new JSONObject();
+		}
+		
+		return reservationService.saveReservation(availableFlight, theReservation.getUserName(), theReservation.getUserSurname(), 
+				theReservation.getSeatsType(), theReservation.getSeatsNumber(), true);
+	}
+	
 	
 	
 }

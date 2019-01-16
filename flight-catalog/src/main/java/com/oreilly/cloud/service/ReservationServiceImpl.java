@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.oreilly.cloud.dao.ReservationDAO;
 import com.oreilly.cloud.entity.Flight;
+import com.oreilly.cloud.entity.Reservation;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -16,12 +17,12 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional
-	public JSONObject getReservation(int reservationId) {
+	public JSONObject getReservationJSON(int reservationId) {
 		if(reservationId <= 0) {
 			return new JSONObject();
 		}
 		
-		JSONObject theReservation = reservationDAO.getReservation(reservationId);
+		JSONObject theReservation = reservationDAO.getReservationJSON(reservationId);
 		
 		if(theReservation == null) {
 			theReservation = new JSONObject();
@@ -29,15 +30,27 @@ public class ReservationServiceImpl implements ReservationService {
 		
 		return theReservation;
 	}
+	
+	@Override
+	@Transactional
+	public Reservation getReservation(int reservationId) {
+		if(reservationId <= 0) {
+			return null;
+		}
+		
+		Reservation theReservation =  reservationDAO.getReservation(reservationId);
+		
+		return theReservation;
+	}
 
 	@Override
 	@Transactional
-	public JSONObject saveReservation(Flight flight, String userName, String userSurname, String seatClass, int seatNumber) {
+	public JSONObject saveReservation(Flight flight, String userName, String userSurname, String seatClass, int seatNumber, boolean confirmed) {
 		if(!checkParamsForSaveReservation(flight, userName, userSurname, seatClass, seatNumber)) {
 			return new JSONObject();
 		}
 		
-		JSONObject theSavedReservation = reservationDAO.saveReservation(flight, userName, userSurname, seatClass, seatNumber);
+		JSONObject theSavedReservation = reservationDAO.saveReservation(flight, userName, userSurname, seatClass, seatNumber, confirmed);
 		
 		if(theSavedReservation == null) {
 			theSavedReservation = new JSONObject();
@@ -57,5 +70,6 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 		return false;
 	}
+
 
 }
