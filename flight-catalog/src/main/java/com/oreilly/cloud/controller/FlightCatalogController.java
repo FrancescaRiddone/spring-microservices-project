@@ -28,17 +28,26 @@ public class FlightCatalogController {
 	
 	
 	@GetMapping("/requiredFlights")
-	public List<JSONObject> getFlights(@RequestParam("sourceAirport") String sourceAirport, 
+	public JSONObject getFlights(@RequestParam("sourceAirport") String sourceAirport, 
 									@RequestParam("sourceCity") String sourceCity,
 									@RequestParam("sourceCountry") String sourceCountry, 
 									@RequestParam("destinationAirport") String destinationAirport,
 									@RequestParam("destinationCity") String destinationCity, 
 									@RequestParam("destinationCountry") String destinationCountry,
+									@RequestParam("departureHour") int departureHour,
+									@RequestParam("departureDay") int departureDay,
+									@RequestParam("departureMonth") int departureMonth,
+									@RequestParam("departureYear") int departureYear,
+									@RequestParam("arrivalHour") int arrivalHour,
+									@RequestParam("arrivalDay") int arrivalDay,
+									@RequestParam("arrivalMonth") int arrivalMonth,
+									@RequestParam("arrivalYear") int arrivalYear,
 									@RequestParam("seatType") String seatType, 
 									@RequestParam("seatNumber") int seatNumber) {
 		
 		return flightService.getFlights(sourceAirport, sourceCity, sourceCountry, 
-				destinationAirport, destinationCity, destinationCountry, seatType, seatNumber);
+				destinationAirport, destinationCity, destinationCountry, departureHour, departureDay, departureMonth, departureYear,
+				arrivalHour, arrivalDay, arrivalMonth, arrivalYear, seatType, seatNumber);
 	}
 	
 	@GetMapping("/flight")
@@ -46,9 +55,11 @@ public class FlightCatalogController {
 		return flightService.getFlight(flightId);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@GetMapping("/reservations")
-	public List<JSONObject> getReservations(@RequestParam List<Integer> reservationIds) {
+	public JSONObject getReservations(@RequestParam List<Integer> reservationIds) {
 		
+		JSONObject theReservations = new JSONObject();
 		List<JSONObject> theReservationsJSON = new ArrayList<>();
 		for(int reservationId: reservationIds) {
 			JSONObject theReservationJSON = reservationService.getReservationJSON(reservationId);
@@ -56,7 +67,9 @@ public class FlightCatalogController {
 				theReservationsJSON.add(theReservationJSON);
 			}
 		}
-		return theReservationsJSON;
+		theReservations.put("reservations", theReservationsJSON);
+		
+		return theReservations;
 	}
 	
 	@GetMapping("/reservations/reservation")

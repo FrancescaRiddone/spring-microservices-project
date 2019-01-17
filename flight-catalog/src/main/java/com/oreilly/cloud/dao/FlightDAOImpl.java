@@ -1,6 +1,8 @@
 package com.oreilly.cloud.dao;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.hibernate.query.Query;
@@ -21,7 +23,8 @@ public class FlightDAOImpl implements FlightDAO {
 	
 	@Override
 	public List<JSONObject> getFlights(String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
-			String destinationCity, String destinationCountry, String seatType, int seatNumber) {
+			String destinationCity, String destinationCountry, int departureHour, int departureDay, int departureMonth, int departureYear,
+			int arrivalHour, int arrivalDay, int arrivalMonth, int arrivalYear, String seatType, int seatNumber) {
 		
 		if(seatNumber == 0) {
 			seatNumber = 1;
@@ -34,6 +37,10 @@ public class FlightDAOImpl implements FlightDAO {
 		theQuery = setQueryParameters(theQuery, sourceAirport, sourceCity, sourceCountry, destinationAirport, destinationCity,
 				destinationCountry, seatType, seatNumber);
 		List<Flight> theFlights = theQuery.getResultList();
+		if(theFlights != null) {
+			theFlights = filterFlightsByTime(theFlights, departureHour, departureDay, departureMonth, departureYear, 
+					arrivalHour, arrivalDay, arrivalMonth, arrivalYear);
+		}
 		List<JSONObject> theFlightsJSON = new ArrayList<>();
 		
 		for(Flight theFlight: theFlights) {
@@ -67,56 +74,51 @@ public class FlightDAOImpl implements FlightDAO {
 		return theQuery.getSingleResult();
 	}
 	
+	
 	private String setQueryString(String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
 			String destinationCity, String destinationCountry, String seatType, int seatNumber) {
 		
 		String queryString = "select f from Flight f where ";
-		boolean firstInsertion = true;
+		queryString = evaluateStringInsertion(queryString, "sourceAirport", sourceAirport);
+		queryString = evaluateStringInsertion(queryString, "sourceCity", sourceCity);
+		queryString = evaluateStringInsertion(queryString, "sourceCountry", sourceCountry);
+		queryString = evaluateStringInsertion(queryString, "destinationAirport", destinationAirport);
+		queryString = evaluateStringInsertion(queryString, "destinationCity", destinationCity);
+		queryString = evaluateStringInsertion(queryString, "destinationCountry", destinationCountry);
+		queryString = evaluateStringInsertion(queryString, "seatType", seatType);
+		queryString = queryString.concat("(f.availableEconomySeats + f.availableBusinessSeats + f.availableFirstSeats) >= :seatNumber");
 		
-		String result1 = evaluateStringInsertion(queryString, "sourceAirport", sourceAirport, firstInsertion);
-		String result2 = evaluateStringInsertion(result1, "sourceCity", sourceCity, firstInsertion);
-		String result3 = evaluateStringInsertion(result2, "sourceCountry", sourceCountry, firstInsertion);
-		String result4 = evaluateStringInsertion(result3, "destinationAirport", destinationAirport, firstInsertion);
-		String result5 = evaluateStringInsertion(result4, "destinationCity", destinationCity, firstInsertion);
-		String result6 = evaluateStringInsertion(result5, "destinationCountry", destinationCountry, firstInsertion);
-		String result7 = evaluateStringInsertion(result6, "seatType", seatType, firstInsertion);
-		String finalQuery = result7.concat(" and (f.availableEconomySeats + f.availableBusinessSeats + f.availableFirstSeats) >= :seatNumber");
-		
-		return finalQuery;
+		return queryString;
 	}
 	
-	private String evaluateStringInsertion(String query, String requestParamName, String requestParamValue, boolean firstInsertion) {
+	private String evaluateStringInsertion(String query, String requestParamName, String requestParamValue) {
 		if(requestParamValue != null && !requestParamValue.equals("")) {
-			if(firstInsertion == false) {
-				query = query.concat(" and f." + requestParamName + ".name = :" + requestParamName);
-			} else {
-				firstInsertion = false;
-				query = query.concat("f." + requestParamName + ".name = :" + requestParamName);
-			}
-		}
+			query = query.concat("f." + requestParamName + ".name = :" + requestParamName + " and ");
+		} 
 		
 		return query;
 	}
-
+	
 	private Query<Flight> setQueryParameters(Query<Flight> theQuery, String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
 			String destinationCity, String destinationCountry, String seatType, int seatNumber){
 		
-		Query<Flight> theQuery1 = setQueryParameter(theQuery, "sourceAirport", sourceAirport);
-		Query<Flight> theQuery2 = setQueryParameter(theQuery1, "sourceCity", sourceCity);
-		Query<Flight> theQuery3 = setQueryParameter(theQuery2, "sourceCountry", sourceCountry);
-		Query<Flight> theQuery4 = setQueryParameter(theQuery3, "destinationAirport", destinationAirport);
-		Query<Flight> theQuery5 = setQueryParameter(theQuery4, "destinationCity", destinationCity);
-		Query<Flight> theQuery6 = setQueryParameter(theQuery5, "destinationCountry", destinationCountry);
-		Query<Flight> theQuery7 = setQueryParameter(theQuery6, "seatType", seatType);
-		Query<Flight> finalQuery = setQueryParameter(theQuery7, "seatNumber", new Integer(seatNumber));
+		theQuery = setQueryParameter(theQuery, "sourceAirport", sourceAirport);
+		theQuery = setQueryParameter(theQuery, "sourceCity", sourceCity);
+		theQuery = setQueryParameter(theQuery, "sourceCountry", sourceCountry);
+		theQuery = setQueryParameter(theQuery, "destinationAirport", destinationAirport);
+		theQuery = setQueryParameter(theQuery, "destinationCity", destinationCity);
+		theQuery = setQueryParameter(theQuery, "destinationCountry", destinationCountry);
+		theQuery = setQueryParameter(theQuery, "seatType", seatType);
+		theQuery = setQueryParameter(theQuery, "seatNumber", new Integer(seatNumber));
 		
-		return  finalQuery;
+		return  theQuery;
 	}
 	
 	private Query<Flight> setQueryParameter(Query<Flight> theQuery, String requestParamName, Object requestParamValue){
 		if(requestParamValue != null && !requestParamValue.equals("")) {
 			theQuery.setParameter(requestParamName, requestParamValue);
 		}
+		
 		return theQuery;
 	}	
 	
@@ -139,6 +141,53 @@ public class FlightDAOImpl implements FlightDAO {
 		}
 		
 		return queryText;
+	}
+	
+	private List<Flight> filterFlightsByTime(List<Flight> theFlights, int departureHour, int departureDay, 
+			int departureMonth, int departureYear, int arrivalHour, int arrivalDay, int arrivalMonth, int arrivalYear){
+		
+		List<Flight> filteredFlights = new ArrayList<>();
+	    
+	    for(Flight theFlight: theFlights) {
+	    	if(checkTravelTime(theFlight.getDepartureTime(), departureHour, departureDay, departureMonth, departureYear) &&
+	    		checkTravelTime(theFlight.getArrivalTime(), arrivalHour, arrivalDay, arrivalMonth, arrivalYear)) {
+	    		
+	    		filteredFlights.add(theFlight);
+	    	}
+		}
+	    return filteredFlights;
+	}
+	
+	private boolean checkTravelTime(Timestamp flightTimestamp, int hour, int day, int month, int year){
+		if(flightTimestamp == null) {
+			return false;
+		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(flightTimestamp);
+		if(year != 0) {
+			if(cal.get(Calendar.YEAR) != year) {
+				return false;
+			}
+			
+			if(month != 0) {
+				if(cal.get(Calendar.MONTH) + 1 != month) {
+					return false;
+				}
+
+				if(day != 0) {
+					if(cal.get(Calendar.DAY_OF_MONTH) != day) {
+						return false;
+					}
+					
+					if(hour != 0) {
+						if(cal.get(Calendar.HOUR_OF_DAY) != hour) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 

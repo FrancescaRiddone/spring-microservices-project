@@ -1,8 +1,5 @@
 package com.oreilly.cloud.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,24 +14,23 @@ public class FlightServiceImpl implements FlightService{
 	@Autowired
 	private FlightDAO flightDAO;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public List<JSONObject> getFlights(String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
-			String destinationCity, String destinationCountry, String seatType, int seatNumber) {
+	public JSONObject getFlights(String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
+			String destinationCity, String destinationCountry, int departureHour, int departureDay, int departureMonth, int departureYear,
+			int arrivalHour, int arrivalDay, int arrivalMonth, int arrivalYear, String seatType, int seatNumber) {
 		
 		if(!checkParamsForGetFlights(sourceAirport, sourceCity, sourceCountry, destinationAirport, destinationCity, 
 				destinationCountry, seatType, seatNumber)) {
-			return  new ArrayList<>();
+			return  new JSONObject();
 		}
+		JSONObject requiredFlights = new JSONObject();
+		requiredFlights.put("flights", flightDAO.getFlights(sourceAirport, sourceCity, sourceCountry, 
+				destinationAirport, destinationCity, destinationCountry, departureHour, departureDay, departureMonth, departureYear,
+				arrivalHour, arrivalDay, arrivalMonth, arrivalYear, seatType, seatNumber));
 		
-		List<JSONObject> theRequiredFlights = flightDAO.getFlights(sourceAirport, sourceCity, sourceCountry, destinationAirport, 
-				destinationCity, destinationCountry, seatType, seatNumber);
-		
-		if(theRequiredFlights == null) {
-			theRequiredFlights = new ArrayList<>();
-		}
-		
-		return theRequiredFlights;
+		return requiredFlights;
 	}
 
 	@Override
@@ -73,6 +69,6 @@ public class FlightServiceImpl implements FlightService{
 		
 		return true;
 	}
-
+	
 	
 }
