@@ -19,7 +19,7 @@ public class Flight {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="flight_id")
-	private int flightId;
+	private int id;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="company_id")
@@ -84,11 +84,17 @@ public class Flight {
 	
 	
 	public Flight() {
-		
+		company = new Company();
+		sourceAirport = new Airport();
+		sourceCity = new City();
+		sourceCountry = new Country();
+		destinationAirport = new Airport();
+		destinationCity = new City();
+		destinationCountry = new Country();
 	}
 
 	public Flight(Company company, Airport sourceAirport, City sourceCity, Country sourceCountry,
-			Airport destinationeAirport, City destinationCity, Country destinationCountry, int totalEconomySeats,
+			Airport destinationAirport, City destinationCity, Country destinationCountry, int totalEconomySeats,
 			int totalBusinessSeats, int totalFirstSeats, int availableEconomySeats,
 			int availableBusinessSeats, int availableFirstSeats, double economySeatPrice, double businessSeatPrice,
 			double firstSeatPrice, Timestamp departureTime, Timestamp arrivalTime) {
@@ -97,7 +103,7 @@ public class Flight {
 		this.sourceAirport = sourceAirport;
 		this.sourceCity = sourceCity;
 		this.sourceCountry = sourceCountry;
-		this.destinationAirport = destinationeAirport;
+		this.destinationAirport = destinationAirport;
 		this.destinationCity = destinationCity;
 		this.destinationCountry = destinationCountry;
 		this.totalEconomySeats = totalEconomySeats;
@@ -113,12 +119,12 @@ public class Flight {
 		this.arrivalTime = arrivalTime;
 	}
 
-	public int getFlightId() {
-		return flightId;
+	public int getId() {
+		return id;
 	}
 
-	public void setFlightId(int flightId) {
-		this.flightId = flightId;
+	public void setId(int flightId) {
+		this.id = flightId;
 	}
 
 	public Company getCompany() {
@@ -267,7 +273,7 @@ public class Flight {
 
 	@Override
 	public String toString() {
-		return "Flight [flightId=" + flightId + ", company=" + company + ", sourceAirport=" + sourceAirport
+		return "Flight [id=" + id + ", company=" + company + ", sourceAirport=" + sourceAirport
 				+ ", sourceCity=" + sourceCity + ", sourceCountry=" + sourceCountry + ", destinationAirport="
 				+ destinationAirport + ", destinationCity=" + destinationCity + ", destinationCountry="
 				+ destinationCountry + ", totalEconomySeats=" + totalEconomySeats + ", totalBusinessSeats="

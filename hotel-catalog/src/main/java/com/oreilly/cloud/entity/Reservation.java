@@ -1,5 +1,7 @@
 package com.oreilly.cloud.entity;
 
+import java.sql.Timestamp;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,8 +24,14 @@ public class Reservation {
 	private int id;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="flight_id")
-	private Flight flight;
+	@JoinColumn(name="room_id")
+	private Room room;
+	
+	@Column(name="check_in")
+	private Timestamp checkIn;
+	
+	@Column(name="check_out")
+	private Timestamp checkOut;
 	
 	@Column(name="user_name")
 	private String userName;
@@ -34,33 +42,35 @@ public class Reservation {
 	@Column(name="price")
 	private double price;
 	
-	@Column(name="seats_type")
-	private String seatsType;
+	@Column(name="hosts_number")
+	private int hostsNumber;
 	
-	@Column(name="seats_number")
-	private int seatsNumber;
+	@Column(name="reservation_type")
+	private String reservationType;
 	
 	@Column(name="confirmed", columnDefinition = "TINYINT")
 	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private boolean confirmed;
-	
+
 	
 	public Reservation() {
-		flight = new Flight();
+		room = new Room();
 		userName = "";
 		userSurname = "";
-		seatsType = "";
+		reservationType = "";
 	}
-
-	public Reservation(Flight flight, String userName, String userSurname, double price, String seatsType,
-			int seatsNumber, boolean confirmed) {
+	
+	public Reservation(Room room, Timestamp checkIn, Timestamp checkOut, String userName, String userSurname,
+			double price, int hostsNumber, String reservationType, boolean confirmed) {
 		
-		this.flight = flight;
+		this.room = room;
+		this.checkIn = checkIn;
+		this.checkOut = checkOut;
 		this.userName = userName;
 		this.userSurname = userSurname;
 		this.price = price;
-		this.seatsType = seatsType;
-		this.seatsNumber = seatsNumber;
+		this.hostsNumber = hostsNumber;
+		this.reservationType = reservationType;
 		this.confirmed = confirmed;
 	}
 
@@ -72,12 +82,28 @@ public class Reservation {
 		this.id = id;
 	}
 
-	public Flight getFlight() {
-		return flight;
+	public Room getRoom() {
+		return room;
 	}
 
-	public void setFlight(Flight flight) {
-		this.flight = flight;
+	public void setRoom(Room room) {
+		this.room = room;
+	}
+
+	public Timestamp getCheckIn() {
+		return checkIn;
+	}
+
+	public void setCheckIn(Timestamp checkIn) {
+		this.checkIn = checkIn;
+	}
+
+	public Timestamp getCheckOut() {
+		return checkOut;
+	}
+
+	public void setCheckOut(Timestamp checkOut) {
+		this.checkOut = checkOut;
 	}
 
 	public String getUserName() {
@@ -104,20 +130,20 @@ public class Reservation {
 		this.price = price;
 	}
 
-	public String getSeatsType() {
-		return seatsType;
+	public int getHostsNumber() {
+		return hostsNumber;
 	}
 
-	public void setSeatsType(String seatsType) {
-		this.seatsType = seatsType;
+	public void setHostsNumber(int hostsNumber) {
+		this.hostsNumber = hostsNumber;
 	}
 
-	public int getSeatsNumber() {
-		return seatsNumber;
+	public String getReservationType() {
+		return reservationType;
 	}
 
-	public void setSeatsNumber(int seatsNumber) {
-		this.seatsNumber = seatsNumber;
+	public void setReservationType(String reservationType) {
+		this.reservationType = reservationType;
 	}
 
 	public boolean isConfirmed() {
@@ -130,10 +156,10 @@ public class Reservation {
 
 	@Override
 	public String toString() {
-		return "Reservation [id=" + id + ", flight=" + flight + ", userName=" + userName
-				+ ", userSurname=" + userSurname + ", price=" + price + ", seatsType=" + seatsType + ", seatsNumber="
-				+ seatsNumber + ", confirmed=" + confirmed + "]";
+		return "Reservation [id=" + id + ", room=" + room + ", checkIn=" + checkIn + ", checkOut=" + checkOut
+				+ ", userName=" + userName + ", userSurname=" + userSurname + ", price=" + price + ", hostsNumber="
+				+ hostsNumber + ", reservationType=" + reservationType + ", confirmed=" + confirmed + "]";
 	}
-	
 
+	
 }

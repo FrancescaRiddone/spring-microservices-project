@@ -98,7 +98,7 @@ public class FlightCatalogController {
 		if(theReservation == null) {
 			return new JSONObject();
 		}
-		Flight availableFlight = flightService.checkFlightAvailability(theReservation.getFlight().getFlightId(), 
+		Flight availableFlight = flightService.checkFlightAvailability(theReservation.getFlight().getId(), 
 				theReservation.getSeatsType(), theReservation.getSeatsNumber());
 		if(availableFlight == null) {
 			return new JSONObject();

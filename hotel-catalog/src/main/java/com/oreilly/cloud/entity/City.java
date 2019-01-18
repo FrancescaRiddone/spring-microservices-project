@@ -31,63 +31,58 @@ public class City {
 	@JoinColumn(name="country_id")
 	private Country country;
 	
-	@OneToMany(mappedBy = "sourceCity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Flight> departingFlights;
-	
-	@OneToMany(mappedBy = "destinationCity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Flight> incomingFlights;
+	@OneToMany(mappedBy = "city", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Hotel> hotels;
 	
 	
 	public City() {
 		name = "";
 		country = new Country();
-		departingFlights = new ArrayList<>();
-		incomingFlights = new ArrayList<>();
+		hotels = new ArrayList<>();
 	}
 
 	public City(String name, Country country) {
 		this.name = name;
 		this.country = country;
-		departingFlights = new ArrayList<>();
-		incomingFlights = new ArrayList<>();
+		this.hotels = new ArrayList<>();
 	}
-
 
 	public int getId() {
 		return id;
 	}
 
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
 
 	public String getName() {
 		return name;
 	}
 
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
 
 	public Country getCountry() {
 		return country;
 	}
 
-
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+	
+	public List<Hotel> getHotels() {
+		return hotels;
+	}
+
+	public void setHotels(List<Hotel> hotels) {
+		this.hotels = hotels;
 	}
 
 	@Override
 	public String toString() {
 		return "City [id=" + id + ", name=" + name + ", country=" + country + "]";
 	}
-	
-	
 
 
 }

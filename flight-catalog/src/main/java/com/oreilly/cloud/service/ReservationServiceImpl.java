@@ -60,7 +60,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 	
 	private boolean checkParamsForSaveReservation(Flight flight, String userName, String userSurname, String seatClass, int seatNumber) {
-		if(flight != null && flight.getFlightId() > 0 && 
+		if(flight != null && flight.getId() > 0 && 
 				userName != null && !userName.equals("") &&
 				userSurname != null && !userSurname.equals("") && 
 				(seatClass.equals("economy") || seatClass.equals("business") || seatClass.equals("first")) &&

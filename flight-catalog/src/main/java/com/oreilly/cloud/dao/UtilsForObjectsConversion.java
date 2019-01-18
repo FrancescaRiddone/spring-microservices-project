@@ -11,7 +11,7 @@ public class UtilsForObjectsConversion {
 	public static JSONObject createJSONForFlight(Flight theFlight){
 		JSONObject theFlightJSON = new JSONObject();
 		
-		theFlightJSON.put("flightId", theFlight.getFlightId());
+		theFlightJSON.put("flightId", theFlight.getId());
 		theFlightJSON.put("company", theFlight.getCompany().getName());
 		theFlightJSON.put("sourceAirport", theFlight.getSourceAirport().getName());
 		theFlightJSON.put("sourceAirportCode", theFlight.getSourceAirport().getCode());

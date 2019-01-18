@@ -18,7 +18,7 @@ public class Company {
 	
 	
 	public Company() {
-		
+		name = "";
 	}
 
 	public Company(String name) {

@@ -25,23 +25,18 @@ public class Country {
 	@Column(name="country")
 	private String name;
 	
-	@OneToMany(mappedBy = "sourceCountry", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Flight> departingFlights;
-	
-	@OneToMany(mappedBy = "destinationCountry", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Flight> incomingFlights;
+	@OneToMany(mappedBy = "country", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<City> cities;
 	
 	
 	public Country() {
 		name = "";
-		departingFlights = new ArrayList<>();
-		incomingFlights = new ArrayList<>();
+		cities = new ArrayList<>();
 	}
 
 	public Country(String name) {
 		this.name = name;
-		departingFlights = new ArrayList<>();
-		incomingFlights = new ArrayList<>();
+		cities = new ArrayList<>();
 	}
 
 	public int getId() {
@@ -58,6 +53,14 @@ public class Country {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public List<City> getCities() {
+		return cities;
+	}
+
+	public void setCities(List<City> cities) {
+		this.cities = cities;
 	}
 
 	@Override

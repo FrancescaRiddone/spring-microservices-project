@@ -42,6 +42,9 @@ public class Airport {
 	
 	
 	public Airport() {
+		name = "";
+		city = new City();
+		code = "";
 		departingFlights = new ArrayList<>();
 		incomingFlights = new ArrayList<>();
 	}
