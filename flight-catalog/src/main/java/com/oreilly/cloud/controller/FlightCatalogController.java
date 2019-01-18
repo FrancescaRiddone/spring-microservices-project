@@ -2,6 +2,8 @@ package com.oreilly.cloud.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.oreilly.cloud.service.SearchFlightRequest;
 import org.json.simple.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +47,8 @@ public class FlightCatalogController {
 									@RequestParam("seatType") String seatType, 
 									@RequestParam("seatNumber") int seatNumber) {
 		
-		return flightService.getFlights(sourceAirport, sourceCity, sourceCountry, 
-				destinationAirport, destinationCity, destinationCountry, departureHour, departureDay, departureMonth, departureYear,
-				arrivalHour, arrivalDay, arrivalMonth, arrivalYear, seatType, seatNumber);
+		return flightService.getFlights(
+				new SearchFlightRequest(sourceAirport, sourceCity, sourceCountry, destinationAirport, destinationCity, destinationCountry, departureHour, departureDay, departureMonth, departureYear, arrivalHour, arrivalDay, arrivalMonth, arrivalYear, seatType, seatNumber));
 	}
 	
 	@GetMapping("/flight")

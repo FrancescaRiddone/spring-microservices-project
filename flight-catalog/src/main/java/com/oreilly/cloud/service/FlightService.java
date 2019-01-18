@@ -7,9 +7,7 @@ import com.oreilly.cloud.entity.Flight;
 
 public interface FlightService {
 	
-	public JSONObject getFlights(String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
-			String destinationCity, String destinationCountry, int departureHour, int departureDay, int departureMonth, int departureYear,
-			int arrivalHour, int arrivalDay, int arrivalMonth, int arrivalYear, String seatType, int seatNumber);
+	public JSONObject getFlights(SearchFlightRequest searchFlightRequest);
 	
 	public JSONObject getFlight(int flightId);
 	
