@@ -2,7 +2,6 @@ package com.oreilly.cloud.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,15 +16,6 @@ public class ReservationDAOImpl implements ReservationDAO {
 	
 	
 	@Override
-	public JSONObject getReservationJSON(int reservationId) {
-		Session currentSession = sessionFactory.getCurrentSession();
-		Reservation theReservation = currentSession.get(Reservation.class, reservationId);
-		JSONObject theReservationJSON = com.oreilly.cloud.dao.UtilsForObjectsConversion.createJSONForReservation(theReservation);
-		
-		return theReservationJSON;
-	}
-	
-	@Override
 	public Reservation getReservation(int reservationId) {
 		Session currentSession = sessionFactory.getCurrentSession();
 		Reservation theReservation = currentSession.get(Reservation.class, reservationId);
@@ -34,14 +24,13 @@ public class ReservationDAOImpl implements ReservationDAO {
 	}
 	
 	@Override
-	public JSONObject saveReservation(Flight flight, String userName, String userSurname, String seatClass, int seatNumber, boolean confirmed) {
+	public Reservation saveReservation(Reservation theReservation) {
 		Session currentSession = sessionFactory.getCurrentSession();
-		Reservation theNewReservation= new Reservation(flight, userName, userSurname, getPriceForClassAndSeatNumber(flight, seatClass, seatNumber), 
-											seatClass, seatNumber, confirmed);
-		currentSession.saveOrUpdate(theNewReservation);
-		JSONObject theSavedReservationJSON = com.oreilly.cloud.dao.UtilsForObjectsConversion.createJSONForReservation(theNewReservation);
+		theReservation.setPrice(getPriceForClassAndSeatNumber(theReservation.getFlight(), theReservation.getSeatsType(), 
+				theReservation.getSeatsNumber()));
+		currentSession.saveOrUpdate(theReservation);
 		
-		return theSavedReservationJSON;
+		return theReservation;
 	}
 	
 	private double getPriceForClassAndSeatNumber(Flight flight, String seatClass, int seatNumber) {

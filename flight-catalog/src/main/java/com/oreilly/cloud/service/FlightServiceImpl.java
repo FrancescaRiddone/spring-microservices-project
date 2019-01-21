@@ -2,7 +2,12 @@ package com.oreilly.cloud.service;
 
 import com.oreilly.cloud.exception.ResourceNotFoundException;
 import com.oreilly.cloud.exception.ValidateException;
-import org.json.simple.JSONObject;
+import com.oreilly.cloud.object.FlightResource;
+import com.oreilly.cloud.object.SearchFlightRequest;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,32 +20,36 @@ public class FlightServiceImpl implements FlightService{
 
 	@Autowired
 	private FlightDAO flightDAO;
-
-	@SuppressWarnings("unchecked")
+	
+	
 	@Override
 	@Transactional
-	public JSONObject getFlights(SearchFlightRequest searchFlightRequest) {
-		
+	public List<FlightResource> getFlights(SearchFlightRequest searchFlightRequest) {
 		checkParamsForGetFlights(searchFlightRequest);
 
-		JSONObject requiredFlights = new JSONObject();
-		requiredFlights.put("flights", flightDAO.getFlights(searchFlightRequest.getSourceAirport(), searchFlightRequest.getSourceCity(), searchFlightRequest.getSourceCountry(),
-				searchFlightRequest.getDestinationAirport(), searchFlightRequest.getDestinationCity(), searchFlightRequest.getDestinationCountry(), searchFlightRequest.getDepartureHour(), searchFlightRequest.getDepartureDay(), searchFlightRequest.getDepartureMonth(), searchFlightRequest.getDepartureYear(),
-				searchFlightRequest.getArrivalHour(), searchFlightRequest.getArrivalDay(), searchFlightRequest.getArrivalMonth(), searchFlightRequest.getArrivalYear(), searchFlightRequest.getSeatType(), searchFlightRequest.getSeatNumber()));
+		List<FlightResource> theRequiredFlights = new ArrayList<>();
+		List<Flight> foundedFlights = flightDAO.getFlights(searchFlightRequest);
+		if(foundedFlights == null) {
+			throw new ResourceNotFoundException();
+		}
+		for(Flight theFlight: foundedFlights) {
+			theRequiredFlights.add(com.oreilly.cloud.service.Converter.convertInFlightResource(theFlight));
+		}
 		
-		return requiredFlights;
+		return theRequiredFlights;
 	}
 
 	@Override
 	@Transactional
-	public JSONObject getFlight(int flightId) {
-		JSONObject theFlight = flightDAO.getFlight(flightId);
+	public FlightResource getFlight(int flightId) {
+		Flight theFlight = flightDAO.getFlight(flightId);
 
 		if(theFlight == null) {
 			throw new ResourceNotFoundException();
 		}
+		FlightResource flightResource = com.oreilly.cloud.service.Converter.convertInFlightResource(theFlight);
 		
-		return theFlight;
+		return flightResource;
 	}
 
 	@Override
@@ -54,8 +63,10 @@ public class FlightServiceImpl implements FlightService{
 	}
 	
 	private void checkParamsForGetFlights(SearchFlightRequest searchFlightRequest) {
-		if(searchFlightRequest.getSourceAirport() == null && searchFlightRequest.getSourceCity() == null && searchFlightRequest.getSourceCountry() == null && searchFlightRequest.getDestinationAirport() == null &&
-				searchFlightRequest.getDestinationCity() == null && searchFlightRequest.getDestinationCountry() == null && searchFlightRequest.getSeatType() == null && searchFlightRequest.getSeatNumber() == 0) {
+		if(searchFlightRequest.getSource().getAirportName() == null && searchFlightRequest.getSource().getCity() == null && 
+				searchFlightRequest.getSource().getCountry() == null && searchFlightRequest.getDestination().getAirportName() == null &&
+				searchFlightRequest.getDestination().getCity() == null && searchFlightRequest.getDestination().getCountry() == null && 
+				searchFlightRequest.getSeatType() == null && searchFlightRequest.getSeatNumber() == 0) {
 
 			throw new ValidateException();
 		}

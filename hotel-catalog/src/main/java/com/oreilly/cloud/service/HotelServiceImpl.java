@@ -1,9 +1,7 @@
 package com.oreilly.cloud.service;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.oreilly.cloud.dao.HotelDAO;
 
@@ -12,9 +10,6 @@ public class HotelServiceImpl implements HotelService {
 	
 	@Autowired
 	private HotelDAO hotelDAO;
-	
-	
-	
 	
 	/*
 	@Override

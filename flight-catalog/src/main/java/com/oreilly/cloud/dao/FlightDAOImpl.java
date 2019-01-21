@@ -8,11 +8,11 @@ import java.util.List;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.oreilly.cloud.entity.Flight;
+import com.oreilly.cloud.object.SearchFlightRequest;
 
 @Repository
 public class FlightDAOImpl implements FlightDAO {
@@ -22,42 +22,30 @@ public class FlightDAOImpl implements FlightDAO {
 
 	
 	@Override
-	public List<JSONObject> getFlights(String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
-			String destinationCity, String destinationCountry, int departureHour, int departureDay, int departureMonth, int departureYear,
-			int arrivalHour, int arrivalDay, int arrivalMonth, int arrivalYear, String seatType, int seatNumber) {
+	public List<Flight> getFlights(SearchFlightRequest searchFlightRequest) {
 		
-		if(seatNumber == 0) {
-			seatNumber = 1;
+		if(searchFlightRequest.getSeatNumber() == 0) {
+			searchFlightRequest.setSeatNumber(1);
 		}
 		
 		Session currentSession = sessionFactory.getCurrentSession();
-		String queryText = setQueryString(sourceAirport, sourceCity, sourceCountry, destinationAirport, destinationCity,
-				destinationCountry, seatType, seatNumber);
+		String queryText = setQueryString(searchFlightRequest);
 		Query<Flight> theQuery = currentSession.createQuery(queryText, Flight.class);
-		theQuery = setQueryParameters(theQuery, sourceAirport, sourceCity, sourceCountry, destinationAirport, destinationCity,
-				destinationCountry, seatType, seatNumber);
+		theQuery = setQueryParameters(theQuery, searchFlightRequest);
 		List<Flight> theFlights = theQuery.getResultList();
 		if(theFlights != null) {
-			theFlights = filterFlightsByTime(theFlights, departureHour, departureDay, departureMonth, departureYear, 
-					arrivalHour, arrivalDay, arrivalMonth, arrivalYear);
-		}
-		List<JSONObject> theFlightsJSON = new ArrayList<>();
-		
-		for(Flight theFlight: theFlights) {
-			JSONObject theFlightJSON = com.oreilly.cloud.dao.UtilsForObjectsConversion.createJSONForFlight(theFlight);
-			theFlightsJSON.add(theFlightJSON);
+			theFlights = filterFlightsByTime(theFlights, searchFlightRequest);
 		}
 		
-		return theFlightsJSON;
+		return theFlights;
 	}
 	
 	@Override
-	public JSONObject getFlight(int flightId) {
+	public Flight getFlight(int flightId) {
 		Session currentSession = sessionFactory.getCurrentSession();
 		Flight theFlight = currentSession.get(Flight.class, flightId);
-		JSONObject theFlightJSON = com.oreilly.cloud.dao.UtilsForObjectsConversion.createJSONForFlight(theFlight);
 		
-		return theFlightJSON;
+		return theFlight;
 	}
 	
 	@Override
@@ -75,17 +63,15 @@ public class FlightDAOImpl implements FlightDAO {
 	}
 	
 	
-	private String setQueryString(String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
-			String destinationCity, String destinationCountry, String seatType, int seatNumber) {
-		
+	private String setQueryString(SearchFlightRequest searchFlightRequest) {
 		String queryString = "select f from Flight f where ";
-		queryString = evaluateStringInsertion(queryString, "sourceAirport", sourceAirport);
-		queryString = evaluateStringInsertion(queryString, "sourceCity", sourceCity);
-		queryString = evaluateStringInsertion(queryString, "sourceCountry", sourceCountry);
-		queryString = evaluateStringInsertion(queryString, "destinationAirport", destinationAirport);
-		queryString = evaluateStringInsertion(queryString, "destinationCity", destinationCity);
-		queryString = evaluateStringInsertion(queryString, "destinationCountry", destinationCountry);
-		queryString = evaluateStringInsertion(queryString, "seatType", seatType);
+		queryString = evaluateStringInsertion(queryString, "sourceAirport", searchFlightRequest.getSource().getAirportName());
+		queryString = evaluateStringInsertion(queryString, "sourceCity", searchFlightRequest.getSource().getCity());
+		queryString = evaluateStringInsertion(queryString, "sourceCountry", searchFlightRequest.getSource().getCountry());
+		queryString = evaluateStringInsertion(queryString, "destinationAirport", searchFlightRequest.getDestination().getAirportName());
+		queryString = evaluateStringInsertion(queryString, "destinationCity", searchFlightRequest.getDestination().getCity());
+		queryString = evaluateStringInsertion(queryString, "destinationCountry", searchFlightRequest.getDestination().getCountry());
+		queryString = evaluateStringInsertion(queryString, "seatType", searchFlightRequest.getSeatType());
 		queryString = queryString.concat("(f.availableEconomySeats + f.availableBusinessSeats + f.availableFirstSeats) >= :seatNumber");
 		
 		return queryString;
@@ -99,17 +85,16 @@ public class FlightDAOImpl implements FlightDAO {
 		return query;
 	}
 	
-	private Query<Flight> setQueryParameters(Query<Flight> theQuery, String sourceAirport, String sourceCity, String sourceCountry, String destinationAirport,
-			String destinationCity, String destinationCountry, String seatType, int seatNumber){
+	private Query<Flight> setQueryParameters(Query<Flight> theQuery, SearchFlightRequest searchFlightRequest){
 		
-		theQuery = setQueryParameter(theQuery, "sourceAirport", sourceAirport);
-		theQuery = setQueryParameter(theQuery, "sourceCity", sourceCity);
-		theQuery = setQueryParameter(theQuery, "sourceCountry", sourceCountry);
-		theQuery = setQueryParameter(theQuery, "destinationAirport", destinationAirport);
-		theQuery = setQueryParameter(theQuery, "destinationCity", destinationCity);
-		theQuery = setQueryParameter(theQuery, "destinationCountry", destinationCountry);
-		theQuery = setQueryParameter(theQuery, "seatType", seatType);
-		theQuery = setQueryParameter(theQuery, "seatNumber", new Integer(seatNumber));
+		theQuery = setQueryParameter(theQuery, "sourceAirport", searchFlightRequest.getSource().getAirportName());
+		theQuery = setQueryParameter(theQuery, "sourceCity", searchFlightRequest.getSource().getCity());
+		theQuery = setQueryParameter(theQuery, "sourceCountry", searchFlightRequest.getSource().getCountry());
+		theQuery = setQueryParameter(theQuery, "destinationAirport", searchFlightRequest.getDestination().getAirportName());
+		theQuery = setQueryParameter(theQuery, "destinationCity", searchFlightRequest.getDestination().getCity());
+		theQuery = setQueryParameter(theQuery, "destinationCountry", searchFlightRequest.getDestination().getCountry());
+		theQuery = setQueryParameter(theQuery, "seatType", searchFlightRequest.getSeatType());
+		theQuery = setQueryParameter(theQuery, "seatNumber", new Integer(searchFlightRequest.getSeatNumber()));
 		
 		return  theQuery;
 	}
@@ -143,14 +128,15 @@ public class FlightDAOImpl implements FlightDAO {
 		return queryText;
 	}
 	
-	private List<Flight> filterFlightsByTime(List<Flight> theFlights, int departureHour, int departureDay, 
-			int departureMonth, int departureYear, int arrivalHour, int arrivalDay, int arrivalMonth, int arrivalYear){
+	private List<Flight> filterFlightsByTime(List<Flight> theFlights, SearchFlightRequest searchFlightRequest){
 		
 		List<Flight> filteredFlights = new ArrayList<>();
 	    
 	    for(Flight theFlight: theFlights) {
-	    	if(checkTravelTime(theFlight.getDepartureTime(), departureHour, departureDay, departureMonth, departureYear) &&
-	    		checkTravelTime(theFlight.getArrivalTime(), arrivalHour, arrivalDay, arrivalMonth, arrivalYear)) {
+	    	if(checkTravelTime(theFlight.getDepartureTime(), searchFlightRequest.getSource().getHour(), searchFlightRequest.getSource().getDay(), 
+	    			searchFlightRequest.getSource().getMonth(), searchFlightRequest.getSource().getYear()) &&
+	    		checkTravelTime(theFlight.getArrivalTime(), searchFlightRequest.getDestination().getHour(), searchFlightRequest.getDestination().getDay(), 
+	    				searchFlightRequest.getDestination().getMonth(), searchFlightRequest.getDestination().getYear())) {
 	    		
 	    		filteredFlights.add(theFlight);
 	    	}
