@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.oreilly.cloud.entity.Flight;
-import com.oreilly.cloud.entity.Reservation;
 import com.oreilly.cloud.exception.ResourceNotFoundException;
+import com.oreilly.cloud.exception.ValidateException;
+import com.oreilly.cloud.model.Flight;
+import com.oreilly.cloud.model.Reservation;
 import com.oreilly.cloud.object.FlightResource;
-import com.oreilly.cloud.object.ReservationResource;
+import com.oreilly.cloud.object.FlightReservationRequest;
+import com.oreilly.cloud.object.FlightReservationResource;
 import com.oreilly.cloud.object.SearchFlightRequest;
 import com.oreilly.cloud.service.FlightService;
 import com.oreilly.cloud.service.ReservationService;
@@ -31,21 +33,30 @@ public class FlightCatalogController {
 	private ReservationService reservationService;
 	
 	
-	@GetMapping("/requiredFlights")
-	public List<FlightResource> getFlights(@RequestBody SearchFlightRequest searchFlightRequest) {
+	@GetMapping("/flight")
+	public FlightResource getFlight(@RequestParam("flightId") int flightId) throws ResourceNotFoundException {
+		FlightResource resource = flightService.getFlight(flightId);
+		
+		return resource;
+	}
+	
+	@PostMapping("/requiredFlights")
+	public List<FlightResource> getFlights(@RequestBody SearchFlightRequest searchFlightRequest) throws ResourceNotFoundException, ValidateException {
 		return flightService.getFlights(searchFlightRequest);
 	}
 	
-	@GetMapping("/flight")
-	public FlightResource getFlight(@RequestParam("flightId") int flightId) {
-		return flightService.getFlight(flightId);
+	@GetMapping("/reservations/reservation")
+	public FlightReservationResource getReservation(@RequestParam("reservationId") int reservationId) throws ResourceNotFoundException {
+		FlightReservationResource theReservation = reservationService.getReservationResource(reservationId);
+		
+		return theReservation;
 	}
 	
 	@GetMapping("/reservations")
-	public List<ReservationResource> getReservations(@RequestParam List<Integer> reservationIds) {
-		List<ReservationResource> theReservations = new ArrayList<>();
+	public List<FlightReservationResource> getReservations(@RequestParam List<Integer> reservationIds) throws ResourceNotFoundException {
+		List<FlightReservationResource> theReservations = new ArrayList<>();
 		for(int reservationId: reservationIds) {
-			ReservationResource theReservation = reservationService.getReservationResource(reservationId);
+			FlightReservationResource theReservation = reservationService.getReservationResource(reservationId);
 			if(theReservation != null) {
 				theReservations.add(theReservation);
 			}
@@ -57,47 +68,40 @@ public class FlightCatalogController {
 		return theReservations;
 	}
 	
-	@GetMapping("/reservations/reservation")
-	public ReservationResource getReservation(@RequestParam("reservationId") int reservationId) {
-		ReservationResource theReservation = reservationService.getReservationResource(reservationId);
-		if(theReservation == null) {
-			throw new ResourceNotFoundException();
-		}
+	@PostMapping("/reservations/new")
+	public FlightReservationResource createReservation(@RequestBody FlightReservationRequest flightReservationRequest) 
+			throws ResourceNotFoundException, ValidateException{
 		
-		return theReservation;
-	}
-	
-	@PostMapping("/reservations/newReservation")
-	public ReservationResource createReservation(@RequestParam("flightId") int flightId,
-									@RequestParam("userName") String userName,
-									@RequestParam("userSurname") String userSurname,
-									@RequestParam("seatClass") String seatClass,
-									@RequestParam("seatNumber") int seatNumber) {
+		Flight availableFlight = flightService.checkFlightAvailability(flightReservationRequest.getFlightId(), 
+				flightReservationRequest.getSeatClass(), flightReservationRequest.getSeatNumber());
 		
-		Flight availableFlight = flightService.checkFlightAvailability(flightId, seatClass, seatNumber);
 		if(availableFlight == null) {
 			throw new ResourceNotFoundException();
 		}
-		
-		Reservation theNewReservation = new Reservation(availableFlight, userName, userSurname, 0.0, seatClass,
-				seatNumber, false);
+		Reservation theNewReservation = new Reservation(availableFlight, flightReservationRequest.getUserName(), 
+				flightReservationRequest.getUserSurname(), 0.0, flightReservationRequest.getSeatClass(),
+				flightReservationRequest.getSeatNumber(), false);
 		
 		return reservationService.saveReservation(theNewReservation);
 	}
 	
-	@PostMapping("/reservations/reserve")
-	public ReservationResource confirmeReservation(@RequestParam("reservationId") int reservationId) {
-		Reservation theConfirmedReservation = reservationService.getReservation(reservationId);
+	@GetMapping("/reservations/confirm")
+	public FlightReservationResource confirmReservation(@RequestParam int reservationId) throws ResourceNotFoundException, ValidateException {
+		Reservation theReservation = reservationService.getReservation(reservationId);
 		
-		Flight availableFlight = flightService.checkFlightAvailability(theConfirmedReservation.getFlight().getId(), 
-				theConfirmedReservation.getSeatsType(), theConfirmedReservation.getSeatsNumber());
-		if(availableFlight == null) {
-			throw new ResourceNotFoundException();
+		if(flightService.checkFlightAvailability(theReservation.getFlight().getFlightId(), 
+					theReservation.getSeatsType(), theReservation.getSeatsNumber()) == null) {
+			
+				throw new ResourceNotFoundException();
 		}
 		
-		return reservationService.saveReservation(theConfirmedReservation);
+		theReservation.setConfirmed(true);
+		FlightReservationResource theReservationResource = reservationService.saveReservation(theReservation);
+		flightService.updateAvailableSeats(theReservation.getFlight().getFlightId(), theReservation.getSeatsType(), 
+					theReservation.getSeatsNumber());
+		
+		return theReservationResource;
 	}
-	
 	
 	
 }

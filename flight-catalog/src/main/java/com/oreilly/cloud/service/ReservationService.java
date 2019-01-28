@@ -1,14 +1,14 @@
 package com.oreilly.cloud.service;
 
-import com.oreilly.cloud.entity.Reservation;
-import com.oreilly.cloud.object.ReservationResource;
+import com.oreilly.cloud.model.Reservation;
+import com.oreilly.cloud.object.FlightReservationResource;
 
 public interface ReservationService {
 	
 	public Reservation getReservation(int reservationId);
 	
-	public ReservationResource getReservationResource(int reservationId);
+	public FlightReservationResource getReservationResource(int reservationId);
 	
-	public ReservationResource saveReservation(Reservation theReservation);
+	public FlightReservationResource saveReservation(Reservation theReservation);
 
 }
