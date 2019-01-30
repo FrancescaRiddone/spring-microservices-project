@@ -46,8 +46,6 @@ public class Airport {
 		incomingFlights = new ArrayList<>();
 	}
 	
-	
-
 	public Airport(int id, String name, City city, String code) {
 		this.id = id;
 		this.name = name;
@@ -56,8 +54,6 @@ public class Airport {
 		departingFlights = new ArrayList<>();
 		incomingFlights = new ArrayList<>();
 	}
-
-
 
 	public Airport(String name, City city, String code) {
 		this.name = name;

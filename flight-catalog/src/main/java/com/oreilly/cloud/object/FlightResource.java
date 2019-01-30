@@ -10,6 +10,10 @@ public class FlightResource {
 	
 	private JourneyStage destination;
 	
+	private FlightTime departure;
+	
+	private FlightTime arrival;
+	
 	private int availableEconomySeats;
 	
 	private int availableBusinessSeats;
@@ -24,19 +28,19 @@ public class FlightResource {
 	
 	
 	public FlightResource() {
-		this.company = "";
-		this.source = new JourneyStage();
-		this.destination = new JourneyStage();
+		
 	}
 
 	public FlightResource(int flightId, String company, JourneyStage source, JourneyStage destination,
-			int availableEconomySeats, int availableBusinessSeats, int availableFirstSeats, double economySeatPrice,
-			double businessSeatPrice, double firstSeatPrice) {
-		
+			FlightTime departure, FlightTime arrival, int availableEconomySeats, int availableBusinessSeats,
+			int availableFirstSeats, double economySeatPrice, double businessSeatPrice, double firstSeatPrice) {
+	
 		this.flightId = flightId;
 		this.company = company;
 		this.source = source;
 		this.destination = destination;
+		this.departure = departure;
+		this.arrival = arrival;
 		this.availableEconomySeats = availableEconomySeats;
 		this.availableBusinessSeats = availableBusinessSeats;
 		this.availableFirstSeats = availableFirstSeats;
@@ -75,6 +79,22 @@ public class FlightResource {
 
 	public void setDestination(JourneyStage destination) {
 		this.destination = destination;
+	}
+	
+	public FlightTime getDeparture() {
+		return departure;
+	}
+
+	public void setDeparture(FlightTime departure) {
+		this.departure = departure;
+	}
+
+	public FlightTime getArrival() {
+		return arrival;
+	}
+
+	public void setArrival(FlightTime arrival) {
+		this.arrival = arrival;
 	}
 
 	public int getAvailableEconomySeats() {
@@ -128,10 +148,10 @@ public class FlightResource {
 	@Override
 	public String toString() {
 		return "FlightResource [flightId=" + flightId + ", company=" + company + ", source=" + source + ", destination="
-				+ destination + ", availableEconomySeats=" + availableEconomySeats + ", availableBusinessSeats="
-				+ availableBusinessSeats + ", availableFirstSeats=" + availableFirstSeats + ", economySeatPrice="
-				+ economySeatPrice + ", businessSeatPrice=" + businessSeatPrice + ", firstSeatPrice=" + firstSeatPrice
-				+ "]";
+				+ destination + ", departure=" + departure + ", arrival=" + arrival + ", availableEconomySeats="
+				+ availableEconomySeats + ", availableBusinessSeats=" + availableBusinessSeats
+				+ ", availableFirstSeats=" + availableFirstSeats + ", economySeatPrice=" + economySeatPrice
+				+ ", businessSeatPrice=" + businessSeatPrice + ", firstSeatPrice=" + firstSeatPrice + "]";
 	}
 	
 

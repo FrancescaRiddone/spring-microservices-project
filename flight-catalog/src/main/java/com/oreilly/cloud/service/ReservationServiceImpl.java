@@ -21,9 +21,9 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional
-	public Reservation getReservation(int reservationId) throws ResourceNotFoundException {
+	public Reservation getReservation(int reservationId) throws ResourceNotFoundException, ValidateException {
 		if(reservationId <= 0) {
-			return null;
+			throw new ValidateException();
 		}
 		Optional<Reservation> theReservation = reservationRepository.findById(reservationId);
 		if(!theReservation.isPresent()) {
@@ -37,6 +37,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	public FlightReservationResource getReservationResource(int reservationId) throws ResourceNotFoundException {
 		Reservation theReservation = getReservation(reservationId);
+		
 		FlightReservationResource reservationResource = com.oreilly.cloud.service.Converter.convertInReservationResource(theReservation);
 		
 		return reservationResource;
@@ -44,7 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
 	
 	@Override
 	@Transactional
-	public FlightReservationResource saveReservation(Reservation theReservation) throws ResourceNotFoundException {
+	public FlightReservationResource saveReservation(Reservation theReservation) throws ResourceNotFoundException, ValidateException {
 		checkParamsForSaveReservation(theReservation);
 		
 		theReservation.setPrice(getPriceForClassAndSeatNumber(theReservation.getFlight(), theReservation.getSeatsType(), 
@@ -59,12 +60,13 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservationResource;
 	}
 	
+	
 	private void checkParamsForSaveReservation(Reservation theReservation) throws ValidateException {
-		if((theReservation.getFlight() == null || theReservation.getFlight().getFlightId() <= 0) && 
-				(theReservation.getUserName() == null || theReservation.getUserName().equals("")) &&
-				(theReservation.getUserSurname() == null || theReservation.getUserSurname().equals("")) && 
+		if((theReservation.getFlight() == null || theReservation.getFlight().getFlightId() <= 0) || 
+				(theReservation.getUserName() == null || theReservation.getUserName().equals("")) ||
+				(theReservation.getUserSurname() == null || theReservation.getUserSurname().equals("")) ||
 				!(theReservation.getSeatsType().equals("economy") || theReservation.getSeatsType().equals("business") || 
-						theReservation.getSeatsType().equals("first")) &&
+						theReservation.getSeatsType().equals("first")) ||
 				theReservation.getSeatsNumber() <= 0) {
 			
 			throw new ValidateException();

@@ -2,9 +2,15 @@ package com.oreilly.cloud.object;
 
 public class SearchFlightRequest {
 	
+	private String company;
+	
 	private JourneyStage source;
 	
 	private JourneyStage destination;
+	
+	private FlightTime departureTime;
+	
+	private FlightTime arrivalTime;
     
     private String seatType;
     
@@ -12,16 +18,27 @@ public class SearchFlightRequest {
     
 
     public SearchFlightRequest() {
-    	this.source = new JourneyStage();
-		this.destination = new JourneyStage();
-		this.seatType = "";
+    	
     }
 
-    public SearchFlightRequest(JourneyStage source, JourneyStage destination, String seatType, int seatNumber) {
+    public SearchFlightRequest(String company, JourneyStage source, JourneyStage destination, FlightTime departureTime,
+			FlightTime arrivalTime, String seatType, int seatNumber) {
+		
+		this.company = company;
 		this.source = source;
 		this.destination = destination;
+		this.departureTime = departureTime;
+		this.arrivalTime = arrivalTime;
 		this.seatType = seatType;
 		this.seatNumber = seatNumber;
+	}
+	
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
 	}
 
 	public JourneyStage getSource() {
@@ -38,6 +55,22 @@ public class SearchFlightRequest {
 
 	public void setDestination(JourneyStage destination) {
 		this.destination = destination;
+	}
+	
+	public FlightTime getDepartureTime() {
+		return departureTime;
+	}
+
+	public void setDepartureTime(FlightTime departureTime) {
+		this.departureTime = departureTime;
+	}
+
+	public FlightTime getArrivalTime() {
+		return arrivalTime;
+	}
+
+	public void setArrivalTime(FlightTime arrivalTime) {
+		this.arrivalTime = arrivalTime;
 	}
 
 	public String getSeatType() {
@@ -58,8 +91,9 @@ public class SearchFlightRequest {
 
 	@Override
 	public String toString() {
-		return "SearchFlightRequest [source=" + source + ", destination=" + destination + ", seatType=" + seatType
-				+ ", seatNumber=" + seatNumber + "]";
+		return "SearchFlightRequest [source=" + source + ", destination=" + destination + ", departureTime="
+				+ departureTime + ", arrivalTime=" + arrivalTime + ", seatType=" + seatType + ", seatNumber="
+				+ seatNumber + "]";
 	}
 
     

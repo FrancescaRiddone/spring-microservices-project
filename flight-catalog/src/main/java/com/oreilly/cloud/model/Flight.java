@@ -281,6 +281,6 @@ public class Flight {
 				+ ", businessSeatPrice=" + businessSeatPrice + ", firstSeatPrice=" + firstSeatPrice + ", departureTime="
 				+ departureTime + ", arrivalTime=" + arrivalTime + "]";
 	}
-	
+
 	
 }

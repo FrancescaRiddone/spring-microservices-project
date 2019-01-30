@@ -7,10 +7,14 @@ import com.oreilly.cloud.model.City;
 import com.oreilly.cloud.model.Company;
 import com.oreilly.cloud.model.Country;
 import com.oreilly.cloud.model.Flight;
+import com.oreilly.cloud.model.QFlight;
 import com.oreilly.cloud.object.FlightResource;
+import com.oreilly.cloud.object.FlightTime;
 import com.oreilly.cloud.object.JourneyStage;
 import com.oreilly.cloud.object.SearchFlightRequest;
 import com.oreilly.cloud.repository.FlightRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +22,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,108 +50,86 @@ public class FlightServiceTest {
 
     @Test
     public void flightFoundWithId() {
-        // given
-        // a flightService
         assertNotNull(flightService);
 
-        // when
-        // I search for a flight with id 1
         when(flightRepository.findById(1)).thenReturn(createOptionalFlight());
-
         FlightResource flight = flightService.getFlight(1);
 
-        // then
-        // I get the flight with some specification
         assertNotNull(flight);
-        assertThat(flight.getFlightId(), is(1));
-        assertThat(flight.getCompany(), is("Ryanair"));
-        assertThat(flight.getSource().getCity(), is("Milan"));
-        assertThat(flight.getSource().getAirportName(), is("Malpensa Airport"));
-        assertThat(flight.getDestination().getCity(), is("London"));
-        assertThat(flight.getDestination().getAirportName(), is("London Luton Airport"));
+        assertEquals(flight.getFlightId(), 1);
     }
     
     @Test(expected = ValidateException.class)
     public void getFlightValidateException() {
-        // when
-        // I search for a flight with id 0
-        
-    	flightService.getFlight(0);
+    	assertNotNull(flightService);
+    	
+        flightService.getFlight(0);
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void flightNotFound() {
-        // when
-        // I search for a flight with id which isn't in db
+    	assertNotNull(flightService);
+        
     	when(flightRepository.findById(100)).thenReturn(Optional.empty());
-    	
-    	// then
-        flightService.getFlight(100);
+    	flightService.getFlight(100);
     }
 
     
     @Test
     public void flightsFoundWithSourceAirportAndDestinationAirport() {
-    	// given a search request
-        SearchFlightRequest searchFlightRequest = new SearchFlightRequest();
+    	SearchFlightRequest searchFlightRequest = new SearchFlightRequest();
         JourneyStage source = new JourneyStage();
         source.setAirportName("Malpensa Airport");
+        searchFlightRequest.setSource(source);
         JourneyStage destination = new JourneyStage();
         destination.setAirportName("London Luton Airport");
+        searchFlightRequest.setDestination(destination);
+        searchFlightRequest.setSeatNumber(2);
+        FlightTime time = new FlightTime(0, 9, 13, 5, 2019);
+        searchFlightRequest.setDepartureTime(time);
         
-        // when I search for a flight with that request
-        when(flightService.getFlightsByClass(searchFlightRequest)).thenReturn(createFlights(true));
-        
-        // then
+        when(flightRepository.findAll(createPredicate1())).thenReturn(createFlights(true, true));
         List<FlightResource> flights = flightService.getFlights(searchFlightRequest);
         
         assertNotNull(flights);
-        assertThat(flights.size(), is(2));
-        for(int i = 0; i < 2; i++) {
-        	assertThat(flights.get(i).getSource().getCity(), is("Milan"));
-        	assertThat(flights.get(i).getSource().getAirportName(), is("Malpensa Airport"));
-            assertThat(flights.get(i).getDestination().getCity(), is("London"));
-            assertThat(flights.get(i).getDestination().getAirportName(), is("London Luton Airport"));
-        }
-        
+        assertThat(flights.size(), is(1));
+        assertThat(flights.get(0).getSource().getCity(), is("Milan"));
+        assertThat(flights.get(0).getSource().getAirportName(), is("Malpensa Airport"));
+        assertThat(flights.get(0).getDestination().getCity(), is("London"));
+        assertThat(flights.get(0).getDestination().getAirportName(), is("London Luton Airport"));
+        assertTrue(flights.get(0).getDeparture().getHour() >= 9);
     }
 
     @Test(expected = ValidateException.class)
     public void getFlightsValidateException() {
-    	// given a search of a flight with an empty request
-        SearchFlightRequest searchFlightRequest = new SearchFlightRequest();
+    	SearchFlightRequest searchFlightRequest = new SearchFlightRequest();
         
-        // then
         flightService.getFlights(searchFlightRequest);
     }
-    
+ 
     @Test(expected = ResourceNotFoundException.class)
     public void getFlightsResourceNotFoundException() {
-    	// given a search request
-        SearchFlightRequest searchFlightRequest = new SearchFlightRequest();
+    	SearchFlightRequest searchFlightRequest = new SearchFlightRequest();
         JourneyStage source = new JourneyStage();
         source.setCity("Atlanta");
+        searchFlightRequest.setSource(source);
         JourneyStage destination = new JourneyStage();
         destination.setCity("Rome");
+        searchFlightRequest.setDestination(destination);
+        FlightTime time = new FlightTime(0, 0, 13, 5, 2019);
+        searchFlightRequest.setDepartureTime(time);
         
-        // when I search for a flight with that request
-        when(flightService.getFlightsByClass(searchFlightRequest)).thenReturn(createFlights(false));
-        
-        // then
         flightService.getFlights(searchFlightRequest);
     }
+
     
     @Test
     public void availableFlightFound() {
-    	// given parameters
-        int flightId = 1;
+    	int flightId = 1;
         String seatClass = "economy";
         int seatNumber = 2;
         
-        // when I check the availability of the flight with these properties
-        when(flightService.checkFlightAvailabilityByClass(flightId, seatClass, seatNumber)).thenReturn(createFlight());
-        
-        // then
+        when(flightRepository.findOne(createPredicate2())).thenReturn(Optional.of(createFlight()));
         Flight theFlight = flightService.checkFlightAvailability(flightId, seatClass, seatNumber);
         
         assertNotNull(theFlight);
@@ -152,22 +138,22 @@ public class FlightServiceTest {
         assertTrue(theFlight.getAvailableEconomySeats() >= 2);
     }
     
+    /*
+    
     @Test
     public void availableFlightNotFound() {
-    	// given parameters
-        int flightId = 1;
+    	int flightId = 1;
         String seatClass = "first";
         int seatNumber = 50;
         
-        // when I check the availability of the flight with these properties
-        when(flightService.checkFlightAvailabilityByClass(flightId, seatClass, seatNumber)).thenReturn(null);
+        when(flightRepository.findOne(createPredicate3())).thenReturn(Optional.of(null));
         
-        // then
         Flight theFlight = flightService.checkFlightAvailability(flightId, seatClass, seatNumber);
         
         assertTrue(theFlight == null);
     }
     
+   
     @Test(expected = ValidateException.class)
     public void checkFlightAvailabilityValidateException() {
     	// given invalid parameters
@@ -191,7 +177,7 @@ public class FlightServiceTest {
         flightService.updateAvailableSeats(flightId, seatClass, seatNumber);
     }
     
-    
+    /*
     @Test
     public void foundFlightWithEconomySeats() {
     	// given a search request
@@ -273,7 +259,7 @@ public class FlightServiceTest {
         
         assertTrue(theFlight == null);
     }
-    
+    */
     
     private Optional<Flight> createOptionalFlight(){
     	Optional<Flight> optFlight;
@@ -314,17 +300,14 @@ public class FlightServiceTest {
 	    return theFlight;
     }
     
-    private List<Flight> createFlights(boolean arePresent) {
+    private List<Flight> createFlights(boolean arePresent, boolean withDepartureFilter) {
     	if(!arePresent) {
     		return null;
     	}
     	
         List<Flight> theFlights = new ArrayList<>();
         
-        Flight theFlight1 = createFlight();
-        theFlights.add(theFlight1);
-        
-        Flight theFlight2 = new Flight();
+        Flight theFlight1 = new Flight();
         Company theCompany = new Company(1, "Ryanair");
         Country theSourceCountry = new Country(7, "Italy");
         City theSourceCity = new City(9, "Milan", theSourceCountry);
@@ -332,28 +315,78 @@ public class FlightServiceTest {
         City theDestinationCity = new City(7, "London", theDestinationCountry);
         Airport theSourceAirport = new Airport(13, "Malpensa Airport", theSourceCity, "MPX");
         Airport theDestinationAirport = new Airport(9, "London Luton Airport", theDestinationCity, "LTN");
-        theFlight2.setId(2);
-        theFlight2.setCompany(theCompany);
-        theFlight2.setSourceAirport(theSourceAirport);
-        theFlight2.setSourceCity(theSourceCity);
-        theFlight2.setSourceCountry(theSourceCountry);
-        theFlight2.setDestinationAirport(theDestinationAirport);
-        theFlight2.setDestinationCity(theDestinationCity);
-        theFlight2.setDestinationCountry(theDestinationCountry);
-        theFlight2.setTotalEconomySeats(100);
-        theFlight2.setTotalBusinessSeats(60);
-        theFlight2.setTotalFirstSeats(35);
-        theFlight2.setAvailableEconomySeats(100);
-        theFlight2.setAvailableBusinessSeats(60);
-        theFlight2.setAvailableFirstSeats(35);
-        theFlight2.setEconomySeatPrice(17.99);
-        theFlight2.setBusinessSeatPrice(52.88);
-        theFlight2.setFirstSeatPrice(72.96);
-        theFlight2.setDepartureTime(java.sql.Timestamp.valueOf("2019-05-13 21:35:00"));
-	    theFlight2.setArrivalTime(java.sql.Timestamp.valueOf("2019-05-13 22:30:00"));
-        theFlights.add(theFlight2);
+        theFlight1.setId(2);
+        theFlight1.setCompany(theCompany);
+        theFlight1.setSourceAirport(theSourceAirport);
+        theFlight1.setSourceCity(theSourceCity);
+        theFlight1.setSourceCountry(theSourceCountry);
+        theFlight1.setDestinationAirport(theDestinationAirport);
+        theFlight1.setDestinationCity(theDestinationCity);
+        theFlight1.setDestinationCountry(theDestinationCountry);
+        theFlight1.setTotalEconomySeats(100);
+        theFlight1.setTotalBusinessSeats(60);
+        theFlight1.setTotalFirstSeats(35);
+        theFlight1.setAvailableEconomySeats(100);
+        theFlight1.setAvailableBusinessSeats(60);
+        theFlight1.setAvailableFirstSeats(35);
+        theFlight1.setEconomySeatPrice(17.99);
+        theFlight1.setBusinessSeatPrice(52.88);
+        theFlight1.setFirstSeatPrice(72.96);
+        theFlight1.setDepartureTime(java.sql.Timestamp.valueOf("2019-05-13 21:35:00"));
+	    theFlight1.setArrivalTime(java.sql.Timestamp.valueOf("2019-05-13 22:30:00"));
+	    
+	    theFlights.add(theFlight1);
+        if(!withDepartureFilter) {
+        	Flight theFlight2 = createFlight();
+        	theFlights.add(theFlight2);
+        }
         
         return theFlights;
     }
+    
+    private Predicate createPredicate1() {
+    	BooleanBuilder predicate = new BooleanBuilder();
+		QFlight flight = QFlight.flight;
+		
+		predicate.and(flight.sourceAirport.name.equalsIgnoreCase("Malpensa Airport"));
+		predicate.and(flight.destinationAirport.name.equalsIgnoreCase("London Luton Airport"));
+		predicate.and((flight.availableEconomySeats.add(flight.availableBusinessSeats).add(flight.availableFirstSeats)).goe(2));	
+		
+		try {
+			SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+			String dateString = "2019-05-13 09:00:00.0";
+			Date departureDate = formatter.parse(dateString);
+			Timestamp departureTimestamp = new Timestamp(departureDate.getTime());
+			Date departureLimit = formatter.parse(dateString.substring(0, 11).concat("23:59:59"));
+			Timestamp departureLimitTimestamp = new Timestamp(departureLimit.getTime());
+			predicate.and(flight.departureTime.between(departureTimestamp, departureLimitTimestamp));
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return predicate;		
+    }
+    
+    private Predicate createPredicate2() {
+    	BooleanBuilder predicate = new BooleanBuilder();
+		QFlight flight = QFlight.flight;
+		
+		predicate.and(flight.flightId.eq(1));
+		predicate.and(flight.availableEconomySeats.goe(2));
+		
+		return predicate;
+    }
+    
+    private Predicate createPredicate3() {
+    	BooleanBuilder predicate = new BooleanBuilder();
+		QFlight flight = QFlight.flight;
+		
+		predicate.and(flight.flightId.eq(1));
+		predicate.and(flight.availableFirstSeats.goe(50));
+		
+		return predicate;
+    }
+    
     
 }
