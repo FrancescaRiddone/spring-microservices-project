@@ -2,12 +2,7 @@ package com.oreilly.cloud.service;
 
 import com.oreilly.cloud.exception.ResourceNotFoundException;
 import com.oreilly.cloud.exception.ValidateException;
-import com.oreilly.cloud.model.Airport;
-import com.oreilly.cloud.model.City;
-import com.oreilly.cloud.model.Company;
-import com.oreilly.cloud.model.Country;
-import com.oreilly.cloud.model.Flight;
-import com.oreilly.cloud.model.QFlight;
+import com.oreilly.cloud.model.*;
 import com.oreilly.cloud.object.FlightResource;
 import com.oreilly.cloud.object.FlightTime;
 import com.oreilly.cloud.object.JourneyStage;
@@ -15,7 +10,6 @@ import com.oreilly.cloud.object.SearchFlightRequest;
 import com.oreilly.cloud.repository.FlightRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,12 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,10 +45,10 @@ public class FlightServiceTest {
         when(flightRepository.findById(1)).thenReturn(createOptionalFlight());
         FlightResource flight = flightService.getFlight(1);
 
-        assertNotNull(flight);
-        assertEquals(flight.getFlightId(), 1);
+        assertOnFlight(flight, 1);
+
     }
-    
+
     @Test(expected = ValidateException.class)
     public void getFlightValidateException() {
     	assertNotNull(flightService);
@@ -77,7 +67,19 @@ public class FlightServiceTest {
     
     @Test
     public void flightsFoundWithSourceAirportAndDestinationAirport() {
-    	SearchFlightRequest searchFlightRequest = new SearchFlightRequest();
+        SearchFlightRequest searchFlightRequest = createSearchFlightRequest();
+
+        when(flightRepository.findAll(createPredicate1())).thenReturn(createFlights(true, true));
+        List<FlightResource> flights = flightService.getFlights(searchFlightRequest);
+        
+        assertNotNull(flights);
+        assertThat(flights.size(), is(1));
+        assertOnFlight(flights.get(0), 2);
+        assertTrue(flights.get(0).getDeparture().getHour() >= 9);
+    }
+
+    private SearchFlightRequest createSearchFlightRequest() {
+        SearchFlightRequest searchFlightRequest = new SearchFlightRequest();
         JourneyStage source = new JourneyStage();
         source.setAirportName("Malpensa Airport");
         searchFlightRequest.setSource(source);
@@ -87,17 +89,16 @@ public class FlightServiceTest {
         searchFlightRequest.setSeatNumber(2);
         FlightTime time = new FlightTime(0, 9, 13, 5, 2019);
         searchFlightRequest.setDepartureTime(time);
-        
-        when(flightRepository.findAll(createPredicate1())).thenReturn(createFlights(true, true));
-        List<FlightResource> flights = flightService.getFlights(searchFlightRequest);
-        
-        assertNotNull(flights);
-        assertThat(flights.size(), is(1));
-        assertThat(flights.get(0).getSource().getCity(), is("Milan"));
-        assertThat(flights.get(0).getSource().getAirportName(), is("Malpensa Airport"));
-        assertThat(flights.get(0).getDestination().getCity(), is("London"));
-        assertThat(flights.get(0).getDestination().getAirportName(), is("London Luton Airport"));
-        assertTrue(flights.get(0).getDeparture().getHour() >= 9);
+        return searchFlightRequest;
+    }
+
+    private void assertOnFlight(FlightResource flight, int flightId) {
+        assertNotNull(flight);
+        assertEquals(flight.getFlightId(), flightId);
+        assertThat(flight.getSource().getCity(), is("Milan"));
+        assertThat(flight.getSource().getAirportName(), is("Malpensa Airport"));
+        assertThat(flight.getDestination().getCity(), is("London"));
+        assertThat(flight.getDestination().getAirportName(), is("London Luton Airport"));
     }
 
     @Test(expected = ValidateException.class)

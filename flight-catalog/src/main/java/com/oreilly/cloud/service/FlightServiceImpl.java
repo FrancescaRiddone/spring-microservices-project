@@ -22,6 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.oreilly.cloud.predicate.FlightPredicates.getCheckFlightAvailabilityPredicate;
+import static com.oreilly.cloud.predicate.FlightPredicates.getSearchFlightsPredicate;
+import static com.oreilly.cloud.service.Converter.convertInFlightResource;
+
 @Service
 public class FlightServiceImpl implements FlightService{
 	
@@ -39,7 +43,7 @@ public class FlightServiceImpl implements FlightService{
 			throw new ResourceNotFoundException();
 		}
 		
-		FlightResource flightResource = com.oreilly.cloud.service.Converter.convertInFlightResource(theFlight.get());
+		FlightResource flightResource = convertInFlightResource(theFlight.get());
 		
 		return flightResource;
 	}
@@ -55,7 +59,7 @@ public class FlightServiceImpl implements FlightService{
 		List<FlightResource> theRequiredFlights = new ArrayList<>();
 		List<Flight> foundFlights = null;
 		
-		Predicate thePredicate = com.oreilly.cloud.predicate.FlightPredicates.getSearchFlightsPredicate(searchFlightRequest);
+		Predicate thePredicate = getSearchFlightsPredicate(searchFlightRequest);
 		Iterable<Flight> flightsIterator = flightRepository.findAll(thePredicate);
 		foundFlights = Lists.newArrayList(flightsIterator);
 		
@@ -63,7 +67,7 @@ public class FlightServiceImpl implements FlightService{
 			throw new ResourceNotFoundException();
 		}
 		for(Flight theFlight: foundFlights) {
-			theRequiredFlights.add(com.oreilly.cloud.service.Converter.convertInFlightResource(theFlight));
+			theRequiredFlights.add(convertInFlightResource(theFlight));
 		}
 		
 		return theRequiredFlights;
@@ -74,7 +78,7 @@ public class FlightServiceImpl implements FlightService{
 	public Flight checkFlightAvailability(int flightId, String seatClass, int seatNumber) throws ValidateException {
 		checkFlightAvailabilityParams(flightId, seatClass, seatNumber);
 		
-		Predicate thePredicate = com.oreilly.cloud.predicate.FlightPredicates.getCheckFlightAvailabilityPredicate(flightId, seatClass, seatNumber);
+		Predicate thePredicate = getCheckFlightAvailabilityPredicate(flightId, seatClass, seatNumber);
 		Optional<Flight> theFlight = flightRepository.findOne(thePredicate);
 		
 		return theFlight.get();
