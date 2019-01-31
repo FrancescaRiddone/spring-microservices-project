@@ -1,7 +1,6 @@
 package com.oreilly.cloud.service;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.oreilly.cloud.object.FlightResource;
 import com.oreilly.cloud.object.FlightTime;
@@ -14,15 +13,13 @@ public class Converter{
 
 	public static FlightResource convertInFlightResource(Flight theFlight) {
 		
-		Calendar cal = Calendar.getInstance();
+		LocalDateTime departureTime = theFlight.getDepartureTime();
+		FlightTime departure = new FlightTime(departureTime.getMinute(), departureTime.getHour(), 
+				departureTime.getDayOfMonth(), departureTime.getMonthValue(), departureTime.getYear());
 		
-		cal.setTime(new Date(theFlight.getDepartureTime().getTime()));
-		FlightTime departure = new FlightTime(cal.get(Calendar.MINUTE), cal.get(Calendar.HOUR_OF_DAY) - 1, 
-				cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
-		
-		cal.setTime(new Date(theFlight.getArrivalTime().getTime()));
-		FlightTime arrival = new FlightTime(cal.get(Calendar.MINUTE), cal.get(Calendar.HOUR_OF_DAY) - 1, 
-				cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+		LocalDateTime arrivalTime = theFlight.getArrivalTime();
+		FlightTime arrival = new FlightTime(arrivalTime.getMinute(), arrivalTime.getHour(), 
+				arrivalTime.getDayOfMonth(), arrivalTime.getMonthValue(), arrivalTime.getYear());
 		
 		JourneyStage source = new JourneyStage(theFlight.getSourceAirport().getName(), theFlight.getSourceAirport().getCode(),
 				theFlight.getSourceCity().getName(), theFlight.getSourceCountry().getName());

@@ -45,16 +45,14 @@ public class ReservationServiceImpl implements ReservationService {
 	
 	@Override
 	@Transactional
-	public FlightReservationResource saveReservation(Reservation theReservation) throws ResourceNotFoundException, ValidateException {
+	public FlightReservationResource saveReservation(Reservation theReservation) throws ValidateException {
 		checkParamsForSaveReservation(theReservation);
 		
 		theReservation.setPrice(getPriceForClassAndSeatNumber(theReservation.getFlight(), theReservation.getSeatsType(), 
 				theReservation.getSeatsNumber()));
 		
 		Reservation theSavedReservation = reservationRepository.save(theReservation);
-		if(theSavedReservation == null) {
-			throw new ResourceNotFoundException();
-		}
+		
 		FlightReservationResource reservationResource = com.oreilly.cloud.service.Converter.convertInReservationResource(theSavedReservation);
 		
 		return reservationResource;
@@ -62,6 +60,9 @@ public class ReservationServiceImpl implements ReservationService {
 	
 	
 	private void checkParamsForSaveReservation(Reservation theReservation) throws ValidateException {
+		if(theReservation == null) {
+			throw new ValidateException();
+		}
 		if((theReservation.getFlight() == null || theReservation.getFlight().getFlightId() <= 0) || 
 				(theReservation.getUserName() == null || theReservation.getUserName().equals("")) ||
 				(theReservation.getUserSurname() == null || theReservation.getUserSurname().equals("")) ||

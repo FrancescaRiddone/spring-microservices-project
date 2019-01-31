@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -27,11 +28,16 @@ public class ReservationRepositoryTest {
     private ReservationRepository reservationRepository;
 	
 	
+	/*
+	 * TESTS on method findById(int id) of ReservationRepository
+	 */
+	
 	@Test
-    public void getById() {
+    public void getReservationByValidId() {
 		assertNotNull(reservationRepository);
+		int reservationId = 1;
 		
-        Optional<Reservation> theReservation = reservationRepository.findById(1);
+        Optional<Reservation> theReservation = reservationRepository.findById(reservationId);
         
         assertNotNull(theReservation.get());
         assertEquals(theReservation.get().getId(), 1);
@@ -40,25 +46,32 @@ public class ReservationRepositoryTest {
     }
 	
 	@Test
-	public void getByInvalidId() {
+	public void getReservationByInvalidId() {
 		assertNotNull(reservationRepository);
+		int reservationId = 0;
 		
-		Optional<Reservation> theReservation = reservationRepository.findById(0);
+		Optional<Reservation> theReservation = reservationRepository.findById(reservationId);
 		
 		assertTrue(!theReservation.isPresent());
 	}
 	
 	@Test
-	public void getByNotPresentId() {
+	public void getReservationNotFound() {
 		assertNotNull(reservationRepository);
+		int reservationId = 20000;
 		
-		Optional<Reservation> theReservation = reservationRepository.findById(2000);
+		Optional<Reservation> theReservation = reservationRepository.findById(reservationId);
 		
 		assertTrue(!theReservation.isPresent());
 	}
+	
+	/*
+	 * TESTS on method save(Reservation reservation) of ReservationRepository
+	 */
 	
 	@Test
 	public void saveValidReservation() {
+		assertNotNull(reservationRepository);
 		Reservation theReservation = createReservation();
 		
 		Reservation theSavedReservation = reservationRepository.save(theReservation);
@@ -68,15 +81,9 @@ public class ReservationRepositoryTest {
 		assertEquals(theSavedReservation.getUserSurname(), theReservation.getUserSurname());
 	}
 	
-	@Test(expected = org.springframework.dao.InvalidDataAccessApiUsageException.class)
-	public void saveInvalidReservation() {
-		assertNotNull(reservationRepository);
-		
-		reservationRepository.save(null);
-	}
-	
 	
 	private Reservation createReservation() {
+		assertNotNull(reservationRepository);
     	Reservation theReservation = new Reservation();
     	theReservation.setId(1);
     	theReservation.setFlight(createFlight());
@@ -117,8 +124,8 @@ public class ReservationRepositoryTest {
         theFlight.setEconomySeatPrice(17.99);
         theFlight.setBusinessSeatPrice(52.88);
         theFlight.setFirstSeatPrice(72.96);
-        theFlight.setDepartureTime(java.sql.Timestamp.valueOf("2019-05-13 07:10:00"));
-	    theFlight.setArrivalTime(java.sql.Timestamp.valueOf("2019-05-13 08:20:00"));
+        theFlight.setDepartureTime(LocalDateTime.of(2019, 5, 13, 7, 10));
+	    theFlight.setArrivalTime(LocalDateTime.of(2019, 5, 13, 8, 20));
     	
 	    return theFlight;
     }

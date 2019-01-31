@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -33,12 +34,15 @@ public class ReservationServiceTest {
     private ReservationRepository reservationRepository;
     
     
+    /*
+	 * TESTS on method getReservation(int reservationId) of ReservationService
+	 */
+    
     @Test
     public void reservationFoundWithId() {
         assertNotNull(reservationService);
 
         when(reservationRepository.findById(1)).thenReturn(createOptionalReservation());
-
         Reservation theReservation = reservationService.getReservation(1);
 
         assertNotNull(theReservation);
@@ -56,25 +60,25 @@ public class ReservationServiceTest {
     public void reservationNotFound() {
         assertNotNull(reservationService);
 
-        when(reservationRepository.findById(2000)).thenReturn(Optional.empty());
-
-        reservationService.getReservation(2000);
+        when(reservationRepository.findById(20000)).thenReturn(Optional.empty());
+        reservationService.getReservation(20000);
     }
-   
+    
     /*
+   	 * TESTS on method getReservationResource(int reservationId) of ReservationService
+   	 */
+    
     @Test
     public void reservationResourceFoundWithId() {
     	int reservationId = 1;
     	
-    	when(reservationService.getReservation(reservationId)).thenReturn(createReservation());
-    	
+    	when(reservationRepository.findById(1)).thenReturn(createOptionalReservation());
     	FlightReservationResource reservationResource = reservationService.getReservationResource(reservationId);
     	
     	assertNotNull(reservationResource);
     	assertEquals(reservationResource.getReservationId(), reservationId);
     }
-    */
-    
+
     @Test(expected = ValidateException.class)
     public void getReservationResourceWithInvalidId() {
         assertNotNull(reservationService);
@@ -89,12 +93,16 @@ public class ReservationServiceTest {
         reservationService.getReservationResource(2000);
     }
     
+    /*
+   	 * TESTS on method saveReservation(Reservation theReservation) of ReservationService
+   	 */
+    
     @Test
     public void reservationSuccessfullySaved() {
+    	assertNotNull(reservationService);
     	Reservation theReservation = createReservation();
     	
     	when(reservationRepository.save(theReservation)).thenReturn(createReservation());
-    	
     	FlightReservationResource theReservationResource = reservationService.saveReservation(theReservation);
     	
     	assertNotNull(theReservationResource);
@@ -103,29 +111,13 @@ public class ReservationServiceTest {
     
     @Test(expected = ValidateException.class)
     public void reservationWithInvalidIdNotSaved() {
+    	assertNotNull(reservationService);
     	Reservation theReservation = new Reservation();
     	theReservation.setId(0);
-    	theReservation.setUserName("");
-    	theReservation.setSeatsNumber(-1);
     	
     	reservationService.saveReservation(theReservation);
     }
 
-    @Test(expected = ResourceNotFoundException.class)
-    public void reservationNotFoundNotSaved() {
-    	Reservation theReservation = new Reservation();
-    	theReservation.setId(2000);
-    	theReservation.setFlight(createFlight());
-    	theReservation.setUserName("Gino");
-    	theReservation.setUserSurname("Antonellino");
-    	theReservation.setSeatsNumber(2);
-    	theReservation.setSeatsType("economy");
-    	theReservation.setPrice(1000.00);
-    	
-    	reservationService.saveReservation(theReservation);
-    }
-    
-    
     
     private Optional<Reservation> createOptionalReservation(){
     	Optional<Reservation> theOptReservation = Optional.of(createReservation());
@@ -174,10 +166,11 @@ public class ReservationServiceTest {
         theFlight.setEconomySeatPrice(17.99);
         theFlight.setBusinessSeatPrice(52.88);
         theFlight.setFirstSeatPrice(72.96);
-        theFlight.setDepartureTime(java.sql.Timestamp.valueOf("2019-05-13 07:10:00"));
-	    theFlight.setArrivalTime(java.sql.Timestamp.valueOf("2019-05-13 08:20:00"));
+        theFlight.setDepartureTime(LocalDateTime.of(2019, 5, 13, 7, 10));
+	    theFlight.setArrivalTime(LocalDateTime.of(2019, 5, 13, 8, 20));
     	
 	    return theFlight;
     }
+
 
 }

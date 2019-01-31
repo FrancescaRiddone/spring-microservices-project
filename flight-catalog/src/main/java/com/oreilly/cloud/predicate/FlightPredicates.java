@@ -1,9 +1,6 @@
 package com.oreilly.cloud.predicate;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.oreilly.cloud.model.QFlight;
 import com.oreilly.cloud.object.FlightTime;
@@ -14,16 +11,12 @@ import com.querydsl.core.types.Predicate;
 
 public final class FlightPredicates {
 	
-	private FlightPredicates() {
-		
-	}
-	
 	public static Predicate getSearchFlightsPredicate(SearchFlightRequest searchFlightRequest) {
 		BooleanBuilder predicate = new BooleanBuilder();
 		QFlight flight = QFlight.flight;
 		
-		Timestamp[] departureTimestamps = getDatesTimestamp(searchFlightRequest.getDepartureTime(), true);
-		Timestamp[] arrivalTimestamps = getDatesTimestamp(searchFlightRequest.getArrivalTime(), false);
+		LocalDateTime[] departureTimestamps = getDatesTimes(searchFlightRequest.getDepartureTime(), true);
+		LocalDateTime[] arrivalTimestamps = getDatesTimes(searchFlightRequest.getArrivalTime(), false);
 		
 		setCompanyInPredicate(predicate, flight, searchFlightRequest.getCompany());
 		setSourceInPredicate(predicate, flight, searchFlightRequest.getSource());
@@ -47,81 +40,50 @@ public final class FlightPredicates {
 	}
 	
 	
-	private static Timestamp[] getDatesTimestamp(FlightTime theFlightTime, boolean isDepartureDate) {
-		Timestamp[] theDatesTimestamps = new Timestamp[2];
-		SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+	private static LocalDateTime[] getDatesTimes(FlightTime theFlightTime, boolean isDepartureDate) {
+		LocalDateTime[] theDatesTimes = new LocalDateTime[2];
 		
 		if(theFlightTime != null && !(theFlightTime.getMinute() == 0 && theFlightTime.getHour() == 0 && 
 				theFlightTime.getDay() == 0 && theFlightTime.getMonth() == 0 && theFlightTime.getYear() == 0)) {
 			if(isDepartureDate) {
-				String dateString = buildDateString(theFlightTime, "departureTime");
-				if(dateString != null) {
-					try {
-						Date departureDate = formatter.parse(dateString);
-						theDatesTimestamps[0] = new Timestamp(departureDate.getTime());
-						Date departureLimit = formatter.parse(dateString.substring(0, 11).concat("23:59:59"));
-						theDatesTimestamps[1] = new Timestamp(departureLimit.getTime());
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}
+				theDatesTimes[0] = buildLocalDateTime(theFlightTime, "departureTime");
+				theDatesTimes[1] = buildLocalDateTime(theFlightTime, "departureTime").withHour(23).withMinute(59).withSecond(59);
 			} else {
-				String dateString = buildDateString(theFlightTime, "arrivalTime");
-				if(dateString != null) {
-					try {
-						Date arrivalDate = formatter.parse(dateString);
-						theDatesTimestamps[1] = new Timestamp(arrivalDate.getTime());
-						Date arrivalLimit = formatter.parse(dateString.substring(0, 11).concat("00:00:01"));
-						theDatesTimestamps[0] = new Timestamp(arrivalLimit.getTime());
-						
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				}
+				theDatesTimes[1] = buildLocalDateTime(theFlightTime, "arrivalTime");
+				theDatesTimes[0] = buildLocalDateTime(theFlightTime, "arrivalTime").withHour(0).withMinute(0).withSecond(1);
 			}
 		}
 		
-		return theDatesTimestamps;
+		return theDatesTimes;
 	}
 	
-	private static String buildDateString(FlightTime time, String paramName) {
+	private static LocalDateTime buildLocalDateTime(FlightTime time, String paramName) {
 		if(time == null) {
 			return null;
 		}
 		
-		String dateString = time.getYear() + "-";
+		int hour = 0; 
+		int minute = 0;
+		int second = 0;
 		
-		if(time.getMonth() < 10) {
-			dateString = dateString.concat("0");
-		}
-		dateString = dateString.concat(time.getMonth() + "-");
-		
-		if(time.getDay() < 10) {
-			dateString = dateString.concat("0");
-		}
-		dateString = dateString.concat(time.getDay() + "");
-		
-		if(time.getHour() > 0 || time.getMinute() > 0) {
-			dateString = dateString.concat(" ");
-			
-			if(time.getHour() < 10) {
-				dateString = dateString.concat("0");
-			}
-			dateString = dateString.concat(time.getHour() + ":");
-			
-			if(time.getMinute() < 10) {
-				dateString = dateString.concat("0");
-			}
-			dateString = dateString.concat(time.getMinute() + ":00");	
+		if(time.getHour() > 0) {
+			hour = time.getHour();
+			minute = time.getMinute();
 		} else {
 			if(paramName.equals("arrivalTime")) {
-				dateString = dateString.concat(" 23:59:59");
+				hour = 23;
+				minute = 59;
+				second = 59;
 			} else {
-				dateString = dateString.concat(" 00:00:01");
+				hour = 0;
+				minute = 0;
+				second = 1;
 			}
 		}
 		
-		return dateString;
+		LocalDateTime dateTime = LocalDateTime.of(time.getYear(), time.getMonth(), time.getDay(), hour, minute, second);
+		
+		return dateTime;
 	}
 	
 	private static void setCompanyInPredicate(BooleanBuilder predicate, QFlight flight, String company) {
@@ -178,14 +140,14 @@ public final class FlightPredicates {
 		}
 	}
 	
-	private static void setTimeInPredicate(BooleanBuilder predicate, QFlight flight, Timestamp departureTimestamp, 
-		Timestamp departureLimitTimestamp, Timestamp arrivalTimestamp, Timestamp arrivalLimitTimestamp) {
+	private static void setTimeInPredicate(BooleanBuilder predicate, QFlight flight, LocalDateTime departureTime, 
+			LocalDateTime departureLimitTime, LocalDateTime arrivalTime, LocalDateTime arrivalLimitTime) {
 		
-		if(departureTimestamp != null && departureLimitTimestamp != null) {
-			predicate.and(flight.departureTime.between(departureTimestamp, departureLimitTimestamp));
+		if(departureTime != null && departureLimitTime != null) {
+			predicate.and(flight.departureTime.between(departureTime, departureLimitTime));
 		}
-		if(arrivalTimestamp != null && arrivalLimitTimestamp != null) {
-			predicate.and(flight.arrivalTime.between(arrivalLimitTimestamp, arrivalTimestamp));
+		if(arrivalTime != null && arrivalLimitTime != null) {
+			predicate.and(flight.arrivalTime.between(arrivalLimitTime, arrivalTime));
 		}
 	}
 	

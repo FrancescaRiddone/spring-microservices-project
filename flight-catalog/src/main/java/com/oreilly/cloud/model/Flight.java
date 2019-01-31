@@ -1,6 +1,6 @@
 package com.oreilly.cloud.model;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -77,22 +77,23 @@ public class Flight {
 	private double firstSeatPrice;
 	
 	@Column(name="departure_time")
-	private Timestamp departureTime;
+	private LocalDateTime departureTime;
 	
 	@Column(name="arrival_time")
-	private Timestamp arrivalTime;
+	private LocalDateTime arrivalTime;
 	
 	
 	public Flight() {
 		
 	}
 
-	public Flight(Company company, Airport sourceAirport, City sourceCity, Country sourceCountry,
+	public Flight(int flightId, Company company, Airport sourceAirport, City sourceCity, Country sourceCountry,
 			Airport destinationAirport, City destinationCity, Country destinationCountry, int totalEconomySeats,
-			int totalBusinessSeats, int totalFirstSeats, int availableEconomySeats,
-			int availableBusinessSeats, int availableFirstSeats, double economySeatPrice, double businessSeatPrice,
-			double firstSeatPrice, Timestamp departureTime, Timestamp arrivalTime) {
+			int totalBusinessSeats, int totalFirstSeats, int availableEconomySeats, int availableBusinessSeats,
+			int availableFirstSeats, double economySeatPrice, double businessSeatPrice, double firstSeatPrice,
+			LocalDateTime departureTime, LocalDateTime arrivalTime) {
 		
+		this.flightId = flightId;
 		this.company = company;
 		this.sourceAirport = sourceAirport;
 		this.sourceCity = sourceCity;
@@ -253,19 +254,19 @@ public class Flight {
 		this.firstSeatPrice = firstSeatPrice;
 	}
 
-	public Timestamp getDepartureTime() {
+	public LocalDateTime getDepartureTime() {
 		return departureTime;
 	}
 
-	public void setDepartureTime(Timestamp departureTime) {
+	public void setDepartureTime(LocalDateTime departureTime) {
 		this.departureTime = departureTime;
 	}
 
-	public Timestamp getArrivalTime() {
+	public LocalDateTime getArrivalTime() {
 		return arrivalTime;
 	}
 
-	public void setArrivalTime(Timestamp arrivalTime) {
+	public void setArrivalTime(LocalDateTime arrivalTime) {
 		this.arrivalTime = arrivalTime;
 	}
 

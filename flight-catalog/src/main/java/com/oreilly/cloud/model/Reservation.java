@@ -48,6 +48,19 @@ public class Reservation {
 	public Reservation() {
 		
 	}
+	
+	public Reservation(int id, Flight flight, String userName, String userSurname, double price, String seatsType,
+			int seatsNumber, boolean confirmed) {
+		
+		this.id = id;
+		this.flight = flight;
+		this.userName = userName;
+		this.userSurname = userSurname;
+		this.price = price;
+		this.seatsType = seatsType;
+		this.seatsNumber = seatsNumber;
+		this.confirmed = confirmed;
+	}
 
 	public Reservation(Flight flight, String userName, String userSurname, double price, String seatsType,
 			int seatsNumber, boolean confirmed) {

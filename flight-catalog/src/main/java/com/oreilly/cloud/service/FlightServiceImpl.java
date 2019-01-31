@@ -5,16 +5,12 @@ import com.oreilly.cloud.exception.ResourceNotFoundException;
 import com.oreilly.cloud.exception.ValidateException;
 import com.oreilly.cloud.model.Flight;
 import com.oreilly.cloud.object.FlightResource;
-import com.oreilly.cloud.object.FlightTime;
 import com.oreilly.cloud.object.JourneyStage;
 import com.oreilly.cloud.object.SearchFlightRequest;
 import com.oreilly.cloud.repository.FlightRepository;
 import com.querydsl.core.types.Predicate;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,14 +54,13 @@ public class FlightServiceImpl implements FlightService{
 		
 		List<FlightResource> theRequiredFlights = new ArrayList<>();
 		List<Flight> foundFlights = null;
-		
 		Predicate thePredicate = getSearchFlightsPredicate(searchFlightRequest);
 		Iterable<Flight> flightsIterator = flightRepository.findAll(thePredicate);
 		foundFlights = Lists.newArrayList(flightsIterator);
-		
 		if(foundFlights.isEmpty()) {
 			throw new ResourceNotFoundException();
 		}
+		
 		for(Flight theFlight: foundFlights) {
 			theRequiredFlights.add(convertInFlightResource(theFlight));
 		}
@@ -81,7 +76,11 @@ public class FlightServiceImpl implements FlightService{
 		Predicate thePredicate = getCheckFlightAvailabilityPredicate(flightId, seatClass, seatNumber);
 		Optional<Flight> theFlight = flightRepository.findOne(thePredicate);
 		
-		return theFlight.get();
+		if(theFlight.isPresent()) {
+			return theFlight.get();
+		}
+		
+		return null;
 	}
 	
 	@Override
