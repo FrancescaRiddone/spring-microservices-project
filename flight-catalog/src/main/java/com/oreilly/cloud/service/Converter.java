@@ -16,11 +16,9 @@ public class Converter{
 		LocalDateTime departureTime = theFlight.getDepartureTime();
 		FlightTime departure = new FlightTime(departureTime.getMinute(), departureTime.getHour(), 
 				departureTime.getDayOfMonth(), departureTime.getMonthValue(), departureTime.getYear());
-		
 		LocalDateTime arrivalTime = theFlight.getArrivalTime();
 		FlightTime arrival = new FlightTime(arrivalTime.getMinute(), arrivalTime.getHour(), 
 				arrivalTime.getDayOfMonth(), arrivalTime.getMonthValue(), arrivalTime.getYear());
-		
 		JourneyStage source = new JourneyStage(theFlight.getSourceAirport().getName(), theFlight.getSourceAirport().getCode(),
 				theFlight.getSourceCity().getName(), theFlight.getSourceCountry().getName());
 		JourneyStage destination = new JourneyStage(theFlight.getDestinationAirport().getName(), theFlight.getDestinationAirport().getCode(),

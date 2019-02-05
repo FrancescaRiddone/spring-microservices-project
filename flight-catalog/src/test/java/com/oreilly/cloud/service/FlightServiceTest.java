@@ -36,37 +36,39 @@ public class FlightServiceTest {
 
     
     /*
-	 * TESTS on method getFlight(int flightId) of FlightService
+	 * TESTS on method FlightResource getFlight(int flightId) of FlightService
 	 */
 
     @Test
     public void flightFoundWithId() {
         assertNotNull(flightService);
+        int flightId = 1;
 
-        when(flightRepository.findById(1)).thenReturn(createOptionalFlight());
-        FlightResource flight = flightService.getFlight(1);
+        when(flightRepository.findById(flightId)).thenReturn(createOptionalFlight());
+        FlightResource flight = flightService.getFlight(flightId);
 
         assertOnFlight(flight, 1);
-
     }
 
     @Test(expected = ValidateException.class)
     public void getFlightValidateException() {
     	assertNotNull(flightService);
+    	int flightId = 0;
     	
-        flightService.getFlight(0);
+        flightService.getFlight(flightId);
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void flightNotFound() {
     	assertNotNull(flightService);
+    	int flightId = 100000;
         
-    	when(flightRepository.findById(100)).thenReturn(Optional.empty());
-    	flightService.getFlight(100);
+    	when(flightRepository.findById(flightId)).thenReturn(Optional.empty());
+    	flightService.getFlight(flightId);
     }
     
     /*
-	 * TESTS on method getFlights(SearchFlightRequest searchFlightRequest) of FlightService
+	 * TESTS on method List<FlightResource> getFlights(SearchFlightRequest searchFlightRequest) of FlightService
 	 */
 
     @Test
@@ -100,7 +102,7 @@ public class FlightServiceTest {
     }
     
     /*
-	 * TESTS on method checkFlightAvailability(int flightId, String seatClass, int seatNumber) of FlightService
+	 * TESTS on method Flight checkFlightAvailability(int flightId, String seatClass, int seatNumber) of FlightService
 	 */
  
     @Test
@@ -143,7 +145,7 @@ public class FlightServiceTest {
     }
     
     /*
-	 * TESTS on method updateAvailableSeats(int flightId, String seatClass, int seatNumber) of FlightService
+	 * TESTS on method void updateAvailableSeats(int flightId, String seatClass, int seatNumber) of FlightService
 	 */
  
     @Test(expected = ValidateException.class)
@@ -158,8 +160,7 @@ public class FlightServiceTest {
     
     
     private Optional<Flight> createOptionalFlight(){
-    	Optional<Flight> optFlight;
-    	optFlight = Optional.of(createFlight1());	
+    	Optional<Flight> optFlight = Optional.of(createFlight1());	
     	return optFlight;
     }
     

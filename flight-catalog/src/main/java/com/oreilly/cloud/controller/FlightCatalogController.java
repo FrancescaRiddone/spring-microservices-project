@@ -53,7 +53,7 @@ public class FlightCatalogController {
 	}
 	
 	@GetMapping("/reservations")
-	public List<FlightReservationResource> getReservations(@RequestParam List<Integer> reservationIds) throws ResourceNotFoundException {
+	public List<FlightReservationResource> getReservations(@RequestParam("reservationIds") List<Integer> reservationIds) throws ResourceNotFoundException {
 		List<FlightReservationResource> theReservations = new ArrayList<>();
 		for(int reservationId: reservationIds) {
 			FlightReservationResource theReservation = reservationService.getReservationResource(reservationId);

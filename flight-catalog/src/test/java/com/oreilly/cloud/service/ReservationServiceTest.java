@@ -35,7 +35,7 @@ public class ReservationServiceTest {
     
     
     /*
-	 * TESTS on method getReservation(int reservationId) of ReservationService
+	 * TESTS on method Reservation getReservation(int reservationId) of ReservationService
 	 */
     
     @Test
@@ -65,7 +65,7 @@ public class ReservationServiceTest {
     }
     
     /*
-   	 * TESTS on method getReservationResource(int reservationId) of ReservationService
+   	 * TESTS on method FlightReservationResource getReservationResource(int reservationId) of ReservationService
    	 */
     
     @Test
@@ -94,7 +94,7 @@ public class ReservationServiceTest {
     }
     
     /*
-   	 * TESTS on method saveReservation(Reservation theReservation) of ReservationService
+   	 * TESTS on method FlightReservationResource saveReservation(Reservation theReservation) of ReservationService
    	 */
     
     @Test

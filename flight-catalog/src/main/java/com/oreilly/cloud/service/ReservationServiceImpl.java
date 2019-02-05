@@ -1,5 +1,7 @@
 package com.oreilly.cloud.service;
 
+import static com.oreilly.cloud.service.Converter.convertInReservationResource;
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,7 @@ public class ReservationServiceImpl implements ReservationService {
 	public FlightReservationResource getReservationResource(int reservationId) throws ResourceNotFoundException {
 		Reservation theReservation = getReservation(reservationId);
 		
-		FlightReservationResource reservationResource = com.oreilly.cloud.service.Converter.convertInReservationResource(theReservation);
+		FlightReservationResource reservationResource = convertInReservationResource(theReservation);
 		
 		return reservationResource;
 	}
@@ -46,20 +48,20 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	@Transactional
 	public FlightReservationResource saveReservation(Reservation theReservation) throws ValidateException {
-		checkParamsForSaveReservation(theReservation);
+		checkParamForSaveReservation(theReservation);
 		
 		theReservation.setPrice(getPriceForClassAndSeatNumber(theReservation.getFlight(), theReservation.getSeatsType(), 
 				theReservation.getSeatsNumber()));
 		
 		Reservation theSavedReservation = reservationRepository.save(theReservation);
 		
-		FlightReservationResource reservationResource = com.oreilly.cloud.service.Converter.convertInReservationResource(theSavedReservation);
+		FlightReservationResource reservationResource = convertInReservationResource(theSavedReservation);
 		
 		return reservationResource;
 	}
 	
 	
-	private void checkParamsForSaveReservation(Reservation theReservation) throws ValidateException {
+	private void checkParamForSaveReservation(Reservation theReservation) throws ValidateException {
 		if(theReservation == null) {
 			throw new ValidateException();
 		}

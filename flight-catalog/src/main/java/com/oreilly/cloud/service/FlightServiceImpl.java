@@ -143,14 +143,6 @@ public class FlightServiceImpl implements FlightService{
 			}
 		}
 		
-		/*
-		boolean checked = (theJourneyStage.getAirportName() != null && !theJourneyStage.getAirportName().equals("")) ||
-				(theJourneyStage.getCity() != null && !theJourneyStage.getCity().equals("")) ||
-				(theJourneyStage.getCountry() != null && !theJourneyStage.getCountry().equals("")) ||
-				(theJourneyStage.getAirportCode() != null && !theJourneyStage.getAirportCode().equals(""));
-		*/
-				
-		
 		return (checked[0] || checked[1] || checked[2] || checked[3]);	
 	}
 	
