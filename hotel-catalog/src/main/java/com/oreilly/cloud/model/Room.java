@@ -94,10 +94,6 @@ public class Room {
 	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private boolean balcony;
 	
-	@Column(name="available", columnDefinition = "TINYINT")
-	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private boolean available;
-	
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Reservation> reservations;
 
@@ -108,8 +104,7 @@ public class Room {
 	public Room(int id, Hotel hotel, int hostsNumber, double standardDailyPrice, double withBreakfastDailyPrice,
 			double halfBoardDailyPrice, double fullBoardDailyPrice, int singleBeds, int doubleBeds,
 			boolean airConditioner, boolean heat, boolean tv, boolean telephone, boolean vault, boolean bathtub,
-			boolean swimmingPool, boolean soundproofing, boolean withView, boolean bathroom, boolean balcony,
-			boolean available) {
+			boolean swimmingPool, boolean soundproofing, boolean withView, boolean bathroom, boolean balcony) {
 		
 		this.id = id;
 		this.hotel = hotel;
@@ -131,7 +126,6 @@ public class Room {
 		this.withView = withView;
 		this.bathroom = bathroom;
 		this.balcony = balcony;
-		this.available = available;
 	}
 
 	public int getId() {
@@ -294,14 +288,6 @@ public class Room {
 		this.balcony = balcony;
 	}
 
-	public boolean isAvailable() {
-		return available;
-	}
-
-	public void setAvailable(boolean available) {
-		this.available = available;
-	}
-
 	public List<Reservation> getReservations() {
 		return reservations;
 	}
@@ -318,8 +304,8 @@ public class Room {
 				+ ", doubleBeds=" + doubleBeds + ", airConditioner=" + airConditioner + ", heat=" + heat + ", tv=" + tv
 				+ ", telephone=" + telephone + ", vault=" + vault + ", bathtub=" + bathtub + ", swimmingPool="
 				+ swimmingPool + ", soundproofing=" + soundproofing + ", withView=" + withView + ", bathroom="
-				+ bathroom + ", balcony=" + balcony + ", available=" + available + "]";
+				+ bathroom + ", balcony=" + balcony + "]";
 	}
-	
+
 
 }

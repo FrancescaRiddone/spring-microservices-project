@@ -1,5 +1,7 @@
 package com.oreilly.cloud.controller;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +12,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.oreilly.cloud.object.CheckTime;
+import com.oreilly.cloud.object.HotelReservationRequest;
 import com.oreilly.cloud.object.HotelReservationResource;
 import com.oreilly.cloud.object.HotelResource;
-import com.oreilly.cloud.exception.ResourceNotFoundException;
-import com.oreilly.cloud.exception.ValidateException;
-import com.oreilly.cloud.object.HotelReservationRequest;
+import com.oreilly.cloud.object.RoomResource;
 import com.oreilly.cloud.object.SearchHotelRequest;
+import com.oreilly.cloud.exception.ResourceNotFoundException;
+import com.oreilly.cloud.exception.ResourceUnavailableException;
+import com.oreilly.cloud.exception.ValidateException;
+import com.oreilly.cloud.model.Reservation;
+import com.oreilly.cloud.model.Room;
 import com.oreilly.cloud.service.HotelService;
 import com.oreilly.cloud.service.ReservationService;
+import com.oreilly.cloud.service.RoomService;
 
 @RestController
 @RequestMapping("/hotels")
@@ -27,6 +35,9 @@ public class HotelCatalogController {
 	private HotelService hotelService;
 	
 	@Autowired
+	private RoomService roomService;
+	
+	@Autowired
 	private ReservationService reservationService;
 	
 	
@@ -34,75 +45,206 @@ public class HotelCatalogController {
 	public HotelResource getHotel(@RequestParam("hotelId") int hotelId) throws ValidateException, ResourceNotFoundException {
 		HotelResource resource = hotelService.getHotel(hotelId);
 		
+		List<Room> theHotelRooms = roomService.getRooms(hotelId);
+		
+		if(theHotelRooms != null && !theHotelRooms.isEmpty()) {
+			List<Integer> theRoomIds = new ArrayList<>();
+			for(Room theRoom: theHotelRooms) {
+				theRoomIds.add(theRoom.getId());
+			}
+			resource.setAvailableRoomsIds(theRoomIds);
+		}
+		
 		return resource;
 	}
-	/*
+	
 	@PostMapping("/requiredHotels")
 	public List<HotelResource> getHotels(@RequestBody SearchHotelRequest searchHotelRequest) {
-		return hotelService.getFlights(searchHotelRequest);
+		List<HotelResource> foundHotels = hotelService.getHotels(searchHotelRequest);
+		List<Integer> foundIds = new ArrayList<>();
+		for(HotelResource theHotel: foundHotels) {
+			foundIds.add(theHotel.getHotelId());
+		}
+		if(foundIds.isEmpty()) {
+			throw new ResourceNotFoundException();
+		}
+		List<Room> foundRooms = roomService.getRooms(searchHotelRequest, foundIds);
+		foundIds = new ArrayList<>();
+		for(Room theRoom: foundRooms) {
+			foundIds.add(theRoom.getId());
+		}
+		if(foundIds.isEmpty()) {
+			throw new ResourceNotFoundException();
+		}
+		List<Room> reservedRooms = reservationService.getReservedRooms(searchHotelRequest.getCheckIn(), searchHotelRequest.getCheckOut(), foundIds);
+		List<Room> availableRooms = getAvailableRooms(foundRooms, reservedRooms);
+		List<HotelResource> resultHotels = getHotelsWithAvailableRooms(foundHotels, availableRooms);
+		 
+		return resultHotels;
 	}
-	*/
 	
-	
-	/*
-	 * Dò all'utente info dettagliate sulle camere offerte da un certo hotel 
-	 * (tutte anche quelle che magari non sono ciò che cerca)
-	 */
-	/*
-	@GetMapping("/")
-	public void getHotelRooms(@RequestParam("hotelId") int hotelId) {
+	@GetMapping("/hotel/room")
+	public RoomResource getRoom(@RequestParam("roomId") int roomId) {
+		RoomResource theRoom = roomService.getRoomResource(roomId);
 		
+		return theRoom;
 	}
-	*/
-	/*
+	
+	@GetMapping("/hotel/rooms")
+	public List<RoomResource> getRooms(@RequestParam("roomIds") List<Integer> roomIds){
+		if(roomIds.isEmpty()) {
+			throw new ValidateException();
+		}
+		
+		List<RoomResource> theRooms = new ArrayList<>();
+		for(int roomId: roomIds) {
+			RoomResource theRoom = roomService.getRoomResource(roomId);
+			if(theRoom != null) {
+				theRooms.add(theRoom);
+			}
+		}
+		if(theRooms.isEmpty()) {
+			throw new ResourceNotFoundException();
+		}
+		
+		return theRooms;
+	}
+	
 	@GetMapping("/reservations/reservation")
 	public HotelReservationResource getReservation(@RequestParam("reservationId") int reservationId) {
-		return null;
+		HotelReservationResource theReservation = reservationService.getReservationResource(reservationId);
+		
+		return theReservation;
 	}
-	*/
-	/*
+	
 	@GetMapping("/reservations")
-	public List<HotelReservationResource> getReservations(@RequestParam List<Integer> reservationIds) {
-		return null;
-	}
-	*/
-	
-	/*
-	 * Crea una nuova reservation con i seguenti valori
-	 */
-	/*
-	@PostMapping("/")
-	public void createReservation(@RequestBody HotelReservationRequest newReservationRequest) {
+	public List<HotelReservationResource> getReservations(@RequestParam("reservationIds") List<Integer> reservationIds) {
+		if(reservationIds.isEmpty()) {
+			throw new ValidateException();
+		}
 		
-	}
-	*/
-	/*
-	 * Conferma una reservation con id corrispondente
-	 */
-	/*
-	@PostMapping("/")
-	public void confirmReservation(@RequestParam int reservationId) {
+		List<HotelReservationResource> theReservations = new ArrayList<>();
+		for(int reservationId: reservationIds) {
+			HotelReservationResource theReservation = reservationService.getReservationResource(reservationId);
+			if(theReservation != null) {
+				theReservations.add(theReservation);
+			}
+		}
+		if(theReservations.isEmpty()) {
+			throw new ResourceNotFoundException();
+		}
 		
+		return theReservations;
 	}
-	*/
 	
+	@PostMapping("/reservations/new")
+	public HotelReservationResource createReservation(@RequestBody HotelReservationRequest hotelReservationRequest) 
+			throws ResourceNotFoundException, ValidateException{
+		
+		checkCreateReservationParam(hotelReservationRequest);
+		
+		reservationService.checkRoomAvailability(hotelReservationRequest.getRoomId(), hotelReservationRequest.getHostsNumber(), 
+												hotelReservationRequest.getCheckIn(), hotelReservationRequest.getCheckOut());
+		
+		Room availableRoom = roomService.getRoom(hotelReservationRequest.getRoomId());	
+		Reservation theNewReservation = new Reservation(availableRoom, convertInLocalDateTime(hotelReservationRequest.getCheckIn()), 
+											convertInLocalDateTime(hotelReservationRequest.getCheckOut()), hotelReservationRequest.getUserName(), 
+											hotelReservationRequest.getUserSurname(), 0.0, hotelReservationRequest.getHostsNumber(), 
+											hotelReservationRequest.getReservationType(), false);
+		
+		return reservationService.saveReservation(theNewReservation);
+	}
 	
+	@GetMapping("/reservations/confirm")
+	public HotelReservationResource confirmReservation(@RequestParam("reservationId") int reservationId) {
+		Reservation theReservation = reservationService.getReservation(reservationId);
+		
+		reservationService.checkRoomAvailability(theReservation.getRoom().getId(), theReservation.getHostsNumber(), 
+				convertInCheckTime(theReservation.getCheckIn()), convertInCheckTime(theReservation.getCheckOut()));
+		
+		theReservation.setConfirmed(true);
+		HotelReservationResource theReservationResource = reservationService.saveReservation(theReservation);
+		
+		return theReservationResource;
+	}
 	
+
+	private List<Room> getAvailableRooms(List<Room> foundRooms, List<Room> reservedRooms) {
+		List<Room> availableRooms = new ArrayList<>();
+		for(Room foundRoom: foundRooms) {
+			boolean isReserved = false;
+			for(Room reservedRoom: reservedRooms) {
+				if(foundRoom.getId() == reservedRoom.getId()) {
+					isReserved = true;
+				}
+			}
+			if(!isReserved) {
+				availableRooms.add(foundRoom);
+			}
+		}
+		if(availableRooms.isEmpty()) {
+			throw new ResourceUnavailableException();
+		}
+		
+		return availableRooms;
+	}
 	
+	private List<HotelResource> getHotelsWithAvailableRooms(List<HotelResource> hotels, List<Room> availableRooms) {
+		List<HotelResource> resultHotels = new ArrayList<>();
+		for(HotelResource foundHotel: hotels) {
+			List<Integer> roomList = new ArrayList<>();
+			for(Room availableRoom: availableRooms) {
+				if(availableRoom.getHotel().getId() == foundHotel.getHotelId()) {
+					roomList.add(availableRoom.getId());
+				}
+			}
+			if(!roomList.isEmpty()) {
+				foundHotel.setAvailableRoomsIds(roomList);
+				resultHotels.add(foundHotel);
+			}
+		}
+		
+		return resultHotels;
+	}
 	
+	private void checkCreateReservationParam(HotelReservationRequest hotelReservationRequest) {
+		if(hotelReservationRequest == null) {
+			throw new ValidateException();
+		}
+		if(hotelReservationRequest.getCheckIn() == null || hotelReservationRequest.getCheckOut() == null) {
+			throw new ValidateException();
+		}
+		checkTimes(hotelReservationRequest.getCheckIn(), hotelReservationRequest.getCheckOut());
+	}
 	
+	private void checkTimes(CheckTime startTime, CheckTime endTime) {
+		if(startTime.getDay() < 1 || startTime.getDay() > 31 || startTime.getMonth() < 1 || 
+				startTime.getMonth() > 12 || startTime.getYear() < 2019 ||
+				endTime.getDay() < 1 || endTime.getDay() > 31 || endTime.getMonth() < 1 || 
+				endTime.getMonth() > 12 || endTime.getYear() < 2019) {
+			
+			throw new ValidateException();
+		}
+		
+		LocalDateTime checkIn = convertInLocalDateTime(startTime);
+		LocalDateTime checkOut = convertInLocalDateTime(endTime);
+		
+		if(!checkIn.isBefore(checkOut)) {
+			throw new ValidateException();
+		}
+	}
+
+	private LocalDateTime convertInLocalDateTime(CheckTime theTime) {
+		LocalDateTime dateTime = LocalDateTime.of(theTime.getYear(), theTime.getMonth(), theTime.getDay(), 0, 0);
+		
+		return dateTime;
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	private CheckTime convertInCheckTime(LocalDateTime theTime) {
+		CheckTime checkTime = new CheckTime(theTime.getDayOfMonth(), theTime.getMonthValue(), theTime.getYear());
+		
+		return checkTime;
+	}
 	
 
 }

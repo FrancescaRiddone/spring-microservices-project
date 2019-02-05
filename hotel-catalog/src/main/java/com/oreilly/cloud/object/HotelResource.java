@@ -1,5 +1,8 @@
 package com.oreilly.cloud.object;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HotelResource {
 	
 	private int hotelId;
@@ -34,9 +37,11 @@ public class HotelResource {
 	
 	private boolean fullBoardAvailable;
 	
+	private List<Integer> availableRoomsIds;
+	
 	
 	public HotelResource() {
-		
+		availableRoomsIds = new ArrayList<>();
 	}
 
 
@@ -60,6 +65,7 @@ public class HotelResource {
 		this.breakfastAvailable = breakfastAvailable;
 		this.halfBoardAvailable = halfBoardAvailable;
 		this.fullBoardAvailable = fullBoardAvailable;
+		availableRoomsIds = new ArrayList<>();
 	}
 
 	public int getHotelId() {
@@ -190,6 +196,15 @@ public class HotelResource {
 		this.fullBoardAvailable = fullBoardAvailable;
 	}
 
+	public List<Integer> getAvailableRoomsIds() {
+		return availableRoomsIds;
+	}
+
+
+	public void setAvailableRoomsIds(List<Integer> availableRoomsIds) {
+		this.availableRoomsIds = availableRoomsIds;
+	}
+
 	@Override
 	public String toString() {
 		return "HotelResource [hotelId=" + hotelId + ", hotelName=" + hotelName + ", city=" + city + ", country="
@@ -198,6 +213,6 @@ public class HotelResource {
 				+ spa + ", swimmingPool=" + swimmingPool + ", breakfastAvailable=" + breakfastAvailable
 				+ ", halfBoardAvailable=" + halfBoardAvailable + ", fullBoardAvailable=" + fullBoardAvailable + "]";
 	}
-
+	
 	
 }

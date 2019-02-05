@@ -1,7 +1,6 @@
 package com.oreilly.cloud.service;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.oreilly.cloud.object.HotelReservationResource;
 import com.oreilly.cloud.object.HotelResource;
@@ -62,12 +61,10 @@ public class Converter{
 	
 	public static HotelReservationResource convertInReservationResource(Reservation theReservation) {
 		RoomResource theRoomResource = convertInRoomResource(theReservation.getRoom());
-		
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date(theReservation.getCheckIn().getTime()));
-		CheckTime checkIn = new CheckTime(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
-		cal.setTime(new Date(theReservation.getCheckOut().getTime()));
-		CheckTime checkOut = new CheckTime(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+		LocalDateTime checkInTime = theReservation.getCheckIn();
+		CheckTime checkIn = new CheckTime(checkInTime.getDayOfMonth(), checkInTime.getMonthValue(), checkInTime.getYear());
+		LocalDateTime checkOutTime = theReservation.getCheckOut();
+		CheckTime checkOut = new CheckTime(checkOutTime.getDayOfMonth(), checkOutTime.getMonthValue(), checkOutTime.getYear());
 		
 		HotelReservationResource theReservationResource = new HotelReservationResource(	theReservation.getId(),
 																						theRoomResource,

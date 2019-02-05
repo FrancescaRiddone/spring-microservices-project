@@ -32,6 +32,12 @@ public class Country {
 	public Country() {
 		hotels = new ArrayList<>();
 	}
+	
+	public Country(int id, String name) {
+		this.id = id;
+		this.name = name;
+		this.hotels = new ArrayList<>();
+	}
 
 	public Country(String name) {
 		this.name = name;

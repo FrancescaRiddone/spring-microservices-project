@@ -1,6 +1,6 @@
 package com.oreilly.cloud.model;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,10 +28,10 @@ public class Reservation {
 	private Room room;
 	
 	@Column(name="check_in")
-	private Timestamp checkIn;
+	private LocalDateTime checkIn;
 	
 	@Column(name="check_out")
-	private Timestamp checkOut;
+	private LocalDateTime checkOut;
 	
 	@Column(name="user_name")
 	private String userName;
@@ -57,7 +57,7 @@ public class Reservation {
 		
 	}
 	
-	public Reservation(Room room, Timestamp checkIn, Timestamp checkOut, String userName, String userSurname,
+	public Reservation(Room room, LocalDateTime checkIn, LocalDateTime checkOut, String userName, String userSurname,
 			double price, int hostsNumber, String reservationType, boolean confirmed) {
 		
 		this.room = room;
@@ -87,19 +87,19 @@ public class Reservation {
 		this.room = room;
 	}
 
-	public Timestamp getCheckIn() {
+	public LocalDateTime getCheckIn() {
 		return checkIn;
 	}
 
-	public void setCheckIn(Timestamp checkIn) {
+	public void setCheckIn(LocalDateTime checkIn) {
 		this.checkIn = checkIn;
 	}
 
-	public Timestamp getCheckOut() {
+	public LocalDateTime getCheckOut() {
 		return checkOut;
 	}
 
-	public void setCheckOut(Timestamp checkOut) {
+	public void setCheckOut(LocalDateTime checkOut) {
 		this.checkOut = checkOut;
 	}
 

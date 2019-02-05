@@ -38,6 +38,13 @@ public class City {
 	public City() {
 		this.hotels = new ArrayList<>();
 	}
+	
+	public City(int id, String name, Country country) {
+		this.id = id;
+		this.name = name;
+		this.country = country;
+		this.hotels = new ArrayList<>();
+	}
 
 	public City(String name, Country country) {
 		this.name = name;
