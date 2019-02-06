@@ -1,5 +1,6 @@
 package com.oreilly.cloud.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -99,6 +100,7 @@ public class Room {
 
 	
 	public Room() {
+		reservations = new ArrayList<>();
 	}
 
 	public Room(int id, Hotel hotel, int hostsNumber, double standardDailyPrice, double withBreakfastDailyPrice,
@@ -126,6 +128,7 @@ public class Room {
 		this.withView = withView;
 		this.bathroom = bathroom;
 		this.balcony = balcony;
+		reservations = new ArrayList<>();
 	}
 
 	public int getId() {

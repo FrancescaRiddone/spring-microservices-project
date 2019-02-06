@@ -65,16 +65,10 @@ public class HotelCatalogController {
 		for(HotelResource theHotel: foundHotels) {
 			foundIds.add(theHotel.getHotelId());
 		}
-		if(foundIds.isEmpty()) {
-			throw new ResourceNotFoundException();
-		}
 		List<Room> foundRooms = roomService.getRooms(searchHotelRequest, foundIds);
 		foundIds = new ArrayList<>();
 		for(Room theRoom: foundRooms) {
 			foundIds.add(theRoom.getId());
-		}
-		if(foundIds.isEmpty()) {
-			throw new ResourceNotFoundException();
 		}
 		List<Room> reservedRooms = reservationService.getReservedRooms(searchHotelRequest.getCheckIn(), searchHotelRequest.getCheckOut(), foundIds);
 		List<Room> availableRooms = getAvailableRooms(foundRooms, reservedRooms);
@@ -142,6 +136,11 @@ public class HotelCatalogController {
 			throws ResourceNotFoundException, ValidateException{
 		
 		checkCreateReservationParam(hotelReservationRequest);
+		
+		Room roomToReserve = roomService.getRoom(hotelReservationRequest.getRoomId());
+		if(roomToReserve.getHostsNumber() != hotelReservationRequest.getHostsNumber()) {
+			throw new ValidateException();
+		}
 		
 		reservationService.checkRoomAvailability(hotelReservationRequest.getRoomId(), hotelReservationRequest.getHostsNumber(), 
 												hotelReservationRequest.getCheckIn(), hotelReservationRequest.getCheckOut());

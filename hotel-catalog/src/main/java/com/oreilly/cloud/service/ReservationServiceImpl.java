@@ -28,6 +28,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private ReservationRepository reservationRepository;
 
 	@Override
+	@Transactional
 	public List<Room> getReservedRooms(CheckTime checkIn, CheckTime checkOut, List<Integer> roomIds) {
 		checkGetReservedRoomsParams(checkIn, checkOut, roomIds);
 		
@@ -64,6 +65,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 	
 	@Override
+	@Transactional
 	public void checkRoomAvailability(int roomId, int hostsNumber, CheckTime checkIn, CheckTime checkOut) {
 		checkRoomAvailabilityParams(roomId, checkIn, checkOut, hostsNumber);
 		

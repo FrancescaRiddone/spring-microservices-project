@@ -28,14 +28,18 @@ public class RoomServiceImpl implements RoomService {
 
 	@Override
 	@Transactional
-	public List<Room> getRooms(SearchHotelRequest searchHotelRequest, List<Integer> hotelsIds) {
-		checkGetRoomsParams(searchHotelRequest, hotelsIds);
+	public List<Room> getRooms(SearchHotelRequest searchHotelRequest, List<Integer> hotelIds) {
+		checkGetRoomsParams(searchHotelRequest, hotelIds);
 		
 		List<Room> foundRooms;
 		
-		Predicate thePredicate = getSearchRoomPredicate(searchHotelRequest, hotelsIds);
+		Predicate thePredicate = getSearchRoomPredicate(searchHotelRequest, hotelIds);
 		Iterable<Room> roomIterator = roomRepository.findAll(thePredicate);
 		foundRooms = Lists.newArrayList(roomIterator);
+		
+		if(foundRooms.isEmpty()) {
+			throw new ResourceNotFoundException();
+		}
 		
 		return foundRooms;
 	}
