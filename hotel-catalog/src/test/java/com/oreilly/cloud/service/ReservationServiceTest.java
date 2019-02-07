@@ -45,20 +45,19 @@ public class ReservationServiceTest {
     @Test
     public void foundReservedRoomsWithIdsAndCheckTimes() {
     	assertNotNull(reservationService);
-    	CheckTime checkIn = new CheckTime(7, 8, 2019);
-    	CheckTime checkOut = new CheckTime(12, 8, 2019);
-    	List<Integer> roomIds = new ArrayList<>();
-    	roomIds.add(13);
-    	roomIds.add(14);
-    	LocalDateTime startDate = LocalDateTime.of(2019, 8, 7, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2019, 8, 12, 0, 0);
+    	CheckTime checkIn = new CheckTime(10, 8, 2019);
+    	CheckTime checkOut = new CheckTime(16, 8, 2019);
+		LocalDateTime startDate = LocalDateTime.of(2019, 8, 10, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2019, 8, 15, 0, 0);
+		List<Integer> roomIds = new ArrayList<>();
+		roomIds.add(13);
+		roomIds.add(14);
     	
     	when(reservationRepository.findReservedRooms(startDate, endDate, roomIds)).thenReturn(createRooms1());
     	List<Room> theReservedRooms = reservationService.getReservedRooms(checkIn, checkOut, roomIds);
     	
-    	assertTrue(theReservedRooms.size() == 2);
+    	assertTrue(theReservedRooms.size() == 1);
     	assertEquals(theReservedRooms.get(0).getId(), 13);
-    	assertEquals(theReservedRooms.get(1).getId(), 14);
     }
     
     @Test(expected = ValidateException.class)
@@ -81,10 +80,7 @@ public class ReservationServiceTest {
     	List<Integer> roomIds = new ArrayList<>();
     	roomIds.add(13);
     	roomIds.add(14);
-    	LocalDateTime startDate = LocalDateTime.of(2019, 3, 7, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2019, 3, 12, 0, 0);
     	
-    	when(reservationRepository.findReservedRooms(startDate, endDate, roomIds)).thenReturn(new ArrayList<>());
     	List<Room> theReservedRooms = reservationService.getReservedRooms(checkIn, checkOut, roomIds);
     	
     	assertTrue(theReservedRooms.isEmpty());
@@ -165,12 +161,9 @@ public class ReservationServiceTest {
     	int hostsNumber = 2;
     	CheckTime checkIn = new CheckTime(20, 10, 2019);
     	CheckTime checkOut = new CheckTime(22, 10, 2019);
-    	LocalDateTime startDate = LocalDateTime.of(2019, 10, 20, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2019, 10, 22, 0, 0);
 		List<Integer> roomIds = new ArrayList<>();
     	roomIds.add(roomId);
     	
-    	when(reservationRepository.findReservedRooms(startDate, endDate, roomIds)).thenReturn(new ArrayList<>());
     	reservationService.checkRoomAvailability(roomId, hostsNumber, checkIn, checkOut);
     }
     
@@ -193,7 +186,7 @@ public class ReservationServiceTest {
     	List<Integer> roomIds = new ArrayList<>();
     	roomIds.add(13);
     	LocalDateTime startDate = LocalDateTime.of(2019, 8, 7, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2019, 8, 12, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2019, 8, 11, 0, 0);
 		int roomId = 13;
     	int hostsNumber = 2;
 		
@@ -228,7 +221,6 @@ public class ReservationServiceTest {
     private List<Room> createRooms1(){
     	List<Room> theRooms = new ArrayList<>();
     	theRooms.add(createRoom1());
-    	theRooms.add(createRoom2());
     	
     	return theRooms;
     }

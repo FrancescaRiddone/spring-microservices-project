@@ -16,7 +16,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 	@Query("SELECT r.room FROM Reservation r " + 
 			"WHERE r.confirmed = true and " +
 			"r.room.id IN (:roomIds) and " +
-			"( (r.checkIn <= :startDate and r.checkOut >= :startDate) or (r.checkIn >= :startDate and r.checkIn <= :endDate) )")
+			"( (r.checkIn <= :startDate and r.checkOut > :startDate) or (r.checkIn >= :startDate and r.checkIn < :endDate) )")
 	public List<Room> findReservedRooms(@Param("startDate") LocalDateTime startDate, 
 												@Param("endDate") LocalDateTime endDate, 
 												@Param("roomIds") List<Integer> roomIds);

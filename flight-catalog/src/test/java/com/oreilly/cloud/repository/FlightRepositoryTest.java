@@ -38,11 +38,8 @@ public class FlightRepositoryTest {
 		
         Optional<Flight> theFlight = flightRepository.findById(flightId);
         
-        assertNotNull(theFlight.get());
-        assertEquals(theFlight.get().getFlightId(), 1);
-        assertEquals(theFlight.get().getSourceAirport().getName(), "Malpensa Airport");
-        assertEquals(theFlight.get().getDestinationAirport().getName(), "London Luton Airport");
-		assertEquals(theFlight.get().getDepartureTime(), LocalDateTime.of(2019, 5, 13, 7, 10));
+        assertTrue(theFlight.isPresent());
+        assertOnFlight(theFlight.get());
 	}
 	
 	@Test
@@ -166,6 +163,14 @@ public class FlightRepositoryTest {
 		
 		return predicate;
     }
+	
+	private void assertOnFlight(Flight theFlight) {
+		assertNotNull(theFlight);
+        assertEquals(theFlight.getFlightId(), 1);
+        assertEquals(theFlight.getSourceAirport().getName(), "Malpensa Airport");
+        assertEquals(theFlight.getDestinationAirport().getName(), "London Luton Airport");
+		assertEquals(theFlight.getDepartureTime(), LocalDateTime.of(2019, 5, 13, 7, 10));
+	}
 	
 
 }

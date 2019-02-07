@@ -72,7 +72,6 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
-	@Transactional
 	public RoomResource getRoomResource(int roomId) {
 		Room theRoom = getRoom(roomId);
 		

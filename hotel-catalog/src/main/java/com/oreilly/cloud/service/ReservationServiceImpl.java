@@ -33,7 +33,7 @@ public class ReservationServiceImpl implements ReservationService {
 		checkGetReservedRoomsParams(checkIn, checkOut, roomIds);
 		
 		LocalDateTime startDate = convertInLocalDateTime(checkIn);
-		LocalDateTime endDate = convertInLocalDateTime(checkOut);
+		LocalDateTime endDate = convertInLocalDateTimeMinusOne(checkOut);
 		
 		List<Room> reservedRooms = reservationRepository.findReservedRooms(startDate, endDate, roomIds);
 		
@@ -115,6 +115,13 @@ public class ReservationServiceImpl implements ReservationService {
 	
 	private LocalDateTime convertInLocalDateTime(CheckTime theTime) {
 		LocalDateTime dateTime = LocalDateTime.of(theTime.getYear(), theTime.getMonth(), theTime.getDay(), 0, 0);
+		
+		return dateTime;
+	}
+	
+	private LocalDateTime convertInLocalDateTimeMinusOne(CheckTime theTime) {
+		LocalDateTime dateTime = LocalDateTime.of(theTime.getYear(), theTime.getMonth(), theTime.getDay(), 0, 0);
+		dateTime = dateTime.minusDays(1);
 		
 		return dateTime;
 	}
