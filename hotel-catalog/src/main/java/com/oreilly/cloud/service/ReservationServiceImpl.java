@@ -29,7 +29,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional
-	public List<Room> getReservedRooms(CheckTime checkIn, CheckTime checkOut, List<Integer> roomIds) {
+	public List<Room> getReservedRooms(CheckTime checkIn, CheckTime checkOut, List<Integer> roomIds) throws ValidateException {
 		checkGetReservedRoomsParams(checkIn, checkOut, roomIds);
 		
 		LocalDateTime startDate = convertInLocalDateTime(checkIn);
@@ -66,7 +66,7 @@ public class ReservationServiceImpl implements ReservationService {
 	
 	@Override
 	@Transactional
-	public void checkRoomAvailability(int roomId, int hostsNumber, CheckTime checkIn, CheckTime checkOut) {
+	public void checkRoomAvailability(int roomId, int hostsNumber, CheckTime checkIn, CheckTime checkOut) throws ValidateException, ResourceUnavailableException {
 		checkRoomAvailabilityParams(roomId, checkIn, checkOut, hostsNumber);
 		
 		List<Integer> roomIds = new ArrayList<>();

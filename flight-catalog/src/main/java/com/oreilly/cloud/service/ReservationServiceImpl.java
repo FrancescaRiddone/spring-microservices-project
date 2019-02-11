@@ -37,7 +37,7 @@ public class ReservationServiceImpl implements ReservationService {
 	
 	@Override
 	@Transactional
-	public FlightReservationResource getReservationResource(int reservationId) throws ResourceNotFoundException {
+	public FlightReservationResource getReservationResource(int reservationId) throws ResourceNotFoundException, ValidateException {
 		Reservation theReservation = getReservation(reservationId);
 		
 		FlightReservationResource reservationResource = convertInReservationResource(theReservation);

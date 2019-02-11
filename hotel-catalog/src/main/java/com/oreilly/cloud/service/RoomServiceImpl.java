@@ -28,7 +28,7 @@ public class RoomServiceImpl implements RoomService {
 
 	@Override
 	@Transactional
-	public List<Room> getRooms(SearchHotelRequest searchHotelRequest, List<Integer> hotelIds) {
+	public List<Room> getRooms(SearchHotelRequest searchHotelRequest, List<Integer> hotelIds) throws ValidateException, ResourceNotFoundException {
 		checkGetRoomsParams(searchHotelRequest, hotelIds);
 		
 		List<Room> foundRooms;
@@ -58,7 +58,7 @@ public class RoomServiceImpl implements RoomService {
 	
 	@Override
 	@Transactional
-	public Room getRoom(int roomId) {
+	public Room getRoom(int roomId) throws ValidateException, ResourceNotFoundException {
 		if(roomId <= 0) {
 			throw new ValidateException();
 		}
@@ -72,7 +72,7 @@ public class RoomServiceImpl implements RoomService {
 	}
 
 	@Override
-	public RoomResource getRoomResource(int roomId) {
+	public RoomResource getRoomResource(int roomId) throws ValidateException, ResourceNotFoundException {
 		Room theRoom = getRoom(roomId);
 		
 		RoomResource roomResource = convertInRoomResource(theRoom);

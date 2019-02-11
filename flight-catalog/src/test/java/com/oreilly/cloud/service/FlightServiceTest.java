@@ -1,6 +1,7 @@
 package com.oreilly.cloud.service;
 
 import com.oreilly.cloud.exception.ResourceNotFoundException;
+import com.oreilly.cloud.exception.ResourceUnavailableException;
 import com.oreilly.cloud.exception.ValidateException;
 import com.oreilly.cloud.model.*;
 import com.oreilly.cloud.object.FlightResource;
@@ -121,7 +122,7 @@ public class FlightServiceTest {
         assertTrue(theFlight.getAvailableEconomySeats() >= 2);
     }
     
-    @Test
+    @Test(expected = ResourceUnavailableException.class)
     public void availableFlightNotFound() {
     	assertNotNull(flightService);
     	int flightId = 1;
@@ -129,9 +130,7 @@ public class FlightServiceTest {
         int seatNumber = 50;
         
         when(flightRepository.findOne(createPredicate3())).thenReturn(Optional.empty());
-        Flight theFlight = flightService.checkFlightAvailability(flightId, seatClass, seatNumber);
-        
-        assertTrue(theFlight == null);
+        flightService.checkFlightAvailability(flightId, seatClass, seatNumber);
     }
    
     @Test(expected = ValidateException.class)

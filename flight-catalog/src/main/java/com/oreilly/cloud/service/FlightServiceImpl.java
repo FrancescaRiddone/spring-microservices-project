@@ -2,6 +2,7 @@ package com.oreilly.cloud.service;
 
 import com.google.common.collect.Lists;
 import com.oreilly.cloud.exception.ResourceNotFoundException;
+import com.oreilly.cloud.exception.ResourceUnavailableException;
 import com.oreilly.cloud.exception.ValidateException;
 import com.oreilly.cloud.model.Flight;
 import com.oreilly.cloud.object.FlightResource;
@@ -70,17 +71,17 @@ public class FlightServiceImpl implements FlightService{
 	
 	@Override
 	@Transactional
-	public Flight checkFlightAvailability(int flightId, String seatClass, int seatNumber) throws ValidateException {
+	public Flight checkFlightAvailability(int flightId, String seatClass, int seatNumber) throws ValidateException, ResourceUnavailableException {
 		checkFlightAvailabilityParams(flightId, seatClass, seatNumber);
 		
 		Predicate thePredicate = getCheckFlightAvailabilityPredicate(flightId, seatClass, seatNumber);
 		Optional<Flight> theFlight = flightRepository.findOne(thePredicate);
 		
-		if(theFlight.isPresent()) {
-			return theFlight.get();
+		if(!theFlight.isPresent()) {
+			throw new ResourceUnavailableException();
 		}
 		
-		return null;
+		return theFlight.get();
 	}
 	
 	@Override

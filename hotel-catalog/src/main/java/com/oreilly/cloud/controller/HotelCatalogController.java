@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oreilly.cloud.object.CheckTime;
@@ -41,8 +41,8 @@ public class HotelCatalogController {
 	private ReservationService reservationService;
 	
 	
-	@GetMapping("/hotel")
-	public HotelResource getHotel(@RequestParam("hotelId") int hotelId) throws ValidateException, ResourceNotFoundException {
+	@GetMapping("/hotel/{hotelId}")
+	public HotelResource getHotel(@PathVariable int hotelId) throws ValidateException, ResourceNotFoundException {
 		HotelResource resource = hotelService.getHotel(hotelId);
 		
 		List<Room> theHotelRooms = roomService.getRooms(hotelId);
@@ -59,7 +59,7 @@ public class HotelCatalogController {
 	}
 	
 	@PostMapping("/requiredHotels")
-	public List<HotelResource> getHotels(@RequestBody SearchHotelRequest searchHotelRequest) {
+	public List<HotelResource> getHotels(@RequestBody SearchHotelRequest searchHotelRequest) throws ValidateException, ResourceNotFoundException {
 		List<HotelResource> foundHotels = hotelService.getHotels(searchHotelRequest);
 		List<Integer> foundIds = new ArrayList<>();
 		for(HotelResource theHotel: foundHotels) {
@@ -77,15 +77,15 @@ public class HotelCatalogController {
 		return resultHotels;
 	}
 	
-	@GetMapping("/hotel/room")
-	public RoomResource getRoom(@RequestParam("roomId") int roomId) {
+	@GetMapping("/rooms/room/{roomId}")
+	public RoomResource getRoom(@PathVariable int roomId) throws ValidateException, ResourceNotFoundException {
 		RoomResource theRoom = roomService.getRoomResource(roomId);
 		
 		return theRoom;
 	}
 	
-	@GetMapping("/hotel/rooms")
-	public List<RoomResource> getRooms(@RequestParam("roomIds") List<Integer> roomIds){
+	@GetMapping("/rooms/{roomIds}")
+	public List<RoomResource> getRooms(@PathVariable List<Integer> roomIds) throws ValidateException, ResourceNotFoundException {
 		if(roomIds.isEmpty()) {
 			throw new ValidateException();
 		}
@@ -104,15 +104,15 @@ public class HotelCatalogController {
 		return theRooms;
 	}
 	
-	@GetMapping("/reservations/reservation")
-	public HotelReservationResource getReservation(@RequestParam("reservationId") int reservationId) {
+	@GetMapping("/reservations/reservation/{reservationId}")
+	public HotelReservationResource getReservation(@PathVariable int reservationId) throws ValidateException, ResourceNotFoundException {
 		HotelReservationResource theReservation = reservationService.getReservationResource(reservationId);
 		
 		return theReservation;
 	}
 	
-	@GetMapping("/reservations")
-	public List<HotelReservationResource> getReservations(@RequestParam("reservationIds") List<Integer> reservationIds) {
+	@GetMapping("/reservations/{reservationIds}")
+	public List<HotelReservationResource> getReservations(@PathVariable List<Integer> reservationIds) throws ValidateException, ResourceNotFoundException {
 		if(reservationIds.isEmpty()) {
 			throw new ValidateException();
 		}
@@ -133,7 +133,7 @@ public class HotelCatalogController {
 	
 	@PostMapping("/reservations/new")
 	public HotelReservationResource createReservation(@RequestBody HotelReservationRequest hotelReservationRequest) 
-			throws ResourceNotFoundException, ValidateException{
+			throws ResourceNotFoundException, ValidateException, ResourceUnavailableException {
 		
 		checkCreateReservationParam(hotelReservationRequest);
 		
@@ -154,8 +154,10 @@ public class HotelCatalogController {
 		return reservationService.saveReservation(theNewReservation);
 	}
 	
-	@GetMapping("/reservations/confirm")
-	public HotelReservationResource confirmReservation(@RequestParam("reservationId") int reservationId) {
+	@GetMapping("/reservations/confirm/{reservationId}")
+	public HotelReservationResource confirmReservation(@PathVariable int reservationId) 
+			throws ResourceNotFoundException, ValidateException, ResourceUnavailableException {
+		
 		Reservation theReservation = reservationService.getReservation(reservationId);
 		
 		reservationService.checkRoomAvailability(theReservation.getRoom().getId(), theReservation.getHostsNumber(), 
