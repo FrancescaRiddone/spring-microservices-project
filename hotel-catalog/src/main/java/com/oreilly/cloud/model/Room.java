@@ -67,9 +67,9 @@ public class Room {
 	@Type(type = "org.hibernate.type.NumericBooleanType")
 	private boolean telephone;
 	
-	@Column(name="vault", columnDefinition = "TINYINT")
+	@Column(name="safe", columnDefinition = "TINYINT")
 	@Type(type = "org.hibernate.type.NumericBooleanType")
-	private boolean vault;
+	private boolean safe;
 	
 	@Column(name="bathtub", columnDefinition = "TINYINT")
 	@Type(type = "org.hibernate.type.NumericBooleanType")
@@ -105,7 +105,7 @@ public class Room {
 
 	public Room(int id, Hotel hotel, int hostsNumber, double standardDailyPrice, double withBreakfastDailyPrice,
 			double halfBoardDailyPrice, double fullBoardDailyPrice, int singleBeds, int doubleBeds,
-			boolean airConditioner, boolean heat, boolean tv, boolean telephone, boolean vault, boolean bathtub,
+			boolean airConditioner, boolean heat, boolean tv, boolean telephone, boolean safe, boolean bathtub,
 			boolean swimmingPool, boolean soundproofing, boolean withView, boolean bathroom, boolean balcony) {
 		
 		this.id = id;
@@ -121,7 +121,7 @@ public class Room {
 		this.heat = heat;
 		this.tv = tv;
 		this.telephone = telephone;
-		this.vault = vault;
+		this.safe = safe;
 		this.bathtub = bathtub;
 		this.swimmingPool = swimmingPool;
 		this.soundproofing = soundproofing;
@@ -236,11 +236,11 @@ public class Room {
 	}
 
 	public boolean isVault() {
-		return vault;
+		return safe;
 	}
 
-	public void setVault(boolean vault) {
-		this.vault = vault;
+	public void setVault(boolean safe) {
+		this.safe = safe;
 	}
 
 	public boolean isBathtub() {
@@ -305,7 +305,7 @@ public class Room {
 				+ standardDailyPrice + ", withBreakfastDailyPrice=" + withBreakfastDailyPrice + ", halfBoardDailyPrice="
 				+ halfBoardDailyPrice + ", fullBoardDailyPrice=" + fullBoardDailyPrice + ", singleBeds=" + singleBeds
 				+ ", doubleBeds=" + doubleBeds + ", airConditioner=" + airConditioner + ", heat=" + heat + ", tv=" + tv
-				+ ", telephone=" + telephone + ", vault=" + vault + ", bathtub=" + bathtub + ", swimmingPool="
+				+ ", telephone=" + telephone + ", safe=" + safe + ", bathtub=" + bathtub + ", swimmingPool="
 				+ swimmingPool + ", soundproofing=" + soundproofing + ", withView=" + withView + ", bathroom="
 				+ bathroom + ", balcony=" + balcony + "]";
 	}

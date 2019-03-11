@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -21,6 +23,7 @@ import com.oreilly.cloud.model.Company;
 import com.oreilly.cloud.model.Country;
 import com.oreilly.cloud.model.Flight;
 import com.oreilly.cloud.model.Reservation;
+import com.oreilly.cloud.model.ReservationSeat;
 import com.oreilly.cloud.object.FlightReservationResource;
 import com.oreilly.cloud.repository.ReservationRepository;
 
@@ -67,7 +70,6 @@ public class ReservationServiceTest {
     /*
    	 * TESTS on method FlightReservationResource getReservationResource(int reservationId) of ReservationService
    	 */
-    
     @Test
     public void reservationResourceFoundWithId() {
     	int reservationId = 1;
@@ -96,9 +98,8 @@ public class ReservationServiceTest {
     /*
    	 * TESTS on method FlightReservationResource saveReservation(Reservation theReservation) of ReservationService
    	 */
-    
     @Test
-    public void reservationSuccessfullySaved() {
+    public void reservationWithAssignedSeatsSuccessfullySaved() {
     	assertNotNull(reservationService);
     	Reservation theReservation = createReservation();
     	
@@ -129,12 +130,17 @@ public class ReservationServiceTest {
     	Reservation theReservation = new Reservation();
     	theReservation.setId(1);
     	theReservation.setFlight(createFlight());
-    	theReservation.setUserName("Mario");
-    	theReservation.setUserSurname("Rossi");
+    	theReservation.setUserEmail("mariorossi@yahoo.it");
     	theReservation.setPrice(105.76);
     	theReservation.setSeatsType("business");
     	theReservation.setSeatsNumber(2);
     	theReservation.setConfirmed(true);
+    	
+    	List<ReservationSeat> seats = new ArrayList<>();
+    	seats.add(new ReservationSeat("1A", theReservation));
+    	seats.add(new ReservationSeat("2A", theReservation));
+    	
+    	theReservation.setReservationSeats(seats);
     	
     	return theReservation;	
     }

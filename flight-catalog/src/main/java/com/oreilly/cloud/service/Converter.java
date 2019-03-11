@@ -1,12 +1,15 @@
 package com.oreilly.cloud.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.oreilly.cloud.object.FlightResource;
 import com.oreilly.cloud.object.FlightTime;
 import com.oreilly.cloud.object.JourneyStage;
 import com.oreilly.cloud.model.Flight;
 import com.oreilly.cloud.model.Reservation;
+import com.oreilly.cloud.model.ReservationSeat;
 import com.oreilly.cloud.object.FlightReservationResource;
 
 public class Converter{
@@ -44,11 +47,18 @@ public class Converter{
 		
 		FlightResource theFlightResource = convertInFlightResource(theReservation.getFlight());
 		
+		List<String> seats = new ArrayList<>();
+		for(ReservationSeat seat: theReservation.getReservationSeats()) {
+			seats.add(seat.getSeatNumber());
+		}
+		
 		FlightReservationResource theReservationResource = new FlightReservationResource(theReservation.getId(),
+																			theReservation.getUserEmail(),
 																			theFlightResource,
 																			theReservation.getPrice(),
 																			theReservation.getSeatsType(),
-																			theReservation.getSeatsNumber());
+																			theReservation.getSeatsNumber(),
+																			seats);
 		
 		return theReservationResource;
 	}

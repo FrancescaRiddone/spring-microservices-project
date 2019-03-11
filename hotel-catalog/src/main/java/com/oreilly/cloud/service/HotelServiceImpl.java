@@ -38,7 +38,7 @@ public class HotelServiceImpl implements HotelService {
 			throw new ResourceNotFoundException();
 		}
 		
-		HotelResource hotelResource = com.oreilly.cloud.service.Converter.convertInHotelResource(theHotel.get());
+		HotelResource hotelResource = convertInHotelResource(theHotel.get());
 		
 		return hotelResource;
 	}

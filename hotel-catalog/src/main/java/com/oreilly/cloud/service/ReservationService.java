@@ -18,5 +18,7 @@ public interface ReservationService {
 	public void checkRoomAvailability(int roomId, int HostsNumber, CheckTime checkIn, CheckTime checkOut);
 	
 	public HotelReservationResource saveReservation(Reservation theReservation);
+	
+	public void deleteReservation(int reservationId);
 
 }

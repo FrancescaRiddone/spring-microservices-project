@@ -67,6 +67,7 @@ public class Converter{
 		CheckTime checkOut = new CheckTime(checkOutTime.getDayOfMonth(), checkOutTime.getMonthValue(), checkOutTime.getYear());
 		
 		HotelReservationResource theReservationResource = new HotelReservationResource(	theReservation.getId(),
+																						theReservation.getUserEmail(),
 																						theRoomResource,
 																						theReservation.getPrice(),
 																						theReservation.getReservationType(),

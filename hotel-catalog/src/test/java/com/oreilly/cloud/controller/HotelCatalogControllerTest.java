@@ -367,8 +367,7 @@ public class HotelCatalogControllerTest {
     	if(typeOfRequest != null) {
 	    	if(typeOfRequest.equals("valid")) {
 	    		reservationRequest.setRoomId(5);
-	    		reservationRequest.setUserName("Luca");
-	    		reservationRequest.setUserSurname("Bazuca");
+	    		reservationRequest.setUserEmail("lucabazuca@gmail.com");
 	    		reservationRequest.setHostsNumber(2);
 	    		reservationRequest.setReservationType("with breakfast");
 	    		CheckTime checkIn = new CheckTime(27, 3, 2019);
@@ -377,8 +376,7 @@ public class HotelCatalogControllerTest {
 	    		reservationRequest.setCheckOut(checkOut);
 	    	} else if(typeOfRequest.equals("invalid")){
 	    		reservationRequest.setRoomId(5);
-	    		reservationRequest.setUserName("Luca");
-	    		reservationRequest.setUserSurname("Bazuca");
+	    		reservationRequest.setUserEmail("lucabazuca@gmail.com");
 	    		reservationRequest.setHostsNumber(4);
 	    		reservationRequest.setReservationType("with breakfast");
 	    		CheckTime checkIn = new CheckTime(27, 3, 2019);
@@ -387,8 +385,7 @@ public class HotelCatalogControllerTest {
 	    		reservationRequest.setCheckOut(checkOut);
 	    	} else if(typeOfRequest.equals("notFound")){
 	    		reservationRequest.setRoomId(10000);
-	    		reservationRequest.setUserName("Luca");
-	    		reservationRequest.setUserSurname("Bazuca");
+	    		reservationRequest.setUserEmail("lucabazuca@gmail.com");
 	    		reservationRequest.setHostsNumber(2);
 	    		reservationRequest.setReservationType("with breakfast");
 	    		CheckTime checkIn = new CheckTime(27, 3, 2019);

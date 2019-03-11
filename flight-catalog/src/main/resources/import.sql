@@ -88,17 +88,17 @@ INSERT INTO flight (flight_id, company_id, source_airport_id, source_city_id, so
 INSERT INTO flight (flight_id, company_id, source_airport_id, source_city_id, source_country_id, destination_airport_id, destination_city_id, destination_country_id, total_economy_seats, total_business_seats, total_first_seats, available_economy_seats, available_business_seats, available_first_seats, economy_seat_price, business_seat_price, first_seat_price, departure_time, arrival_time) values (7, 2, 12, 9, 7, 7, 7, 5, 100, 56, 0, 100, 56, 0, 28.10, 46.50, 0, '2019-05-13 20:55:00', '2019-05-13 21:55:00')
 
 
+INSERT INTO reservation (reservation_id, flight_id, user_email, price, seats_type, seats_number, confirmed) values (1, 1, 'mariorossi@yahoo.it', 105.76, 'business', 2, 1)
+INSERT INTO reservation (reservation_id, flight_id, user_email, price, seats_type, seats_number, confirmed) values (2, 1, 'elisabianchi@gmail.com', 53.97, 'economy', 3, 1)
+INSERT INTO reservation (reservation_id, flight_id, user_email, price, seats_type, seats_number, confirmed) values (3, 4, 'elisabianchi@gmail.com', 29.18, 'economy', 1, 0)
+INSERT INTO reservation (reservation_id, flight_id, user_email, price, seats_type, seats_number, confirmed) values (4, 4, 'mariorossi@yahoo.it', 29.18, 'economy', 1, 0)
 
-INSERT INTO reservation (reservation_id, flight_id, user_name, user_surname, price, seats_type, seats_number, confirmed) values (1, 1, 'Mario', 'Rossi', 105.76, 'business', 2, 1)
-INSERT INTO reservation (reservation_id, flight_id, user_name, user_surname, price, seats_type, seats_number, confirmed) values (2, 1, 'Elisa', 'Bianchi', 53.97, 'economy', 3, 1)
-INSERT INTO reservation (reservation_id, flight_id, user_name, user_surname, price, seats_type, seats_number, confirmed) values (3, 4, 'Elisa', 'Bianchi', 29.18, 'economy', 1, 1)
-
-
-
-
-
-
-
+INSERT INTO reservation_seat (reservation_seat_id, seat_number, reservation_id) values (1, '1A', 1);
+INSERT INTO reservation_seat (reservation_seat_id, seat_number, reservation_id) values (2, '2A', 1);
+INSERT INTO reservation_seat (reservation_seat_id, seat_number, reservation_id) values (3, '5D', 2);
+INSERT INTO reservation_seat (reservation_seat_id, seat_number, reservation_id) values (4, '6D', 2);
+INSERT INTO reservation_seat (reservation_seat_id, seat_number, reservation_id) values (5, '7D', 2);
+INSERT INTO reservation_seat (reservation_seat_id, seat_number, reservation_id) values (6, '1E', 3);
 
 
 

@@ -331,8 +331,7 @@ public class ReservationServiceTest {
     	theReservation.setRoom(createRoom2());
     	theReservation.setCheckIn(LocalDateTime.of(2019, 5, 13, 0, 0));
     	theReservation.setCheckOut(LocalDateTime.of(2019, 5, 15, 0, 0));
-    	theReservation.setUserName("Mario");
-    	theReservation.setUserSurname("Rossi");
+    	theReservation.setUserEmail("mariorossi@yahoo.it");
     	theReservation.setPrice(320.00);
     	theReservation.setHostsNumber(2);
     	theReservation.setReservationType("with breakfast");
@@ -347,8 +346,7 @@ public class ReservationServiceTest {
     	theReservation.setRoom(createRoom2());
     	theReservation.setCheckIn(LocalDateTime.of(2019, 2, 13, 0, 0));
     	theReservation.setCheckOut(LocalDateTime.of(2019, 2, 15, 0, 0));
-    	theReservation.setUserName("Marco");
-    	theReservation.setUserSurname("Blu");
+    	theReservation.setUserEmail("marcoblu@yahoo.it");
     	theReservation.setPrice(320.00);
     	theReservation.setHostsNumber(2);
     	theReservation.setReservationType("with breakfast");
@@ -362,8 +360,7 @@ public class ReservationServiceTest {
     	assertEquals(theReservation.getId(), 4);
     	assertEquals(theReservation.getCheckIn(), LocalDateTime.of(2019, 5, 13, 0, 0));
     	assertEquals(theReservation.getCheckOut(), LocalDateTime.of(2019, 5, 15, 0, 0));
-    	assertEquals(theReservation.getUserName(), "Mario");
-    	assertEquals(theReservation.getUserSurname(), "Rossi");
+    	theReservation.setUserEmail("mariorossi@yahoo.it");
     }
     
     private void assertOnReservationResource1(HotelReservationResource reservationResource) {

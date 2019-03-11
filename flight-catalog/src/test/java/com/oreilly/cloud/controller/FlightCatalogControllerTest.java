@@ -2,6 +2,7 @@ package com.oreilly.cloud.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
@@ -231,7 +232,7 @@ public class FlightCatalogControllerTest {
     public void confirmedReservationWithId() throws Exception {
     	String URI = "/flights/reservations/confirm/3";
 
-        mockMvc.perform(get(URI)
+        mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))
         		.andExpect(MockMvcResultMatchers.jsonPath("$.reservationId").value(3))
         		.andExpect(MockMvcResultMatchers.jsonPath("$.flight.company").value("easyJet"))
@@ -245,18 +246,18 @@ public class FlightCatalogControllerTest {
     
     @Test
     public void notConfirmedReservationWithNotPresentId() throws Exception {
-    	String URI = "/flights/reservations/confirm/1000000";
+    	String URI = "/flights/reservations/confirm/100000";
 
-        mockMvc.perform(get(URI)
+        mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(404));
+        		.andExpect(status().is(404));
     }
     
     @Test
     public void notConfirmedReservationWithInvalidId() throws Exception {
-    	String URI = "/flights/flight/0";
+    	String URI = "/flights/reservations/confirm/0";
 
-        mockMvc.perform(get(URI)
+        mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));
     }
@@ -298,20 +299,17 @@ public class FlightCatalogControllerTest {
     	if(typeOfRequest != null) {
 	    	if(typeOfRequest.equals("valid")) {
 	    		reservationRequest.setFlightId(7);
-	        	reservationRequest.setUserName("Vincenzo");
-	        	reservationRequest.setUserSurname("Verdi");
+	        	reservationRequest.setUserEmail("vincenzoverdi@yahoo.it");
 	        	reservationRequest.setSeatClass("economy");
 	        	reservationRequest.setSeatNumber(2);
 	    	} else if(typeOfRequest.equals("invalid")){
 	    		reservationRequest.setFlightId(0);
-	        	reservationRequest.setUserName("Vincenzo");
-	        	reservationRequest.setUserSurname("Verdi");
+	    		reservationRequest.setUserEmail("vincenzoverdi@yahoo.it");
 	        	reservationRequest.setSeatClass("");
 	        	reservationRequest.setSeatNumber(2);
 	    	} else if(typeOfRequest.equals("notFoundFlight")){
 	    		reservationRequest.setFlightId(100000);
-	        	reservationRequest.setUserName("Vincenzo");
-	        	reservationRequest.setUserSurname("Verdi");
+	    		reservationRequest.setUserEmail("vincenzoverdi@yahoo.it");
 	        	reservationRequest.setSeatClass("business");
 	        	reservationRequest.setSeatNumber(2);
 	    	}

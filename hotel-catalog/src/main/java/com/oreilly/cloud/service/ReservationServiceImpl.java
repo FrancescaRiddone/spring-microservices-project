@@ -89,7 +89,15 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservationResource;
 	}
 	
+	@Override
+	@Transactional
+	public void deleteReservation(int reservationId) throws ResourceNotFoundException, ValidateException {
+		getReservation(reservationId);
+		
+		reservationRepository.deleteById(reservationId);
+	}
 	
+
 	private void checkGetReservedRoomsParams(CheckTime checkIn, CheckTime checkOut, List<Integer> roomIds) throws ValidateException {
 		if(roomIds == null) {
 			throw new ValidateException();
@@ -138,8 +146,7 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ValidateException();
 		}
 		if((theReservation.getRoom() == null || theReservation.getRoom().getId() <= 0) || 
-				(theReservation.getUserName() == null || theReservation.getUserName().equals("")) ||
-				(theReservation.getUserSurname() == null || theReservation.getUserSurname().equals("")) ||
+				(theReservation.getUserEmail() == null || theReservation.getUserEmail().equals("")) ||
 				!(theReservation.getReservationType().equals("standard") || theReservation.getReservationType().equals("with breakfast") || 
 						theReservation.getReservationType().equals("half board") || theReservation.getReservationType().equals("full board")) ||
 				theReservation.getHostsNumber() <= 0 ||

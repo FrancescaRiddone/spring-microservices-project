@@ -10,5 +10,7 @@ public interface ReservationService {
 	public FlightReservationResource getReservationResource(int reservationId);
 	
 	public FlightReservationResource saveReservation(Reservation theReservation);
+	
+	public void deleteReservation(int reservationId);
 
 }

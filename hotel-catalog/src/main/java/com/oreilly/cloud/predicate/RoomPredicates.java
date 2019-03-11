@@ -33,7 +33,7 @@ public final class RoomPredicates {
 		setBooleanPropertyInPredicate(predicate, room, roomProperties.isHeat(), "heat");
 		setBooleanPropertyInPredicate(predicate, room, roomProperties.isTv(), "tv");
 		setBooleanPropertyInPredicate(predicate, room, roomProperties.isTelephone(), "telephone");
-		setBooleanPropertyInPredicate(predicate, room, roomProperties.isVault(), "vault");
+		setBooleanPropertyInPredicate(predicate, room, roomProperties.isSafe(), "safe");
 		setBooleanPropertyInPredicate(predicate, room, roomProperties.isBathtub(), "bathtub");
 		setBooleanPropertyInPredicate(predicate, room, roomProperties.isPrivateSwimmingPool(), "privateSwimmingPool");
 		setBooleanPropertyInPredicate(predicate, room, roomProperties.isSoundproofing(), "soundproofing");
@@ -99,8 +99,8 @@ public final class RoomPredicates {
 				predicate.and(room.tv.eq(true));
 			} else if(propertyName.equals("telephone")) {
 				predicate.and(room.telephone.eq(true));
-			} else if(propertyName.equals("vault")) {
-				predicate.and(room.vault.eq(true));
+			} else if(propertyName.equals("safe")) {
+				predicate.and(room.safe.eq(true));
 			} else if(propertyName.equals("bathtub")) {
 				predicate.and(room.bathtub.eq(true));
 			} else if(propertyName.equals("privateSwimmingPool")) {

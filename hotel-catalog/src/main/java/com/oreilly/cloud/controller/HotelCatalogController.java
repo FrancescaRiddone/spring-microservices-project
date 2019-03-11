@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -147,8 +148,8 @@ public class HotelCatalogController {
 		
 		Room availableRoom = roomService.getRoom(hotelReservationRequest.getRoomId());	
 		Reservation theNewReservation = new Reservation(availableRoom, convertInLocalDateTime(hotelReservationRequest.getCheckIn()), 
-											convertInLocalDateTime(hotelReservationRequest.getCheckOut()), hotelReservationRequest.getUserName(), 
-											hotelReservationRequest.getUserSurname(), 0.0, hotelReservationRequest.getHostsNumber(), 
+											convertInLocalDateTime(hotelReservationRequest.getCheckOut()), hotelReservationRequest.getUserEmail(), 
+											0.0, hotelReservationRequest.getHostsNumber(), 
 											hotelReservationRequest.getReservationType(), false);
 		
 		return reservationService.saveReservation(theNewReservation);
@@ -167,6 +168,13 @@ public class HotelCatalogController {
 		HotelReservationResource theReservationResource = reservationService.saveReservation(theReservation);
 		
 		return theReservationResource;
+	}
+	
+	@DeleteMapping("/reservations/reservation/{reservationId}")
+	public String deleteReservation(@PathVariable int reservationId) throws ValidateException, ResourceNotFoundException {
+		reservationService.deleteReservation(reservationId);
+		
+		return "Reservation with id " + reservationId + " deleted with success";
 	}
 	
 

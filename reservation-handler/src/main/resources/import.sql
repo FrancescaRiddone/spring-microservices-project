@@ -1,0 +1,8 @@
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (1, 1, 1, 'flight', 1)
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (2, 2, 2, 'flight', 1)
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (3, 2, 3, 'flight', 0)
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (4, 1, 4, 'flight', 0)
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (5, 1, 1, 'hotel', 1)
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (6, 2, 2, 'hotel', 1)
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (7, 1, 3, 'hotel', 1)
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (8, 1, 4, 'hotel', 0)

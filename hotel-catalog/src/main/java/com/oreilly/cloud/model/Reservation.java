@@ -33,11 +33,8 @@ public class Reservation {
 	@Column(name="check_out")
 	private LocalDateTime checkOut;
 	
-	@Column(name="user_name")
-	private String userName;
-	
-	@Column(name="user_surname")
-	private String userSurname;
+	@Column(name="user_email")
+	private String userEmail;
 	
 	@Column(name="price")
 	private double price;
@@ -57,14 +54,13 @@ public class Reservation {
 		
 	}
 	
-	public Reservation(Room room, LocalDateTime checkIn, LocalDateTime checkOut, String userName, String userSurname,
+	public Reservation(Room room, LocalDateTime checkIn, LocalDateTime checkOut, String userEmail,
 			double price, int hostsNumber, String reservationType, boolean confirmed) {
 		
 		this.room = room;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		this.userName = userName;
-		this.userSurname = userSurname;
+		this.userEmail = userEmail;
 		this.price = price;
 		this.hostsNumber = hostsNumber;
 		this.reservationType = reservationType;
@@ -103,20 +99,12 @@ public class Reservation {
 		this.checkOut = checkOut;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUserEmail() {
+		return userEmail;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public String getUserSurname() {
-		return userSurname;
-	}
-
-	public void setUserSurname(String userSurname) {
-		this.userSurname = userSurname;
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
 	}
 
 	public double getPrice() {
@@ -154,8 +142,8 @@ public class Reservation {
 	@Override
 	public String toString() {
 		return "Reservation [id=" + id + ", room=" + room + ", checkIn=" + checkIn + ", checkOut=" + checkOut
-				+ ", userName=" + userName + ", userSurname=" + userSurname + ", price=" + price + ", hostsNumber="
-				+ hostsNumber + ", reservationType=" + reservationType + ", confirmed=" + confirmed + "]";
+				+ ", userEmail=" + userEmail + ", price=" + price + ", hostsNumber=" + hostsNumber
+				+ ", reservationType=" + reservationType + ", confirmed=" + confirmed + "]";
 	}
 
 	

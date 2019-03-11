@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,21 +38,20 @@ public class FlightCatalogController {
 	
 	@GetMapping("/flight/{flightId}")
 	public FlightResource getFlight(@PathVariable int flightId) throws ValidateException, ResourceNotFoundException {
-		FlightResource resource = flightService.getFlight(flightId);
 		
-		return resource;
+		return flightService.getFlight(flightId);
 	}
 	
 	@PostMapping("/requiredFlights")
 	public List<FlightResource> getFlights(@RequestBody SearchFlightRequest searchFlightRequest) throws ValidateException, ResourceNotFoundException {
+		
 		return flightService.getFlights(searchFlightRequest);
 	}
 	
 	@GetMapping("/reservations/reservation/{reservationId}")
 	public FlightReservationResource getReservation(@PathVariable int reservationId) throws ValidateException, ResourceNotFoundException {
-		FlightReservationResource theReservation = reservationService.getReservationResource(reservationId);
 		
-		return theReservation;
+		return reservationService.getReservationResource(reservationId);
 	}
 	
 	@GetMapping("/reservations/{reservationIds}")
@@ -76,14 +77,13 @@ public class FlightCatalogController {
 		Flight availableFlight = flightService.checkFlightAvailability(flightReservationRequest.getFlightId(), 
 				flightReservationRequest.getSeatClass(), flightReservationRequest.getSeatNumber());
 		
-		Reservation theNewReservation = new Reservation(availableFlight, flightReservationRequest.getUserName(), 
-				flightReservationRequest.getUserSurname(), 0.0, flightReservationRequest.getSeatClass(),
+		Reservation theNewReservation = new Reservation(availableFlight, flightReservationRequest.getUserEmail(), 0.0, flightReservationRequest.getSeatClass(),
 				flightReservationRequest.getSeatNumber(), false);
 		
 		return reservationService.saveReservation(theNewReservation);
 	}
 	
-	@GetMapping("/reservations/confirm/{reservationId}")
+	@PutMapping("/reservations/confirm/{reservationId}")
 	public FlightReservationResource confirmReservation(@PathVariable int reservationId) throws ValidateException, 
 			ResourceNotFoundException, ResourceUnavailableException {
 		
@@ -94,10 +94,17 @@ public class FlightCatalogController {
 		
 		theReservation.setConfirmed(true);
 		FlightReservationResource theReservationResource = reservationService.saveReservation(theReservation);
+		
 		flightService.updateAvailableSeats(theReservation.getFlight().getFlightId(), theReservation.getSeatsType(), 
 					theReservation.getSeatsNumber());
 		
 		return theReservationResource;
+	}
+	
+	@DeleteMapping("/reservations/reservation/{reservationId}")
+	public void deleteReservation(@PathVariable int reservationId) throws ValidateException, ResourceNotFoundException {
+		
+		reservationService.deleteReservation(reservationId);
 	}
 	
 	

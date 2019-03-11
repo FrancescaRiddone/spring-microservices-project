@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -19,6 +21,7 @@ import com.oreilly.cloud.model.Company;
 import com.oreilly.cloud.model.Country;
 import com.oreilly.cloud.model.Flight;
 import com.oreilly.cloud.model.Reservation;
+import com.oreilly.cloud.model.ReservationSeat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -41,8 +44,7 @@ public class ReservationRepositoryTest {
         
         assertNotNull(theReservation.get());
         assertEquals(theReservation.get().getId(), 1);
-        assertEquals(theReservation.get().getUserName(), "Mario");
-        assertEquals(theReservation.get().getUserSurname(), "Rossi");
+        assertEquals(theReservation.get().getUserEmail(), "mariorossi@yahoo.it");
     }
 	
 	@Test
@@ -77,8 +79,7 @@ public class ReservationRepositoryTest {
 		Reservation theSavedReservation = reservationRepository.save(theReservation);
 		
 		assertEquals(theSavedReservation.getId(), theReservation.getId());
-		assertEquals(theSavedReservation.getUserName(), theReservation.getUserName());
-		assertEquals(theSavedReservation.getUserSurname(), theReservation.getUserSurname());
+		assertEquals(theSavedReservation.getUserEmail(), theReservation.getUserEmail());
 	}
 	
 	
@@ -87,12 +88,17 @@ public class ReservationRepositoryTest {
     	Reservation theReservation = new Reservation();
     	theReservation.setId(1);
     	theReservation.setFlight(createFlight());
-    	theReservation.setUserName("Mario");
-    	theReservation.setUserSurname("Rossi");
+    	theReservation.setUserEmail("mariorossi@yahoo.it");
     	theReservation.setPrice(105.76);
     	theReservation.setSeatsType("business");
     	theReservation.setSeatsNumber(2);
     	theReservation.setConfirmed(true);
+    	
+    	List<ReservationSeat> seats = new ArrayList<>();
+    	seats.add(new ReservationSeat("1A", theReservation));
+    	seats.add(new ReservationSeat("2A", theReservation));
+    	
+    	theReservation.setReservationSeats(seats);
     	
     	return theReservation;	
     }

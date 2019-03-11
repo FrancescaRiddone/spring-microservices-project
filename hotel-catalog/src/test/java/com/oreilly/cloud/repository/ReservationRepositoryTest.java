@@ -171,8 +171,7 @@ public class ReservationRepositoryTest {
     	theReservation.setRoom(createRoom2());
     	theReservation.setCheckIn(LocalDateTime.of(2019, 8, 2, 0, 0));
     	theReservation.setCheckOut(LocalDateTime.of(2019, 8, 10, 0, 0));
-    	theReservation.setUserName("Mario");
-    	theReservation.setUserSurname("Rossi");
+    	theReservation.setUserEmail("mariorossi@yahoo.it");
     	theReservation.setPrice(3300.00);
     	theReservation.setHostsNumber(2);
     	theReservation.setReservationType("full board");
@@ -193,8 +192,7 @@ public class ReservationRepositoryTest {
 		assertNotNull(theReservation);
 		assertEquals(theReservation.getId(), 1);
 		assertEquals(theReservation.getRoom().getId(), 1);
-		assertEquals(theReservation.getUserName(), "Mario");
-		assertEquals(theReservation.getUserSurname(), "Rossi");
+		assertEquals(theReservation.getUserEmail(), "mariorossi@yahoo.it");
 		assertEquals(theReservation.getHostsNumber(), 2);
 	}
 	
@@ -202,8 +200,7 @@ public class ReservationRepositoryTest {
 		assertNotNull(theReservation);
 		assertEquals(theReservation.getId(), 4);
 		assertEquals(theReservation.getRoom().getId(), 14);
-		assertEquals(theReservation.getUserName(), "Mario");
-		assertEquals(theReservation.getUserSurname(), "Rossi");
+		assertEquals(theReservation.getUserEmail(), "mariorossi@yahoo.it");
 		assertEquals(theReservation.getHostsNumber(), 2);
 		assertEquals(theReservation.getReservationType(), "full board");
 	}
