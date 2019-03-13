@@ -11,7 +11,7 @@ import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name="user_reservation")
-public class CartElement {
+public class ReservationElement {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -32,11 +32,11 @@ public class CartElement {
 	private boolean confirmed;
 
 	
-	public CartElement() {
+	public ReservationElement() {
 	
 	}
 
-	public CartElement(int cartElementId, int userId, int reservationId, String type, boolean confirmed) {
+	public ReservationElement(int cartElementId, int userId, int reservationId, String type, boolean confirmed) {
 		this.cartElementId = cartElementId;
 		this.userId = userId;
 		this.reservationId = reservationId;
@@ -44,7 +44,7 @@ public class CartElement {
 		this.confirmed = confirmed;
 	}
 	
-	public CartElement(int userId, int reservationId, String type, boolean confirmed) {
+	public ReservationElement(int userId, int reservationId, String type, boolean confirmed) {
 		this.userId = userId;
 		this.reservationId = reservationId;
 		this.type = type;

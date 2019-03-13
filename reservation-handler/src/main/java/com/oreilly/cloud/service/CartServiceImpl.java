@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.oreilly.cloud.exception.ResourceNotFoundException;
 import com.oreilly.cloud.exception.ValidateException;
-import com.oreilly.cloud.model.CartElement;
+import com.oreilly.cloud.model.ReservationElement;
+import com.oreilly.cloud.object.BankDetails;
 import com.oreilly.cloud.object.FlightReservationResource;
 import com.oreilly.cloud.object.HotelReservationResource;
 import com.oreilly.cloud.repository.CartRepository;
@@ -23,50 +25,40 @@ public class CartServiceImpl implements CartService {
 	@Transactional
 	public void addElementToCart(FlightReservationResource element, int userId) throws ValidateException {
 		checkAddElementToCart1Params(element, userId);
-		CartElement newCartElement = new CartElement(userId, element.getReservationId(), "flight", false);
+		ReservationElement newCartElement = new ReservationElement(userId, element.getReservationId(), "flight", false);
 		
-		CartElement savedCartElement = cartRepository.save(newCartElement);
-		
-		System.out.println("elemento salvato: " + savedCartElement);
-		
-		for(CartElement ce: cartRepository.findAll()) {
-			System.out.println("cart element: " + ce);
-		}
+		cartRepository.save(newCartElement);
 	}
 	
 	@Override
 	@Transactional
 	public void addElementToCart(HotelReservationResource element, int userId) throws ValidateException {
 		checkAddElementToCart2Params(element, userId);
-		CartElement newCartElement = new CartElement(userId, element.getReservationId(), "hotel", false);
+		ReservationElement newCartElement = new ReservationElement(userId, element.getReservationId(), "hotel", false);
 		
-		CartElement savedCartElement = cartRepository.save(newCartElement);
+		cartRepository.save(newCartElement);
+	}
+	
+	@Override
+	@Transactional
+	public void checkIsInUserCart(int userId, int reservationId, String elementType) throws ValidateException, ResourceNotFoundException {
+		checkIdsAndElementType(userId, reservationId, elementType);
 		
-		System.out.println("elemento salvato: " + savedCartElement);
+		ReservationElement cartElement = cartRepository.findElementInCartByUserIdAndReservationIdAndTpe(userId, reservationId, elementType);
 		
-		for(CartElement ce: cartRepository.findAll()) {
-			System.out.println("cart element: " + ce);
+		if(cartElement == null) {
+			throw new ResourceNotFoundException();
 		}
 	}
 	
 	@Override
 	@Transactional
-	public List<Integer> getUserFlightsInCart(int userId) throws ValidateException {
+	public List<Integer> getUserElementsInCart(int userId, String elementType) throws ValidateException {
 		checkIdInParam(userId);
 		
-		List<Integer> flightsInCartIds = cartRepository.findElementsInCartByUserIdAndType(userId, "flight");
+		List<Integer> elementsInCartIds = cartRepository.findElementsInCartByUserIdAndType(userId, elementType);
 
-		return flightsInCartIds;
-	}
-
-	@Override
-	@Transactional
-	public List<Integer> getUserHotelsInCart(int userId) throws ValidateException {
-		checkIdInParam(userId);
-		
-		List<Integer> hotelsInCartIds = cartRepository.findElementsInCartByUserIdAndType(userId, "hotel");
-
-		return hotelsInCartIds;
+		return elementsInCartIds;
 	}
 	
 	@Override
@@ -75,6 +67,26 @@ public class CartServiceImpl implements CartService {
 		checkIdInParam(reservationId);
 		
 		cartRepository.deleteByReservationIdAndType(reservationId, elementType);
+	}
+	
+	@Override
+	public void checkBankDetails(BankDetails bankDetails) throws ValidateException {
+		if(bankDetails == null) {
+			throw new ValidateException();
+		}
+		if(bankDetails.getAccountNumber() == null || bankDetails.getCardOwner() == null ||
+				bankDetails.getCardType() == null || bankDetails.getExpiryYear() < 2019 ||
+				bankDetails.getExpiryMonth() < 1 || bankDetails.getExpiryMonth() > 12) {
+			throw new ValidateException();
+		}
+	}
+	
+	@Override
+	@Transactional
+	public void confirmReservationInCart(int userId, int reservationId, String elementType) throws ValidateException {
+		checkIdsAndElementType(userId, reservationId, elementType);
+		
+		cartRepository.updateElementConfirmation(userId, reservationId, elementType);
 	}
 	
 	
@@ -92,8 +104,18 @@ public class CartServiceImpl implements CartService {
 		}
 	}
 	
-	private void checkIdInParam(int userId) throws ValidateException {
-		if(userId < 1) {
+	private void checkIdInParam(int id) throws ValidateException {
+		if(id < 1) {
+			throw new ValidateException();
+		}
+	}
+	
+	private void checkIdsAndElementType(int userId, int reservationId, String elementType) throws ValidateException {
+		checkIdInParam(userId);
+		checkIdInParam(reservationId);
+		if(elementType == null) {
+			throw new ValidateException();
+		} else if(!elementType.equals("hotel") && !elementType.equals("flight")) {
 			throw new ValidateException();
 		}
 	}

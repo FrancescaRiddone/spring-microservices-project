@@ -35,7 +35,7 @@ public class MyZuulFilter extends ZuulFilter {
 		RequestContext requestContext = RequestContext.getCurrentContext(); 
         HttpServletRequest request = requestContext.getRequest();
         String requestUrl = URI.create(request.getRequestURI()).getPath();
-        if(requestUrl.contains("cart") || 
+        if(requestUrl.contains("cart") || requestUrl.contains("registry") ||
         		requestUrl.contains("confirmedFlightReservations") || requestUrl.contains("confirmedHotelReservations")) {
         	
         	return true;

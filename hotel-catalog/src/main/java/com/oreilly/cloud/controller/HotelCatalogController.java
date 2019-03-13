@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -155,8 +156,8 @@ public class HotelCatalogController {
 		return reservationService.saveReservation(theNewReservation);
 	}
 	
-	@GetMapping("/reservations/confirm/{reservationId}")
-	public HotelReservationResource confirmReservation(@PathVariable int reservationId) 
+	@PutMapping("/reservations/confirmedReservation/{reservationId}")
+	public String confirmReservation(@PathVariable int reservationId) 
 			throws ResourceNotFoundException, ValidateException, ResourceUnavailableException {
 		
 		Reservation theReservation = reservationService.getReservation(reservationId);
@@ -165,9 +166,9 @@ public class HotelCatalogController {
 				convertInCheckTime(theReservation.getCheckIn()), convertInCheckTime(theReservation.getCheckOut()));
 		
 		theReservation.setConfirmed(true);
-		HotelReservationResource theReservationResource = reservationService.saveReservation(theReservation);
+		reservationService.saveReservation(theReservation);
 		
-		return theReservationResource;
+		return "Hotel reservation successfully confirmed.";
 	}
 	
 	@DeleteMapping("/reservations/reservation/{reservationId}")

@@ -72,7 +72,9 @@ public class FlightCatalogController {
 	
 	@PostMapping("/reservations/new")
 	public FlightReservationResource createReservation(@RequestBody FlightReservationRequest flightReservationRequest) 
-			throws ValidateException, ResourceUnavailableException {
+			throws ResourceNotFoundException, ValidateException, ResourceUnavailableException {
+		
+		System.out.println("sono in metodo per nuova reservation");
 		
 		Flight availableFlight = flightService.checkFlightAvailability(flightReservationRequest.getFlightId(), 
 				flightReservationRequest.getSeatClass(), flightReservationRequest.getSeatNumber());
@@ -83,8 +85,8 @@ public class FlightCatalogController {
 		return reservationService.saveReservation(theNewReservation);
 	}
 	
-	@PutMapping("/reservations/confirm/{reservationId}")
-	public FlightReservationResource confirmReservation(@PathVariable int reservationId) throws ValidateException, 
+	@PutMapping("/reservations/confirmedReservation/{reservationId}")
+	public String confirmReservation(@PathVariable int reservationId) throws ValidateException, 
 			ResourceNotFoundException, ResourceUnavailableException {
 		
 		Reservation theReservation = reservationService.getReservation(reservationId);
@@ -93,12 +95,12 @@ public class FlightCatalogController {
 					theReservation.getSeatsType(), theReservation.getSeatsNumber());
 		
 		theReservation.setConfirmed(true);
-		FlightReservationResource theReservationResource = reservationService.saveReservation(theReservation);
+		reservationService.saveReservation(theReservation);
 		
 		flightService.updateAvailableSeats(theReservation.getFlight().getFlightId(), theReservation.getSeatsType(), 
 					theReservation.getSeatsNumber());
 		
-		return theReservationResource;
+		return "Flight reservation successfully confirmed.";
 	}
 	
 	@DeleteMapping("/reservations/reservation/{reservationId}")

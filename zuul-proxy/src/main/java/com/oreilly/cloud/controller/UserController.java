@@ -32,7 +32,7 @@ public class UserController {
 	private UserService userService;
 	
 		
-	@PostMapping("/sign-up")
+	@PostMapping("/signUp")
 	public UserResource signUp(@RequestBody UserCreationRequest userCreationRequest) {
 		
 		return userService.saveUser(userCreationRequest);
