@@ -23,6 +23,6 @@ public interface RegistryRepository extends JpaRepository<ReservationElement, In
 			"e.userId = :userId and " +
 			"e.type = :type and " +
 			"e.confirmed = 1")
-	public ReservationElement findElementInRegistryByUserIdAndReservationIdAndTpe(@Param("userId") int userId, @Param("reservationId") int reservationId, @Param("type") String type);
+	public ReservationElement findElementInRegistryByUserIdAndReservationIdAndType(@Param("userId") int userId, @Param("reservationId") int reservationId, @Param("type") String type);
 
 }

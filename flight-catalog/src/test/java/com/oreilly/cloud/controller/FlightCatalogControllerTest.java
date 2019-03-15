@@ -225,28 +225,22 @@ public class FlightCatalogControllerTest {
     }
     
     /*
-	 * TESTS on URI /flights/reservations/confirm/{reservationId}
+	 * TESTS on URI /flights/reservations/confirmedReservation/{reservationId}
 	 */
     
     @Test
     public void confirmedReservationWithId() throws Exception {
-    	String URI = "/flights/reservations/confirm/3";
+    	String URI = "/flights/reservations/confirmedReservation/3";
 
         mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))
-        		.andExpect(MockMvcResultMatchers.jsonPath("$.reservationId").value(3))
-        		.andExpect(MockMvcResultMatchers.jsonPath("$.flight.company").value("easyJet"))
-        		.andExpect(MockMvcResultMatchers.jsonPath("$.flight.source.airportName").value("Orio al Serio Airport"))
-        		.andExpect(MockMvcResultMatchers.jsonPath("$.flight.destination.airportName").value("London Gatwich Airport"))
-        		.andExpect(MockMvcResultMatchers.jsonPath("$.price").value(29.18))
-        		.andExpect(MockMvcResultMatchers.jsonPath("$.seatsType").value("economy"))
-        		.andExpect(MockMvcResultMatchers.jsonPath("$.seatsNumber").value(1))
-        		.andExpect(status().isOk());
+        		.andExpect(status().isOk())
+        		.andExpect(MockMvcResultMatchers.content().string("Flight reservation successfully confirmed."));
     }
     
     @Test
     public void notConfirmedReservationWithNotPresentId() throws Exception {
-    	String URI = "/flights/reservations/confirm/100000";
+    	String URI = "/flights/reservations/confirmedReservation/100000";
 
         mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))
@@ -255,7 +249,7 @@ public class FlightCatalogControllerTest {
     
     @Test
     public void notConfirmedReservationWithInvalidId() throws Exception {
-    	String URI = "/flights/reservations/confirm/0";
+    	String URI = "/flights/reservations/confirmedReservation/0";
 
         mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))

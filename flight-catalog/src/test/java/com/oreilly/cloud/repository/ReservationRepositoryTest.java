@@ -84,7 +84,6 @@ public class ReservationRepositoryTest {
 	
 	
 	private Reservation createReservation() {
-		assertNotNull(reservationRepository);
     	Reservation theReservation = new Reservation();
     	theReservation.setId(1);
     	theReservation.setFlight(createFlight());

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import com.oreilly.cloud.service.RegistryService;
 public class ConfirmedReservationController {
 	
 	@Autowired
+	@Qualifier("restTemplateExecution")
 	private RestTemplate restTemplate;
 	
 	@Autowired
@@ -37,24 +39,27 @@ public class ConfirmedReservationController {
 		
 		String uri = "http://FLIGHT-CATALOG/flights/reservations/";
 		ResponseEntity<List<FlightReservationResource>> response;
-		List<FlightReservationResource> flightInRegistry;
+		List<FlightReservationResource> flightInRegistry = new ArrayList<>();
 		
 		List<Integer> flightIds = new ArrayList<>();
 		flightIds = registryService.getUserElementsInRegistry(userId, "flight");
-		uri = getUriWithSetIds(uri, flightIds);
 		
-		try {
-			response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<List<FlightReservationResource>>() {});
-			flightInRegistry = response.getBody();
-		} catch(ValidateException ex) {
-			System.out.println("sono nel catch di VALIDATE EXCEPTION");
-			throw new ValidateException();
-		} catch(ResourceNotFoundException ex) {
-			System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
-			throw new ResourceNotFoundException();
-		} catch(Exception ex) {
-			System.out.println(ex.getMessage());
-			throw new MicroserviceContactException();
+		if(!flightIds.isEmpty()) {
+			uri = getUriWithSetIds(uri, flightIds);
+			
+			try {
+				response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<List<FlightReservationResource>>() {});
+				flightInRegistry = response.getBody();
+			} catch(ValidateException ex) {
+				System.out.println("sono nel catch di VALIDATE EXCEPTION");
+				throw new ValidateException();
+			} catch(ResourceNotFoundException ex) {
+				System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
+				throw new ResourceNotFoundException();
+			} catch(Exception ex) {
+				System.out.println(ex.getMessage());
+				throw new MicroserviceContactException();
+			}
 		}
 		
 		return flightInRegistry;
@@ -65,24 +70,27 @@ public class ConfirmedReservationController {
 		
 		String uri = "http://HOTEL-CATALOG/hotels/reservations/";
 		ResponseEntity<List<HotelReservationResource>> response;
-		List<HotelReservationResource> hotelInRegistry;
+		List<HotelReservationResource> hotelInRegistry = new ArrayList<>();
 		
 		List<Integer> hotelIds = new ArrayList<>();
 		hotelIds = registryService.getUserElementsInRegistry(userId, "hotel");
-		uri = getUriWithSetIds(uri, hotelIds);
 		
-		try {
-			response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<List<HotelReservationResource>>() {});
-			hotelInRegistry = response.getBody();
-		} catch(ValidateException ex) {
-			System.out.println("sono nel catch di VALIDATE EXCEPTION");
-			throw new ValidateException();
-		} catch(ResourceNotFoundException ex) {
-			System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
-			throw new ResourceNotFoundException();
-		} catch(Exception ex) {
-			System.out.println(ex.getMessage());
-			throw new MicroserviceContactException();
+		if(!hotelIds.isEmpty()) {
+			uri = getUriWithSetIds(uri, hotelIds);
+			
+			try {
+				response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<List<HotelReservationResource>>() {});
+				hotelInRegistry = response.getBody();
+			} catch(ValidateException ex) {
+				System.out.println("sono nel catch di VALIDATE EXCEPTION");
+				throw new ValidateException();
+			} catch(ResourceNotFoundException ex) {
+				System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
+				throw new ResourceNotFoundException();
+			} catch(Exception ex) {
+				System.out.println(ex.getMessage());
+				throw new MicroserviceContactException();
+			}
 		}
 		
 		return hotelInRegistry;

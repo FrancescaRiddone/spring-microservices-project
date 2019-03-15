@@ -9,11 +9,15 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class ReservationHandlerConfig {
 	
-	@Bean
+	@Bean(name="restTemplateExecution")
 	@LoadBalanced
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
 	   return builder.build();
 	}
 	
+	@Bean(name="restTemplateTest")
+	public RestTemplate restTemplate1(RestTemplateBuilder builder) {
+	   return builder.build();
+	}
 
 }

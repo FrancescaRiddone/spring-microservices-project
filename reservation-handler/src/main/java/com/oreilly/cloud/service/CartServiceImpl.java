@@ -44,7 +44,7 @@ public class CartServiceImpl implements CartService {
 	public void checkIsInUserCart(int userId, int reservationId, String elementType) throws ValidateException, ResourceNotFoundException {
 		checkIdsAndElementType(userId, reservationId, elementType);
 		
-		ReservationElement cartElement = cartRepository.findElementInCartByUserIdAndReservationIdAndTpe(userId, reservationId, elementType);
+		ReservationElement cartElement = cartRepository.findElementInCartByUserIdAndReservationIdAndType(userId, reservationId, elementType);
 		
 		if(cartElement == null) {
 			throw new ResourceNotFoundException();
@@ -75,7 +75,9 @@ public class CartServiceImpl implements CartService {
 			throw new ValidateException();
 		}
 		if(bankDetails.getAccountNumber() == null || bankDetails.getCardOwner() == null ||
-				bankDetails.getCardType() == null || bankDetails.getExpiryYear() < 2019 ||
+				bankDetails.getCardType() == null || bankDetails.getAccountNumber().equals("") ||
+				bankDetails.getCardOwner().equals("") || bankDetails.getCardType().equals("") || 
+				bankDetails.getExpiryYear() < 2019 ||
 				bankDetails.getExpiryMonth() < 1 || bankDetails.getExpiryMonth() > 12) {
 			throw new ValidateException();
 		}

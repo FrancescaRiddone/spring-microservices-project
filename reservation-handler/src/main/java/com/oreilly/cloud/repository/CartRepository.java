@@ -18,7 +18,7 @@ public interface CartRepository extends JpaRepository<ReservationElement, Intege
 			"e.userId = :userId and " +
 			"e.type = :type and " +
 			"e.confirmed = 0")
-	public ReservationElement findElementInCartByUserIdAndReservationIdAndTpe(@Param("userId") int userId, @Param("reservationId") int reservationId, @Param("type") String type);
+	public ReservationElement findElementInCartByUserIdAndReservationIdAndType(@Param("userId") int userId, @Param("reservationId") int reservationId, @Param("type") String type);
 	
 	@Query("SELECT e.reservationId FROM ReservationElement e " + 
 			"WHERE e.type = :type and " +

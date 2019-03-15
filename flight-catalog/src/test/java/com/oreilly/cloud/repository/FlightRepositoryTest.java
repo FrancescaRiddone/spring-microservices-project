@@ -27,6 +27,7 @@ public class FlightRepositoryTest {
 	@Autowired
     private FlightRepository flightRepository;
 	
+	
 	/*
 	 * TESTS on method findById(int id) of FightRepository
 	 */

@@ -33,7 +33,7 @@ public class RegistryServiceImpl implements RegistryService {
 	public void checkIsInUserRegistry(int userId, int reservationId, String elementType) throws ValidateException, ResourceNotFoundException {
 		checkIdsAndElementType(userId, reservationId, elementType);
 		
-		ReservationElement registryElement = registryRepository.findElementInRegistryByUserIdAndReservationIdAndTpe(userId, reservationId, elementType);
+		ReservationElement registryElement = registryRepository.findElementInRegistryByUserIdAndReservationIdAndType(userId, reservationId, elementType);
 		
 		if(registryElement == null) {
 			throw new ResourceNotFoundException();

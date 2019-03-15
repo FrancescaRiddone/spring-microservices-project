@@ -1,11 +1,13 @@
 package com.oreilly.cloud.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
 import com.oreilly.cloud.exception.MicroserviceContactException;
 import com.oreilly.cloud.exception.ResourceNotFoundException;
 import com.oreilly.cloud.exception.ResourceUnavailableException;
@@ -37,15 +37,136 @@ import com.oreilly.cloud.service.CartService;
 public class CartController {
 	
 	@Autowired
+	@Qualifier("restTemplateExecution")
 	private RestTemplate restTemplate;
 
 	@Autowired
 	private CartService cartService;
 	
 	
+	//--------------------------------------OK--------------------------------------------------------------------------------------------
+	
+	@GetMapping("/flights/{reservationId}")
+	public FlightReservationResource getCartFlight(@PathVariable int reservationId, @RequestParam("userId") int userId) {
+		String uri = "http://flight-catalog/flights/reservations/reservation/" + reservationId;
+		ResponseEntity<FlightReservationResource> response;
+		FlightReservationResource flightInCart;
+		
+		cartService.checkIsInUserCart(userId, reservationId, "flight");
+		
+		try {
+			response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<FlightReservationResource>() {});
+			flightInCart = response.getBody();
+		} catch(ValidateException ex) {
+			System.out.println("sono nel catch di VALIDATE EXCEPTION");
+			throw new ValidateException();
+		} catch(ResourceNotFoundException ex) {
+			System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
+			throw new ResourceNotFoundException();
+		} catch(Exception ex) {
+			System.out.println(ex.getMessage());
+			throw new MicroserviceContactException();
+		}
+		
+		return flightInCart;
+	}
+	
+	//--------------------------------------OK--------------------------------------------------------------------------------------------
+	
+	@GetMapping("/hotels/{reservationId}")
+	public HotelReservationResource getCartHotel(@PathVariable int reservationId, @RequestParam("userId") int userId) throws IOException {
+		String uri = "http://hotel-catalog/hotels/reservations/reservation/" + reservationId;
+		ResponseEntity<HotelReservationResource> response;
+		HotelReservationResource hotelInCart;
+		
+		cartService.checkIsInUserCart(userId, reservationId, "hotel");
+		
+		try {
+			response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<HotelReservationResource>() {});
+			hotelInCart = response.getBody();
+		} catch(ValidateException ex) {
+			System.out.println("sono nel catch di VALIDATE EXCEPTION");
+			throw new ValidateException();
+		} catch(ResourceNotFoundException ex) {
+			System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
+			throw new IOException();
+		} catch(Exception ex) {
+			System.out.println(ex.getMessage());
+			throw new MicroserviceContactException();
+		}
+		
+		return hotelInCart;
+	}
+	
+	//--------------------------------------OK--------------------------------------------------------------------------------------------
+	
+	@GetMapping("/flights")
+	public List<FlightReservationResource> getCartFlights(@RequestParam("userId") int userId) {
+		String uri = "http://flight-catalog/flights/reservations/";
+		ResponseEntity<List<FlightReservationResource>> response;
+		List<FlightReservationResource> flightInCart = new ArrayList<>();
+		
+		List<Integer> flightIds = new ArrayList<>();
+		flightIds = cartService.getUserElementsInCart(userId, "flight");
+		
+		if(!flightIds.isEmpty()) {
+			uri = getUriWithSetIds(uri, flightIds);
+			
+			try {
+				response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<List<FlightReservationResource>>() {});
+				flightInCart = response.getBody();
+			} catch(ValidateException ex) {
+				System.out.println("sono nel catch di VALIDATE EXCEPTION");
+				throw new ValidateException();
+			} catch(ResourceNotFoundException ex) {
+				System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
+				throw new ResourceNotFoundException();
+			} catch(Exception ex) {
+				System.out.println(ex.getMessage());
+				throw new MicroserviceContactException();
+			}
+		}
+		
+		return flightInCart;
+	}
+	
+	//--------------------------------------OK--------------------------------------------------------------------------------------------
+	
+	@GetMapping("/hotels")
+	public List<HotelReservationResource> getCartHotels(@RequestParam("userId") int userId) {
+		String uri = "http://hotel-catalog/hotels/reservations/";
+		ResponseEntity<List<HotelReservationResource>> response;
+		List<HotelReservationResource> hotelInCart = new ArrayList<>();
+		
+		List<Integer> hotelIds = new ArrayList<>();
+		hotelIds = cartService.getUserElementsInCart(userId, "hotel");
+		
+		if(!hotelIds.isEmpty()) {
+			uri = getUriWithSetIds(uri, hotelIds);
+			
+			try {
+				response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<List<HotelReservationResource>>() {});
+				hotelInCart = response.getBody();
+			} catch(ValidateException ex) {
+				System.out.println("sono nel catch di VALIDATE EXCEPTION");
+				throw new ValidateException();
+			} catch(ResourceNotFoundException ex) {
+				System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
+				throw new ResourceNotFoundException();
+			} catch(Exception ex) {
+				System.out.println(ex.getMessage());
+				throw new MicroserviceContactException();
+			}
+		}
+		
+		return hotelInCart;
+	}
+	
+	//--------------------------------------OK--------------------------------------------------------------------------------------------
+	
 	@PostMapping("/flights/newFlight")
 	public FlightReservationResource addFlightToCart(@RequestBody FlightReservationRequest reservationRequest, @RequestParam("userId") int userId) {
-		String uri = "http://FLIGHT-CATALOG/flights/reservations/new";
+		String uri = "http://flight-catalog/flights/reservations/new";
 		Map<String, List<String>> newParameterMap = new HashMap<>();
 		FlightReservationResource response;
 		
@@ -71,9 +192,11 @@ public class CartController {
 		return response;
 	}
 	
+	//--------------------------------------OK--------------------------------------------------------------------------------------------
+	
 	@PostMapping("/hotels/newHotel")
 	public HotelReservationResource addHotelToCart(@RequestBody HotelReservationRequest reservationRequest, @RequestParam("userId") int userId) {
-		String uri = "http://HOTEL-CATALOG/hotels/reservations/new";
+		String uri = "http://hotel-catalog/hotels/reservations/new";
 		HotelReservationResource response;
 		Map<String, List<String>> newParameterMap = new HashMap<>();
 		
@@ -98,113 +221,9 @@ public class CartController {
 		return response;
 	}
 	
-	@GetMapping("/flights/{reservationId}")
-	public FlightReservationResource getCartFlight(@PathVariable int reservationId, @RequestParam("userId") int userId) {
-		String uri = "http://FLIGHT-CATALOG/flights/reservations/reservation/" + reservationId;
-		ResponseEntity<FlightReservationResource> response;
-		FlightReservationResource flightInCart;
-		
-		cartService.checkIsInUserCart(userId, reservationId, "flight");
-		
-		try {
-			response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<FlightReservationResource>() {});
-			flightInCart = response.getBody();
-		} catch(ValidateException ex) {
-			System.out.println("sono nel catch di VALIDATE EXCEPTION");
-			throw new ValidateException();
-		} catch(ResourceNotFoundException ex) {
-			System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
-			throw new ResourceNotFoundException();
-		} catch(Exception ex) {
-			System.out.println(ex.getMessage());
-			throw new MicroserviceContactException();
-		}
-		
-		return flightInCart;
-	}
-	
-	@GetMapping("/hotels/{reservationId}")
-	public HotelReservationResource getCartHotel(@PathVariable int reservationId, @RequestParam("userId") int userId) {
-		String uri = "http://HOTEL-CATALOG/hotels/reservations/reservation/" + reservationId;
-		ResponseEntity<HotelReservationResource> response;
-		HotelReservationResource hotelInCart;
-		
-		cartService.checkIsInUserCart(userId, reservationId, "hotel");
-		
-		try {
-			response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<HotelReservationResource>() {});
-			hotelInCart = response.getBody();
-		} catch(ValidateException ex) {
-			System.out.println("sono nel catch di VALIDATE EXCEPTION");
-			throw new ValidateException();
-		} catch(ResourceNotFoundException ex) {
-			System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
-			throw new ResourceNotFoundException();
-		} catch(Exception ex) {
-			System.out.println(ex.getMessage());
-			throw new MicroserviceContactException();
-		}
-		
-		return hotelInCart;
-	}
-	
-	@GetMapping("/flights")
-	public List<FlightReservationResource> getCartFlights(@RequestParam("userId") int userId) {
-		String uri = "http://FLIGHT-CATALOG/flights/reservations/";
-		ResponseEntity<List<FlightReservationResource>> response;
-		List<FlightReservationResource> flightInCart;
-		
-		List<Integer> flightIds = new ArrayList<>();
-		flightIds = cartService.getUserElementsInCart(userId, "flight");
-		uri = getUriWithSetIds(uri, flightIds);
-		
-		try {
-			response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<List<FlightReservationResource>>() {});
-			flightInCart = response.getBody();
-		} catch(ValidateException ex) {
-			System.out.println("sono nel catch di VALIDATE EXCEPTION");
-			throw new ValidateException();
-		} catch(ResourceNotFoundException ex) {
-			System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
-			throw new ResourceNotFoundException();
-		} catch(Exception ex) {
-			System.out.println(ex.getMessage());
-			throw new MicroserviceContactException();
-		}
-		
-		return flightInCart;
-	}
-	
-	@GetMapping("/hotels")
-	public List<HotelReservationResource> getCartHotels(@RequestParam("userId") int userId) {
-		String uri = "http://HOTEL-CATALOG/hotels/reservations/";
-		ResponseEntity<List<HotelReservationResource>> response;
-		List<HotelReservationResource> hotelInCart;
-		
-		List<Integer> hotelIds = new ArrayList<>();
-		hotelIds = cartService.getUserElementsInCart(userId, "hotel");
-		uri = getUriWithSetIds(uri, hotelIds);
-		
-		try {
-			response = restTemplate.exchange(uri,HttpMethod.GET, null, new ParameterizedTypeReference<List<HotelReservationResource>>() {});
-			hotelInCart = response.getBody();
-		} catch(ValidateException ex) {
-			System.out.println("sono nel catch di VALIDATE EXCEPTION");
-			throw new ValidateException();
-		} catch(ResourceNotFoundException ex) {
-			System.out.println("sono nel catch di RESOURCE NOT FOUND EXCEPTION");
-			throw new ResourceNotFoundException();
-		} catch(Exception ex) {
-			System.out.println(ex.getMessage());
-			throw new MicroserviceContactException();
-		}
-		
-		return hotelInCart;
-	}
-	
 	@DeleteMapping("/flights/{reservationId}")
 	public String deleteFlightFromCart(@PathVariable int reservationId, @RequestParam("userId") int userId) {
-		String uri = "http://FLIGHT-CATALOG/flights/reservations/reservation/" + reservationId;
+		String uri = "http://flight-catalog/flights/reservations/reservation/" + reservationId;
 		
 		try {
 			restTemplate.delete(uri);
@@ -226,7 +245,7 @@ public class CartController {
 	
 	@DeleteMapping("/hotels/{reservationId}")
 	public String deleteHotelFromCart(@PathVariable int reservationId, @RequestParam("userId") int userId) {
-		String uri = "http://HOTEL-CATALOG/hotels/reservations/reservation/" + reservationId;
+		String uri = "http://hotel-catalog/hotels/reservations/reservation/" + reservationId;
 		
 		try {
 			restTemplate.delete(uri);
@@ -248,7 +267,7 @@ public class CartController {
 	
 	@PostMapping("/flights/confirmedFlight/{reservationId}")
 	public String buyFlightInCart(@PathVariable int reservationId, @RequestBody BankDetails bankDetails, @RequestParam("userId") int userId) {
-		String uri = "http://FLIGHT-CATALOG/flights/reservations/confirmedReservation/" + reservationId;
+		String uri = "http://flight-catalog/flights/reservations/confirmedReservation/" + reservationId;
 		Map<String, List<String>> newParameterMap = new HashMap<>();
 		
 		cartService.checkIsInUserCart(userId, reservationId, "flight");
@@ -278,7 +297,7 @@ public class CartController {
 	
 	@PostMapping("/hotels/confirmedHotel/{reservationId}")
 	public String buyHoteltInCart(@PathVariable int reservationId, @RequestBody BankDetails bankDetails, @RequestParam("userId") int userId) {
-		String uri = "http://HOTEL-CATALOG/hotels/reservations/confirmedReservation/" + reservationId;
+		String uri = "http://hotel-catalog/hotels/reservations/confirmedReservation/" + reservationId;
 		Map<String, List<String>> newParameterMap = new HashMap<>();
 		
 		cartService.checkIsInUserCart(userId, reservationId, "hotel");

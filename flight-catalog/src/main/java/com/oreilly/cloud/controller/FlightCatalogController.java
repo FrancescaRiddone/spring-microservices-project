@@ -91,14 +91,20 @@ public class FlightCatalogController {
 		
 		Reservation theReservation = reservationService.getReservation(reservationId);
 		
+		System.out.println("trovata reservation con id " + reservationId +  ": " + theReservation);
+		
 		flightService.checkFlightAvailability(theReservation.getFlight().getFlightId(), 
 					theReservation.getSeatsType(), theReservation.getSeatsNumber());
 		
 		theReservation.setConfirmed(true);
 		reservationService.saveReservation(theReservation);
 		
+		System.out.println("reservation confermata");
+		
 		flightService.updateAvailableSeats(theReservation.getFlight().getFlightId(), theReservation.getSeatsType(), 
 					theReservation.getSeatsNumber());
+		
+		System.out.println("aggiornati posti disponibili");
 		
 		return "Flight reservation successfully confirmed.";
 	}

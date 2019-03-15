@@ -2,6 +2,7 @@ package com.oreilly.cloud.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
@@ -298,23 +299,23 @@ public class HotelCatalogControllerTest {
     }
     
     /*
-	 * TESTS on URI /hotels/reservations/confirm/{reservationId}
+	 * TESTS on URI /hotels/reservations/confirmedReservation/{reservationId}
 	 */
 	
     @Test
     public void notConfirmedReservationWithNotPresentId() throws Exception {
-    	String URI = "/hotels/reservations/confirm/1000000";
+    	String URI = "/hotels/reservations/confirmedReservation/1000000";
 
-        mockMvc.perform(get(URI)
+        mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(404));
     }
     
     @Test
     public void notConfirmedReservationWithInvalidId() throws Exception {
-    	String URI = "/hotels/reservations/confirm/0";
+    	String URI = "/hotels/reservations/confirmedReservation/0";
 
-        mockMvc.perform(get(URI)
+        mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));
     }
