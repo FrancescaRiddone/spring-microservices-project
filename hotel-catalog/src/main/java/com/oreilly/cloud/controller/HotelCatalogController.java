@@ -161,21 +161,18 @@ public class HotelCatalogController {
 			throws ResourceNotFoundException, ValidateException, ResourceUnavailableException {
 		
 		Reservation theReservation = reservationService.getReservation(reservationId);
-		
+
 		reservationService.checkRoomAvailability(theReservation.getRoom().getId(), theReservation.getHostsNumber(), 
 				convertInCheckTime(theReservation.getCheckIn()), convertInCheckTime(theReservation.getCheckOut()));
 		
-		theReservation.setConfirmed(true);
-		reservationService.saveReservation(theReservation);
+		reservationService.confirmReservation(reservationId);
 		
 		return "Hotel reservation successfully confirmed.";
 	}
 	
 	@DeleteMapping("/reservations/reservation/{reservationId}")
-	public String deleteReservation(@PathVariable int reservationId) throws ValidateException, ResourceNotFoundException {
+	public void deleteReservation(@PathVariable int reservationId) throws ValidateException, ResourceNotFoundException {
 		reservationService.deleteReservation(reservationId);
-		
-		return "Reservation with id " + reservationId + " deleted with success";
 	}
 	
 

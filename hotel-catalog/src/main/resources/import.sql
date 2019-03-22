@@ -55,7 +55,8 @@ INSERT INTO room (room_id, hotel_id, hosts_number, standard_daily_price, with_br
 INSERT INTO reservation (reservation_id, room_id, check_in, check_out, user_email, price, hosts_number, reservation_type, confirmed) values (1, 1, '2019-05-13', '2019-05-15', 'mariorossi@yahoo.it', 320.00, 2, 'breakfast', 1)
 INSERT INTO reservation (reservation_id, room_id, check_in, check_out, user_email, price, hosts_number, reservation_type, confirmed) values (2, 4, '2019-05-13', '2019-05-17', 'elisabianchi@gmail.com', 753.00, 3, 'standard', 1)
 INSERT INTO reservation (reservation_id, room_id, check_in, check_out, user_email, price, hosts_number, reservation_type, confirmed) values (3, 13, '2019-08-10', '2019-08-15', 'mariorossi@yahoo.it', 2520.00, 2, 'standard', 1)
-INSERT INTO reservation (reservation_id, room_id, check_in, check_out, user_email, price, hosts_number, reservation_type, confirmed) values (4, 14, '2019-08-02', '2019-08-10', 'mariorossi@yahoo.it', 3300.00, 2, 'full board', 0)
+INSERT INTO reservation (reservation_id, room_id, check_in, check_out, user_email, price, hosts_number, reservation_type, confirmed) values (4, 14, '2019-08-02', '2019-08-10', 'mariorossi@yahoo.it', 4400.00, 2, 'full board', 0)
+INSERT INTO reservation (reservation_id, room_id, check_in, check_out, user_email, price, hosts_number, reservation_type, confirmed) values (5, 14, '2019-07-27', '2019-07-29', 'mariorossi@yahoo.it', 1100.00, 2, 'full board', 0)
 
 
 

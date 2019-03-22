@@ -1,6 +1,6 @@
 package com.oreilly.cloud.controller;
 
-public class JsonResponses {
+public class JsonConstants {
 	
 	public static final String flightReservationWithId3 = 	"{'reservationId': 3,'userEmail': 'elisabianchi@gmail.com', " +
 															"'flight': {'flightId': 4, 'company': 'easyJet', " +
@@ -18,8 +18,7 @@ public class JsonResponses {
 															"'seatsType': 'economy', " +
 															"'seatsNumber': 1, " +
 															"'seats': ['1E']}";
-
-
+	
 	public static final String hotelReservationWithId4 = 	"{'reservationId': 4," + 
 															"'userEmail': 'mariorossi@yahoo.it', " + 
 															"'room': {" + 
@@ -60,17 +59,23 @@ public class JsonResponses {
 	
 	public static final String hotelReservationsInCartUserId1 = "[" + hotelReservationWithId4 + "]";
 	
-	public static final String newValidFlightReservationRequest = 	"{'flightId': 5," + 
-																	"'userEmail': 'mariorossi@yahoo.it'," + 
-																	"'seatClass': 'economy'," + 
-																	"'seatNumber': 2" + 
+	public static final String newValidFlightReservationRequest = 	"{\"flightId\":5," + 
+																	"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																	"\"seatClass\":\"economy\"," + 
+																	"\"seatNumber\":2" + 
 																	"}";
 	
-	public static final String newInvalidFlightReservationRequest = "{'flightId': 0," + 
-																	"'userEmail': 'mariorossi@yahoo.it'," + 
-																	"'seatClass': ''," + 
-																	"'seatNumber': 2" + 
+	public static final String newInvalidFlightReservationRequest = "{\"flightId\":0," + 
+																	"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																	"\"seatClass\":\"\"," + 
+																	"\"seatNumber\":2" + 
 																	"}";
+	
+	public static final String newFlightReservationRequestForNotFoundFlight = 	"{\"flightId\":100000," + 
+																				"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																				"\"seatClass\":\"business\"," + 
+																				"\"seatNumber\":2" + 
+																				"}";
 	
 	public static final String newFlightReservationInCart = 	"{'reservationId': 5," + 
 																"'userEmail': 'elisabianchi@yahoo.it'," + 
@@ -119,6 +124,54 @@ public class JsonResponses {
 																"]" + 
 																"}";
 	
+	public static final String newValidHotelReservationRequest = 	"{\"roomId\":5," + 
+																	"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																	"\"hostsNumber\":2," + 
+																	"\"reservationType\":\"with breakfast\"," + 
+																	"\"checkIn\":{" + 
+																	"\"day\":27," + 
+																	"\"month\":3," + 
+																	"\"year\":2019" + 
+																	"}," + 
+																	"\"checkOut\":{" + 
+																	"\"day\":29," + 
+																	"\"month\":3," + 
+																	"\"year\":2019" + 
+																	"}" + 
+																	"}";
+	
+	public static final String newInvalidHotelReservationRequest = 	"{\"roomId\":5," + 
+																	"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																	"\"hostsNumber\":4," + 
+																	"\"reservationType\":\"with breakfast\"," + 
+																	"\"checkIn\":{" + 
+																	"\"day\":27," + 
+																	"\"month\":3," + 
+																	"\"year\":2019" + 
+																	"}," + 
+																	"\"checkOut\":{" + 
+																	"\"day\":29," + 
+																	"\"month\":3," + 
+																	"\"year\":2019" + 
+																	"}" + 
+																	"}";
+
+	public static final String newHotelReservationRequestForNotFoundRoom = 	"{\"roomId\":10000," + 
+																				"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																				"\"hostsNumber\":2," + 
+																				"\"reservationType\":\"with breakfast\"," + 
+																				"\"checkIn\":{" + 
+																				"\"day\":27," + 
+																				"\"month\":3," + 
+																				"\"year\":2019" + 
+																				"}," + 
+																				"\"checkOut\":{" + 
+																				"\"day\":29," + 
+																				"\"month\":3," + 
+																				"\"year\":2019" + 
+																				"}" + 
+																				"}";
+	
 	public static final String newHotelReservationInCart = 	"{'reservationId': 5," + 
 															"'userEmail': 'mariorossi@yahoo.it'," + 
 															"'room': {" + 
@@ -157,6 +210,72 @@ public class JsonResponses {
 																"'year': 2019" + 
 															"}" + 
 															"}";
+	
+	public static final String validBankDetails = 	"{" + 
+													"\"cardType\": \"visa\"," + 
+													"\"accountNumber\": \"4625290368718596\", " + 
+													"\"cardOwner\": \"Giovanni Neri\", " + 
+													"\"expiryMonth\": 5, " + 
+													"\"expiryYear\": 2021, " + 
+													"\"securityCode\": 574" + 
+													"}";
+											
+	public static final String flightReservationWithId2 =       "{'reservationId': 2,'userEmail': 'elisabianchi@gmail.com', " +
+																"'flight': {'flightId': 1, 'company': 'Ryanair', " +
+																	"'source': {'airportName': 'Malpensa Airport','airportCode': 'MPX','city': 'Milan','country': 'Italy'}, " +
+																	"'destination': {'airportName': 'London Luton Airport','airportCode': 'LTN','city': 'London','country': 'United Kingdom'}, " +
+																	"'departure': {'minute': 10,'hour': 7,'day': 13,'month': 5,'year': 2019}, " +
+																	"'arrival': {'minute': 20,'hour': 8,'day': 13,'month': 5,'year': 2019}, " +
+																	"'availableEconomySeats': 97, "  +
+																	"'availableBusinessSeats': 58, " +
+																	"'availableFirstSeats': 35, " +
+																	"'economySeatPrice': 17.99, " +
+																	"'businessSeatPrice': 52.88, " +
+																	"'firstSeatPrice': 72.96}, " +
+																"'price': 53.97," +
+																"'seatsType': 'economy', " +
+																"'seatsNumber': 3, " +
+																"'seats': ['5D', '6D', '7D']}";
+	
+	public static final String listWithFlightReservationWithId2 = "[" + flightReservationWithId2 + "]";
+													
+	public static final String hotelReservationWithId2 =        "{'reservationId': 2," + 
+																"'userEmail': 'elisabianchi@gmail.com', " + 
+																"'room': {" + 
+																	"'roomId': 4," + 
+																	"'hotel': 'Cheshire Hotel'," + 
+																	"'hostsNumber': 3," + 
+																	"'standardDailyPrice': 251," + 
+																	"'withBreakfastDailyPrice': 264," + 
+																	"'halfBoardDailyPrice': 0," + 
+																	"'fullBoardDailyPrice': 0," + 
+																	"'singleBeds': 1," + 
+																	"'doubleBeds': 1," + 
+																	"'airConditioner': true," + 
+																	"'heat': true," + 
+																	"'tv': true," + 
+																	"'telephone': true," + 
+																	"'bathtub': true," + 
+																	"'swimmingPool': false," + 
+																	"'soundproofing': true," + 
+																	"'withView': true," + 
+																	"'bathroom': false," + 
+																	"'balcony': true," + 
+																	"'safe': true}," + 
+																"'price': 753," + 
+																"'reservationType': 'standard'," + 
+																"'hostsNumber': 3," + 
+																"'checkIn': {" + 
+																	"'day': 13," + 
+																	"'month': 5," + 
+																	"'year': 2019}," + 
+																"'checkOut': {" + 
+																	"'day': 17," + 
+																	"'month': 5," + 
+																	"'year': 2019}" + 
+																"}";
+														 
+	public static final String listWithHotelReservationWithId2 = "[" + hotelReservationWithId2 + "]";
 	
 
 }

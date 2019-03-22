@@ -40,5 +40,6 @@ public interface CartRepository extends JpaRepository<ReservationElement, Intege
 			"type = :type and " + 
 			"confirmed = 0")
 	public void updateElementConfirmation(@Param("userId") int userId, @Param("reservationId") int reservationId, @Param("type") String type);
+	
 
 }

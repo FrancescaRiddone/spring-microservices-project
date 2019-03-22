@@ -1,0 +1,8 @@
+language: java
+
+script:
+	- mvn -q -B -f flight-catalog/pom.xml clean verify
+	- mvn -q -B -f hotel-catalog/pom.xml clean verify
+	- mvn -q -B -f reservation-handler/pom.xml clean verify
+	- mvn -q -B -f eureka-server/pom.xml clean verify
+	- mvn -q -B -f zuul-proxy/pom.xml clean verify

@@ -74,8 +74,6 @@ public class FlightCatalogController {
 	public FlightReservationResource createReservation(@RequestBody FlightReservationRequest flightReservationRequest) 
 			throws ResourceNotFoundException, ValidateException, ResourceUnavailableException {
 		
-		System.out.println("sono in metodo per nuova reservation");
-		
 		Flight availableFlight = flightService.checkFlightAvailability(flightReservationRequest.getFlightId(), 
 				flightReservationRequest.getSeatClass(), flightReservationRequest.getSeatNumber());
 		
@@ -91,20 +89,14 @@ public class FlightCatalogController {
 		
 		Reservation theReservation = reservationService.getReservation(reservationId);
 		
-		System.out.println("trovata reservation con id " + reservationId +  ": " + theReservation);
-		
 		flightService.checkFlightAvailability(theReservation.getFlight().getFlightId(), 
 					theReservation.getSeatsType(), theReservation.getSeatsNumber());
 		
 		theReservation.setConfirmed(true);
-		reservationService.saveReservation(theReservation);
-		
-		System.out.println("reservation confermata");
+		reservationService.confirmReservation(theReservation.getId());
 		
 		flightService.updateAvailableSeats(theReservation.getFlight().getFlightId(), theReservation.getSeatsType(), 
 					theReservation.getSeatsNumber());
-		
-		System.out.println("aggiornati posti disponibili");
 		
 		return "Flight reservation successfully confirmed.";
 	}

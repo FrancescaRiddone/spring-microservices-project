@@ -84,6 +84,16 @@ public class ReservationServiceImpl implements ReservationService {
 		reservationRepository.deleteById(reservationId);
 	}
 	
+	@Override
+	@Transactional
+	public void confirmReservation(int reservationId) throws ValidateException {
+		if(reservationId <= 0) {
+			throw new ValidateException();
+		}
+		
+		reservationRepository.updateReservationConfirmation(reservationId);
+	}
+	
 	
 	private void checkParamForSaveReservation(Reservation theReservation) throws ValidateException {
 		if(theReservation == null) {

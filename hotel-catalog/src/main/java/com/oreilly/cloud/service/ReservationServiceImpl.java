@@ -47,6 +47,7 @@ public class ReservationServiceImpl implements ReservationService {
 			throw new ValidateException();
 		}
 		Optional<Reservation> theReservation = reservationRepository.findById(reservationId);
+		
 		if(!theReservation.isPresent()) {
 			throw new ResourceNotFoundException();
 		}
@@ -95,6 +96,16 @@ public class ReservationServiceImpl implements ReservationService {
 		getReservation(reservationId);
 		
 		reservationRepository.deleteById(reservationId);
+	}
+	
+	@Override
+	@Transactional
+	public void confirmReservation(int reservationId) throws ValidateException {
+		if(reservationId <= 0) {
+			throw new ValidateException();
+		}
+		
+		reservationRepository.updateReservationConfirmation(reservationId);
 	}
 	
 

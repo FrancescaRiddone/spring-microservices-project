@@ -6,3 +6,4 @@ INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type
 INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (6, 2, 2, 'hotel', 1)
 INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (7, 1, 3, 'hotel', 1)
 INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (8, 1, 4, 'hotel', 0)
+INSERT INTO user_reservation (user_reservation_id, user_id, reservation_id, type, confirmed) values (9, 1, 5, 'hotel', 0)

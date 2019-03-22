@@ -1,14 +1,23 @@
 package com.oreilly.cloud.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static com.oreilly.cloud.controller.JsonResponses.flightReservationWithId3;
-import static com.oreilly.cloud.controller.JsonResponses.hotelReservationWithId4;
-import static com.oreilly.cloud.controller.JsonResponses.flightReservationsInCartUserId2;
-import static com.oreilly.cloud.controller.JsonResponses.hotelReservationsInCartUserId1;
-import static com.oreilly.cloud.controller.JsonResponses.newFlightReservationInCart;
-import static com.oreilly.cloud.controller.JsonResponses.newHotelReservationInCart;
+
+import static com.oreilly.cloud.controller.JsonConstants.flightReservationWithId3;
+import static com.oreilly.cloud.controller.JsonConstants.hotelReservationWithId4;
+import static com.oreilly.cloud.controller.JsonConstants.flightReservationsInCartUserId2;
+import static com.oreilly.cloud.controller.JsonConstants.hotelReservationsInCartUserId1;
+import static com.oreilly.cloud.controller.JsonConstants.newFlightReservationInCart;
+import static com.oreilly.cloud.controller.JsonConstants.newHotelReservationInCart;
+import static com.oreilly.cloud.controller.JsonConstants.newValidFlightReservationRequest;
+import static com.oreilly.cloud.controller.JsonConstants.newInvalidFlightReservationRequest;
+import static com.oreilly.cloud.controller.JsonConstants.newFlightReservationRequestForNotFoundFlight;
+import static com.oreilly.cloud.controller.JsonConstants.newValidHotelReservationRequest;
+import static com.oreilly.cloud.controller.JsonConstants.newInvalidHotelReservationRequest;
+import static com.oreilly.cloud.controller.JsonConstants.newHotelReservationRequestForNotFoundRoom;
+import static com.oreilly.cloud.controller.JsonConstants.validBankDetails;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -20,19 +29,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.oreilly.cloud.object.CheckTime;
-import com.oreilly.cloud.object.FlightReservationRequest;
-import com.oreilly.cloud.object.HotelReservationRequest;
 
 import io.specto.hoverfly.junit.core.SimulationSource;
 import io.specto.hoverfly.junit.dsl.HoverflyDsl;
@@ -51,6 +55,7 @@ import org.junit.runners.MethodSorters;
 	"hotel-catalog.ribbon.listOfServers=hotel-catalog"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @AutoConfigureMockMvc
+@ActiveProfiles("local")
 public class CartControllerTest {
 	
 	@Autowired
@@ -67,37 +72,60 @@ public class CartControllerTest {
     }
     
 	@Autowired
-	@Qualifier("restTemplateTest")
     RestTemplate restTemplate;
 
 	
-	
 	@ClassRule
 	public static HoverflyRule rule = HoverflyRule.inSimulationMode(SimulationSource.dsl(
-			
-			  HoverflyDsl.service("http://flight-catalog:80")
-			  .get("/flights/reservations/reservation/3")
-			  .willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(flightReservationWithId3)))
-			  .get("/flights/reservations/3")
-			  .willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(flightReservationsInCartUserId2)))
-			  .post("/flights/reservations/new").anyBody()
-			  .willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(newFlightReservationInCart)))
-			  
-			  ,
-			  
-			  HoverflyDsl.service("http://hotel-catalog:80")
-			  .get("/hotels/reservations/reservation/4")
-			  .willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(hotelReservationWithId4)))
-			  .get("/hotels/reservations/4")
-			  .willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(hotelReservationsInCartUserId1)))
-			  .post("/hotels/reservations/new").anyBody()
-			  .willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(newHotelReservationInCart)))
-			  
-			));
-	
+		HoverflyDsl.service("http://flight-catalog:80")
+			.get("/flights/reservations/reservation/3")
+			.willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(flightReservationWithId3)))
+			.get("/flights/reservations/3")
+			.willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(flightReservationsInCartUserId2)))
+			.post("/flights/reservations/new").body(newValidFlightReservationRequest)
+			.willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(newFlightReservationInCart)))
+			.post("/flights/reservations/new").body(newInvalidFlightReservationRequest)
+			.willReturn(ResponseCreators.success())
+			.post("/flights/reservations/new").body(newFlightReservationRequestForNotFoundFlight)
+			.willReturn(ResponseCreators.serverError())
+			.delete("/flights/reservations/reservation/5")
+			.willReturn(ResponseCreators.success())
+			.delete("/flights/reservations/reservation/-2")
+			.willReturn(ResponseCreators.badRequest())
+			.delete("/flights/reservations/reservation/10000")
+			.willReturn(ResponseCreators.serverError())
+			.put("/flights/reservations/confirmedReservation/4")
+			.willReturn(ResponseCreators.success())
+			.put("/flights/reservations/confirmedReservation/-2")
+			.willReturn(ResponseCreators.badRequest())
+			.put("/flights/reservations/confirmedReservation/10000")
+			.willReturn(ResponseCreators.serverError()),
+		HoverflyDsl.service("http://hotel-catalog:80")
+			.get("/hotels/reservations/reservation/4")
+			.willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(hotelReservationWithId4)))
+			.get("/hotels/reservations/4")
+			.willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(hotelReservationsInCartUserId1)))
+			.post("/hotels/reservations/new").body(newValidHotelReservationRequest)
+			.willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(newHotelReservationInCart)))
+			.post("/hotels/reservations/new").body(newInvalidHotelReservationRequest)
+			.willReturn(ResponseCreators.success())
+			.post("/hotels/reservations/new").body(newHotelReservationRequestForNotFoundRoom)
+			.willReturn(ResponseCreators.serverError())
+			.delete("/hotels/reservations/reservation/5")
+			.willReturn(ResponseCreators.success())
+			.delete("/hotels/reservations/reservation/-2")
+			.willReturn(ResponseCreators.badRequest())
+			.delete("/hotels/reservations/reservation/10000")
+			.willReturn(ResponseCreators.serverError())
+			.put("/hotels/reservations/confirmedReservation/5")
+			.willReturn(ResponseCreators.success())
+			.put("/hotels/reservations/confirmedReservation/-2")
+			.willReturn(ResponseCreators.badRequest())
+			.put("/hotels/reservations/confirmedReservation/10000")
+			.willReturn(ResponseCreators.serverError())));
 	
 	/*
-	 * TESTS on URI /cart/flights/{reservationId}
+	 * TESTS on URI GET /cart/flights/{reservationId}
 	 */
 	
 	@Test
@@ -121,7 +149,7 @@ public class CartControllerTest {
 	}
 
 	/*
-	 * TESTS on URI /cart/hotels/{reservationId}
+	 * TESTS on URI GET /cart/hotels/{reservationId}
 	 */
 	
 	@Test
@@ -146,7 +174,7 @@ public class CartControllerTest {
 	}
 	
 	/*
-	 * TESTS on URI /cart/flights
+	 * TESTS on URI GET /cart/flights
 	 */
 	
 	@Test
@@ -170,7 +198,7 @@ public class CartControllerTest {
 	}
 	
 	/*
-	 * TESTS on URI /cart/hotels
+	 * TESTS on URI GET /cart/hotels
 	 */
 	
 	@Test
@@ -195,14 +223,13 @@ public class CartControllerTest {
 	}
 	
 	/*
-	 * TESTS on URI /cart/flights/newFlight
+	 * TESTS on URI POST /cart/flights/newFlight
 	 */
 	
 	@Test
 	public void createNewFlightReservationWithValidFlightReservationRequest() throws Exception {
-		String URI = "/cart/flights/newFlight?userId=1";
-		FlightReservationRequest reservationRequest = createFlightReservationRequest("valid");
-    	String requestJson = convertFlightReservationRequestInJson(reservationRequest);
+		String URI = "/cart/flights/newFlight?userId=2";
+    	String requestJson = newValidFlightReservationRequest;
 		
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
 	    	.andExpect(MockMvcResultMatchers.jsonPath("$.flight.flightId").value(5))
@@ -212,15 +239,32 @@ public class CartControllerTest {
     		.andExpect(status().isOk());	
 	}
 	
+	@Test
+	public void newFlightReservationWithInvalidFlightReservationRequest() throws Exception {
+		String URI = "/cart/flights/newFlight?userId=2";
+    	String requestJson = newInvalidFlightReservationRequest;
+		
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+	    	.andExpect(status().is(400));	
+	}
+	
+	@Test
+	public void newFlightReservationWithFlightReservationRequestWithNotFoundFlight() throws Exception {
+		String URI = "/cart/flights/newFlight?userId=2";
+    	String requestJson = newFlightReservationRequestForNotFoundFlight;
+		
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+	    	.andExpect(status().is(404));	
+	}
+	
 	/*
-	 * TESTS on URI /cart/hotels/newHotel
+	 * TESTS on URI POST /cart/hotels/newHotel
 	 */
 	
 	@Test
     public void createNewHotelReservationWithValidHotelReservationRequest() throws Exception {
     	String URI = "/cart/hotels/newHotel?userId=2";
-    	HotelReservationRequest reservationRequest = createHotelReservationRequest("valid");
-    	String requestJson = convertHotelReservationRequestInJson(reservationRequest);
+    	String requestJson = newValidHotelReservationRequest;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
     			.andExpect(MockMvcResultMatchers.jsonPath("$.room.roomId").value(5))
@@ -230,109 +274,142 @@ public class CartControllerTest {
     			.andExpect(status().isOk());	
     }
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private FlightReservationRequest createFlightReservationRequest(String typeOfRequest) {
-    	FlightReservationRequest reservationRequest = new FlightReservationRequest();
-    	if(typeOfRequest != null) {
-	    	if(typeOfRequest.equals("valid")) {
-	    		reservationRequest.setFlightId(5);
-	        	reservationRequest.setUserEmail("mariorossi@yahoo.it");
-	        	reservationRequest.setSeatClass("economy");
-	        	reservationRequest.setSeatNumber(2);
-	    	} else if(typeOfRequest.equals("invalid")){
-	    		reservationRequest.setFlightId(0);
-	    		reservationRequest.setUserEmail("mariorossi@yahoo.it");
-	        	reservationRequest.setSeatClass("");
-	        	reservationRequest.setSeatNumber(2);
-	    	} else if(typeOfRequest.equals("notFoundFlight")){
-	    		reservationRequest.setFlightId(100000);
-	    		reservationRequest.setUserEmail("mariorossi@yahoo.it");
-	        	reservationRequest.setSeatClass("business");
-	        	reservationRequest.setSeatNumber(2);
-	    	}
-    	}
+	@Test
+    public void newHotelReservationWithInvalidHotelReservationRequest() throws Exception {
+    	String URI = "/cart/hotels/newHotel?userId=2";
+    	String requestJson = newInvalidHotelReservationRequest;
     	
-        return reservationRequest;
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+    			.andExpect(status().is(400));	
     }
 	
-	private String convertFlightReservationRequestInJson(FlightReservationRequest reservationRequest) {
-    	ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = "";
-        
-        try {
-			requestJson = ow.writeValueAsString(reservationRequest);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		} 
-        
-        return requestJson;
-    }
-	
-	private HotelReservationRequest createHotelReservationRequest(String typeOfRequest) {
-    	HotelReservationRequest reservationRequest = new HotelReservationRequest();
-    	if(typeOfRequest != null) {
-	    	if(typeOfRequest.equals("valid")) {
-	    		reservationRequest.setRoomId(5);
-	    		reservationRequest.setUserEmail("elisabianchi@yahoo.it");
-	    		reservationRequest.setHostsNumber(2);
-	    		reservationRequest.setReservationType("with breakfast");
-	    		CheckTime checkIn = new CheckTime(27, 3, 2019);
-	    		CheckTime checkOut = new CheckTime(29, 3, 2019);
-	    		reservationRequest.setCheckIn(checkIn);
-	    		reservationRequest.setCheckOut(checkOut);
-	    	} else if(typeOfRequest.equals("invalid")){
-	    		reservationRequest.setRoomId(5);
-	    		reservationRequest.setUserEmail("elisabianchi@yahoo.it");
-	    		reservationRequest.setHostsNumber(4);
-	    		reservationRequest.setReservationType("with breakfast");
-	    		CheckTime checkIn = new CheckTime(27, 3, 2019);
-	    		CheckTime checkOut = new CheckTime(29, 3, 2019);
-	    		reservationRequest.setCheckIn(checkIn);
-	    		reservationRequest.setCheckOut(checkOut);
-	    	} else if(typeOfRequest.equals("notFound")){
-	    		reservationRequest.setRoomId(10000);
-	    		reservationRequest.setUserEmail("elisabianchi@yahoo.it");
-	    		reservationRequest.setHostsNumber(2);
-	    		reservationRequest.setReservationType("with breakfast");
-	    		CheckTime checkIn = new CheckTime(27, 3, 2019);
-	    		CheckTime checkOut = new CheckTime(29, 3, 2019);
-	    		reservationRequest.setCheckIn(checkIn);
-	    		reservationRequest.setCheckOut(checkOut);
-	    	}
-    	}
+	@Test
+    public void newHotelReservationWithHotelReservationRequestWithNotFoundRoom() throws Exception {
+    	String URI = "/cart/hotels/newHotel?userId=2";
+    	String requestJson = newHotelReservationRequestForNotFoundRoom;
     	
-        return reservationRequest;
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+    			.andExpect(status().is(404));	
     }
-    
-    private String convertHotelReservationRequestInJson(HotelReservationRequest reservationRequest) {
-    	ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        String requestJson = "";
-        
-        try {
-			requestJson = ow.writeValueAsString(reservationRequest);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		} 
-        
-        return requestJson;
+	
+	/*
+	 * TESTS on URI DELETE /cart/flights/{reservationId}
+	 */
+	
+	@Test
+    public void deletePresentFlightReservation() throws Exception {
+    	String URI = "/cart/flights/5?userId=1";
+    	
+    	mockMvc.perform(delete(URI))
+    			.andExpect(status().isOk());	
+    }
+	
+	@Test
+    public void deleteInvalidFlightReservation() throws Exception {
+    	String URI = "/cart/flights/-2?userId=1";
+    	
+    	mockMvc.perform(delete(URI))
+    			.andExpect(status().is(404));	
+    }
+	
+	@Test
+    public void deleteNotPresentFlightReservation() throws Exception {
+    	String URI = "/cart/flights/10000?userId=1";
+    	
+    	mockMvc.perform(delete(URI))
+    			.andExpect(status().is(404));	
+    }
+	
+	/*
+	 * TESTS on URI DELETE /cart/hotels/{reservationId}
+	 */
+	
+	@Test
+    public void deletePresentHotelReservation() throws Exception {
+    	String URI = "/cart/hotels/5?userId=2";
+    	
+    	mockMvc.perform(delete(URI))
+    			.andExpect(status().isOk());	
+    }
+	
+	@Test
+    public void deleteInvalidHotelReservation() throws Exception {
+    	String URI = "/cart/hotels/-2?userId=2";
+    	
+    	mockMvc.perform(delete(URI))
+    			.andExpect(status().is(404));	
+    }
+	
+	@Test
+    public void deleteNotPresentHotelReservation() throws Exception {
+    	String URI = "/cart/hotels/10000?userId=2";
+    	
+    	mockMvc.perform(delete(URI))
+    			.andExpect(status().is(404));	
+    }
+	
+	/*
+	 * TESTS on URI POST /cart/flights/confirmedFlight/{reservationId}
+	 */
+	
+	@Test
+    public void confirmPresentFlightReservation() throws Exception {
+    	String URI = "/cart/flights/confirmedFlight/4?userId=1";
+    	String requestJson = validBankDetails;
+    	
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+    			.andExpect(status().isOk())
+    			.andExpect(MockMvcResultMatchers.content().string("Flight reservation successfully confirmed."));	
+    }
+	
+	@Test
+    public void notConfirmInvalidFlightReservation() throws Exception {
+    	String URI = "/cart/flights/confirmedFlight/-2?userId=1";
+    	String requestJson = validBankDetails;
+    	
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+    			.andExpect(status().is(400));	
+    }
+	
+	@Test
+    public void notConfirmNotFoundFlightReservation() throws Exception {
+    	String URI = "/cart/flights/confirmedFlight/10000?userId=1";
+    	String requestJson = validBankDetails;
+    	
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+    			.andExpect(status().is(404));	
+    }
+	
+	/*
+	 * TESTS on URI POST /cart/hotels/confirmedHotel/{reservationId}
+	 */
+	
+	@Test
+    public void confirmPresentHotelReservation() throws Exception {
+    	String URI = "/cart/hotels/confirmedHotel/5?userId=1";
+    	String requestJson = validBankDetails;
+    	
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+    			.andExpect(status().isOk())
+    			.andExpect(MockMvcResultMatchers.content().string("Hotel reservation successfully confirmed."));	
+    }
+	
+	@Test
+    public void notConfirmInvalidHotelReservation() throws Exception {
+    	String URI = "/cart/hotels/confirmedHotel/-2?userId=1";
+    	String requestJson = validBankDetails;
+    	
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+    			.andExpect(status().is(400));	
+    }
+	
+	@Test
+    public void notConfirmNotFoundHotelReservation() throws Exception {
+    	String URI = "/cart/hotels/confirmedHotel/10000?userId=1";
+    	String requestJson = validBankDetails;
+    	
+    	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
+    			.andExpect(status().is(404));	
     }
 	
 

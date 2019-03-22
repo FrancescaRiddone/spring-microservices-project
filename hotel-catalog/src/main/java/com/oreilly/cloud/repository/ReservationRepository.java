@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +21,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 	public List<Room> findReservedRooms(@Param("startDate") LocalDateTime startDate, 
 												@Param("endDate") LocalDateTime endDate, 
 												@Param("roomIds") List<Integer> roomIds);
+	
+	@Modifying
+	@Query("update Reservation r set r.confirmed = 1" +
+			"where reservation_id = :reservationId")
+	public void updateReservationConfirmation(@Param("reservationId") Integer reservationId);
 	
 	
 }

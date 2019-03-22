@@ -12,5 +12,7 @@ public interface ReservationService {
 	public FlightReservationResource saveReservation(Reservation theReservation);
 	
 	public void deleteReservation(int reservationId);
+	
+	public void confirmReservation(int reservationId);
 
 }

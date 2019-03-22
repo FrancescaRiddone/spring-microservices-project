@@ -7,14 +7,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 
-@Configuration
-@Profile("!local")
+@Configuration()
+@Profile("local")
 public class ReservationHandlerConfig {
 	
 	@Bean
-	@LoadBalanced
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		System.out.println("restTemplate prod construction");
+		System.out.println("restTemplate construction");
+	
 	   return builder.build();
 	}
 

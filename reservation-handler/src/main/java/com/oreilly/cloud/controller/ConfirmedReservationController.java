@@ -27,7 +27,6 @@ import com.oreilly.cloud.service.RegistryService;
 public class ConfirmedReservationController {
 	
 	@Autowired
-	@Qualifier("restTemplateExecution")
 	private RestTemplate restTemplate;
 	
 	@Autowired
@@ -37,7 +36,7 @@ public class ConfirmedReservationController {
 	@GetMapping("/flights")
 	public List<FlightReservationResource> getRegistryFlights(@RequestParam("userId") int userId) {
 		
-		String uri = "http://FLIGHT-CATALOG/flights/reservations/";
+		String uri = "http://flight-catalog/flights/reservations/";
 		ResponseEntity<List<FlightReservationResource>> response;
 		List<FlightReservationResource> flightInRegistry = new ArrayList<>();
 		
@@ -68,7 +67,7 @@ public class ConfirmedReservationController {
 	@GetMapping("/hotels")
 	public List<HotelReservationResource> getRegistryHotels(@RequestParam("userId") int userId) {
 		
-		String uri = "http://HOTEL-CATALOG/hotels/reservations/";
+		String uri = "http://hotel-catalog/hotels/reservations/";
 		ResponseEntity<List<HotelReservationResource>> response;
 		List<HotelReservationResource> hotelInRegistry = new ArrayList<>();
 		
@@ -98,7 +97,7 @@ public class ConfirmedReservationController {
 	
 	@GetMapping("/flights/{reservationId}")
 	public FlightReservationResource getRegistryFlight(@PathVariable int reservationId, @RequestParam("userId") int userId) {
-		String uri = "http://FLIGHT-CATALOG/flights/reservations/reservation/" + reservationId;
+		String uri = "http://flight-catalog/flights/reservations/reservation/" + reservationId;
 		ResponseEntity<FlightReservationResource> response;
 		FlightReservationResource flightInRegistry;
 		
@@ -123,7 +122,7 @@ public class ConfirmedReservationController {
 	
 	@GetMapping("/hotels/{reservationId}")
 	public HotelReservationResource getCartHotel(@PathVariable int reservationId, @RequestParam("userId") int userId) {
-		String uri = "http://HOTEL-CATALOG/hotels/reservations/reservation/" + reservationId;
+		String uri = "http://hotel-catalog/hotels/reservations/reservation/" + reservationId;
 		ResponseEntity<HotelReservationResource> response;
 		HotelReservationResource hotelInRegistry;
 		

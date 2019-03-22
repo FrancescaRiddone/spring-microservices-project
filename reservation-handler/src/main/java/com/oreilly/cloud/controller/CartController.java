@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,7 @@ import com.oreilly.cloud.exception.MicroserviceContactException;
 import com.oreilly.cloud.exception.ResourceNotFoundException;
 import com.oreilly.cloud.exception.ResourceUnavailableException;
 import com.oreilly.cloud.exception.ValidateException;
-import com.oreilly.cloud.object.BankDetails;
+import com.oreilly.cloud.object.BookingConfirmation;
 import com.oreilly.cloud.object.FlightReservationRequest;
 import com.oreilly.cloud.object.FlightReservationResource;
 import com.oreilly.cloud.object.HotelReservationRequest;
@@ -37,14 +36,11 @@ import com.oreilly.cloud.service.CartService;
 public class CartController {
 	
 	@Autowired
-	@Qualifier("restTemplateExecution")
 	private RestTemplate restTemplate;
 
 	@Autowired
 	private CartService cartService;
 	
-	
-	//--------------------------------------OK--------------------------------------------------------------------------------------------
 	
 	@GetMapping("/flights/{reservationId}")
 	public FlightReservationResource getCartFlight(@PathVariable int reservationId, @RequestParam("userId") int userId) {
@@ -71,8 +67,6 @@ public class CartController {
 		return flightInCart;
 	}
 	
-	//--------------------------------------OK--------------------------------------------------------------------------------------------
-	
 	@GetMapping("/hotels/{reservationId}")
 	public HotelReservationResource getCartHotel(@PathVariable int reservationId, @RequestParam("userId") int userId) throws IOException {
 		String uri = "http://hotel-catalog/hotels/reservations/reservation/" + reservationId;
@@ -97,8 +91,6 @@ public class CartController {
 		
 		return hotelInCart;
 	}
-	
-	//--------------------------------------OK--------------------------------------------------------------------------------------------
 	
 	@GetMapping("/flights")
 	public List<FlightReservationResource> getCartFlights(@RequestParam("userId") int userId) {
@@ -130,8 +122,6 @@ public class CartController {
 		return flightInCart;
 	}
 	
-	//--------------------------------------OK--------------------------------------------------------------------------------------------
-	
 	@GetMapping("/hotels")
 	public List<HotelReservationResource> getCartHotels(@RequestParam("userId") int userId) {
 		String uri = "http://hotel-catalog/hotels/reservations/";
@@ -162,16 +152,13 @@ public class CartController {
 		return hotelInCart;
 	}
 	
-	//--------------------------------------OK--------------------------------------------------------------------------------------------
-	
 	@PostMapping("/flights/newFlight")
 	public FlightReservationResource addFlightToCart(@RequestBody FlightReservationRequest reservationRequest, @RequestParam("userId") int userId) {
 		String uri = "http://flight-catalog/flights/reservations/new";
-		Map<String, List<String>> newParameterMap = new HashMap<>();
 		FlightReservationResource response;
 		
 		try {
-			response = restTemplate.postForObject(uri, reservationRequest, FlightReservationResource.class, newParameterMap);
+			response = restTemplate.postForObject(uri, reservationRequest, FlightReservationResource.class, new HashMap<>());
 		
 		} catch(ValidateException ex) {
 			System.out.println("sono nel catch di VALIDATE EXCEPTION");
@@ -192,16 +179,13 @@ public class CartController {
 		return response;
 	}
 	
-	//--------------------------------------OK--------------------------------------------------------------------------------------------
-	
 	@PostMapping("/hotels/newHotel")
 	public HotelReservationResource addHotelToCart(@RequestBody HotelReservationRequest reservationRequest, @RequestParam("userId") int userId) {
 		String uri = "http://hotel-catalog/hotels/reservations/new";
 		HotelReservationResource response;
-		Map<String, List<String>> newParameterMap = new HashMap<>();
 		
 		try {
-			response = restTemplate.postForObject(uri, reservationRequest, HotelReservationResource.class, newParameterMap);
+			response = restTemplate.postForObject(uri, reservationRequest, HotelReservationResource.class, new HashMap<>());
 		} catch(ValidateException ex) {
 			System.out.println("sono nel catch di VALIDATE EXCEPTION");
 			throw new ValidateException();
@@ -265,13 +249,13 @@ public class CartController {
 		return "Hotel element with id " + reservationId + " delete with success from cart.";
 	}
 	
-	@PostMapping("/flights/confirmedFlight/{reservationId}")
-	public String buyFlightInCart(@PathVariable int reservationId, @RequestBody BankDetails bankDetails, @RequestParam("userId") int userId) {
-		String uri = "http://flight-catalog/flights/reservations/confirmedReservation/" + reservationId;
+	@PostMapping("/flights/confirmation")
+	public String buyFlightInCart(@RequestBody BookingConfirmation bookingConfirmation, @RequestParam("userId") int userId) {
+		String uri = "http://flight-catalog/flights/reservations/confirmedReservation/" + bookingConfirmation.getReservationId();
 		Map<String, List<String>> newParameterMap = new HashMap<>();
 		
-		cartService.checkIsInUserCart(userId, reservationId, "flight");
-		cartService.checkBankDetails(bankDetails);
+		cartService.checkIsInUserCart(userId, bookingConfirmation.getReservationId(), "flight");
+		cartService.checkBankDetails(bookingConfirmation.getBankDetails());
 		
 		try {
 			restTemplate.put(uri, null, newParameterMap);
@@ -290,18 +274,18 @@ public class CartController {
 			throw new MicroserviceContactException();
 		}
 		
-		cartService.confirmReservationInCart(userId, reservationId, "flight");
+		cartService.confirmReservationInCart(userId, bookingConfirmation.getReservationId(), "flight");
 		
 		return "Flight reservation successfully confirmed.";
 	}
 	
-	@PostMapping("/hotels/confirmedHotel/{reservationId}")
-	public String buyHoteltInCart(@PathVariable int reservationId, @RequestBody BankDetails bankDetails, @RequestParam("userId") int userId) {
-		String uri = "http://hotel-catalog/hotels/reservations/confirmedReservation/" + reservationId;
+	@PostMapping("/hotels/confirmation")
+	public String buyHotelInCart(@RequestBody BookingConfirmation bookingConfirmation, @RequestParam("userId") int userId) {
+		String uri = "http://hotel-catalog/hotels/reservations/confirmedReservation/" + bookingConfirmation.getReservationId();
 		Map<String, List<String>> newParameterMap = new HashMap<>();
 		
-		cartService.checkIsInUserCart(userId, reservationId, "hotel");
-		cartService.checkBankDetails(bankDetails);
+		cartService.checkIsInUserCart(userId, bookingConfirmation.getReservationId(), "hotel");
+		cartService.checkBankDetails(bookingConfirmation.getBankDetails());
 		
 		try {
 			restTemplate.put(uri, null, newParameterMap);
@@ -320,11 +304,10 @@ public class CartController {
 			throw new MicroserviceContactException();
 		}
 		
-		cartService.confirmReservationInCart(userId, reservationId, "hotel");
+		cartService.confirmReservationInCart(userId, bookingConfirmation.getReservationId(), "hotel");
 		
 		return "Hotel reservation successfully confirmed.";
 	}
-
 	
 	private String getUriWithSetIds(String uri, List<Integer> ids) {
 		for(Integer id: ids) {
