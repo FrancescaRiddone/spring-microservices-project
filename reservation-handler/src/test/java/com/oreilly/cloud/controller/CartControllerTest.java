@@ -17,7 +17,12 @@ import static com.oreilly.cloud.controller.JsonConstants.newFlightReservationReq
 import static com.oreilly.cloud.controller.JsonConstants.newValidHotelReservationRequest;
 import static com.oreilly.cloud.controller.JsonConstants.newInvalidHotelReservationRequest;
 import static com.oreilly.cloud.controller.JsonConstants.newHotelReservationRequestForNotFoundRoom;
-import static com.oreilly.cloud.controller.JsonConstants.validBankDetails;
+import static com.oreilly.cloud.controller.JsonConstants.validBankDetails1a;
+import static com.oreilly.cloud.controller.JsonConstants.validBankDetails2a;
+import static com.oreilly.cloud.controller.JsonConstants.validBankDetails1b;
+import static com.oreilly.cloud.controller.JsonConstants.validBankDetails2b;
+import static com.oreilly.cloud.controller.JsonConstants.validBankDetails1c;
+import static com.oreilly.cloud.controller.JsonConstants.validBankDetails2c;
 
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -25,7 +30,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -33,7 +37,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,13 +74,9 @@ public class CartControllerTest {
     	rule.resetJournal();
     }
     
-	@Autowired
-    RestTemplate restTemplate;
-
-	
 	@ClassRule
 	public static HoverflyRule rule = HoverflyRule.inSimulationMode(SimulationSource.dsl(
-		HoverflyDsl.service("http://flight-catalog:80")
+		HoverflyDsl.service("http://flight-catalog")
 			.get("/flights/reservations/reservation/3")
 			.willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(flightReservationWithId3)))
 			.get("/flights/reservations/3")
@@ -97,10 +96,10 @@ public class CartControllerTest {
 			.put("/flights/reservations/confirmedReservation/4")
 			.willReturn(ResponseCreators.success())
 			.put("/flights/reservations/confirmedReservation/-2")
-			.willReturn(ResponseCreators.badRequest())
+			.willReturn(ResponseCreators.success())
 			.put("/flights/reservations/confirmedReservation/10000")
 			.willReturn(ResponseCreators.serverError()),
-		HoverflyDsl.service("http://hotel-catalog:80")
+		HoverflyDsl.service("http://hotel-catalog")
 			.get("/hotels/reservations/reservation/4")
 			.willReturn(ResponseCreators.success(HttpBodyConverter.jsonWithSingleQuotes(hotelReservationWithId4)))
 			.get("/hotels/reservations/4")
@@ -203,15 +202,10 @@ public class CartControllerTest {
 	
 	@Test
 	public void foundHotelReservationsWithUserId() throws Exception {
-		String URI = "/cart/hotels?userId=1";
+		String URI = "/cart/hotels?userId=2";
 		
 		mockMvc.perform(get(URI))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.jsonPath("$.[0].reservationId").value(4))
-			.andExpect(MockMvcResultMatchers.jsonPath("$.[0].room.roomId").value(14))
-			.andExpect(MockMvcResultMatchers.jsonPath("$.[0].room.hotel").value("Hilton London Bankside"))
-			.andExpect(MockMvcResultMatchers.jsonPath("$.[0].reservationType").value("full board"))
-			.andExpect(MockMvcResultMatchers.jsonPath("$.[0].hostsNumber").value(2));
+			.andExpect(MockMvcResultMatchers.status().isOk());
 	}
 	
 	@Test
@@ -228,7 +222,7 @@ public class CartControllerTest {
 	
 	@Test
 	public void createNewFlightReservationWithValidFlightReservationRequest() throws Exception {
-		String URI = "/cart/flights/newFlight?userId=2";
+		String URI = "/cart/flights/newFlight?userId=1";
     	String requestJson = newValidFlightReservationRequest;
 		
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -241,7 +235,7 @@ public class CartControllerTest {
 	
 	@Test
 	public void newFlightReservationWithInvalidFlightReservationRequest() throws Exception {
-		String URI = "/cart/flights/newFlight?userId=2";
+		String URI = "/cart/flights/newFlight?userId=1";
     	String requestJson = newInvalidFlightReservationRequest;
 		
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -250,7 +244,7 @@ public class CartControllerTest {
 	
 	@Test
 	public void newFlightReservationWithFlightReservationRequestWithNotFoundFlight() throws Exception {
-		String URI = "/cart/flights/newFlight?userId=2";
+		String URI = "/cart/flights/newFlight?userId=1";
     	String requestJson = newFlightReservationRequestForNotFoundFlight;
 		
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -263,7 +257,7 @@ public class CartControllerTest {
 	
 	@Test
     public void createNewHotelReservationWithValidHotelReservationRequest() throws Exception {
-    	String URI = "/cart/hotels/newHotel?userId=2";
+    	String URI = "/cart/hotels/newHotel?userId=1";
     	String requestJson = newValidHotelReservationRequest;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -276,7 +270,7 @@ public class CartControllerTest {
 	
 	@Test
     public void newHotelReservationWithInvalidHotelReservationRequest() throws Exception {
-    	String URI = "/cart/hotels/newHotel?userId=2";
+    	String URI = "/cart/hotels/newHotel?userId=1";
     	String requestJson = newInvalidHotelReservationRequest;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -285,7 +279,7 @@ public class CartControllerTest {
 	
 	@Test
     public void newHotelReservationWithHotelReservationRequestWithNotFoundRoom() throws Exception {
-    	String URI = "/cart/hotels/newHotel?userId=2";
+    	String URI = "/cart/hotels/newHotel?userId=1";
     	String requestJson = newHotelReservationRequestForNotFoundRoom;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
@@ -354,8 +348,8 @@ public class CartControllerTest {
 	
 	@Test
     public void confirmPresentFlightReservation() throws Exception {
-    	String URI = "/cart/flights/confirmedFlight/4?userId=1";
-    	String requestJson = validBankDetails;
+    	String URI = "/cart/flights/confirmation?userId=1";
+    	String requestJson = validBankDetails1a;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
     			.andExpect(status().isOk())
@@ -364,8 +358,8 @@ public class CartControllerTest {
 	
 	@Test
     public void notConfirmInvalidFlightReservation() throws Exception {
-    	String URI = "/cart/flights/confirmedFlight/-2?userId=1";
-    	String requestJson = validBankDetails;
+    	String URI = "/cart/flights/confirmation?userId=1";
+    	String requestJson = validBankDetails1b;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
     			.andExpect(status().is(400));	
@@ -373,8 +367,8 @@ public class CartControllerTest {
 	
 	@Test
     public void notConfirmNotFoundFlightReservation() throws Exception {
-    	String URI = "/cart/flights/confirmedFlight/10000?userId=1";
-    	String requestJson = validBankDetails;
+    	String URI = "/cart/flights/confirmation?userId=1";
+    	String requestJson = validBankDetails1c;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
     			.andExpect(status().is(404));	
@@ -386,8 +380,8 @@ public class CartControllerTest {
 	
 	@Test
     public void confirmPresentHotelReservation() throws Exception {
-    	String URI = "/cart/hotels/confirmedHotel/5?userId=1";
-    	String requestJson = validBankDetails;
+    	String URI = "/cart/hotels/confirmation?userId=1";
+    	String requestJson = validBankDetails2a;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
     			.andExpect(status().isOk())
@@ -396,8 +390,8 @@ public class CartControllerTest {
 	
 	@Test
     public void notConfirmInvalidHotelReservation() throws Exception {
-    	String URI = "/cart/hotels/confirmedHotel/-2?userId=1";
-    	String requestJson = validBankDetails;
+    	String URI = "/cart/hotels/confirmation?userId=1";
+    	String requestJson = validBankDetails2b;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
     			.andExpect(status().is(400));	
@@ -405,8 +399,8 @@ public class CartControllerTest {
 	
 	@Test
     public void notConfirmNotFoundHotelReservation() throws Exception {
-    	String URI = "/cart/hotels/confirmedHotel/10000?userId=1";
-    	String requestJson = validBankDetails;
+    	String URI = "/cart/hotels/confirmation?userId=1";
+    	String requestJson = validBankDetails2c;
     	
     	mockMvc.perform(post(URI).contentType(MediaType.APPLICATION_JSON).content(requestJson))
     			.andExpect(status().is(404));	

@@ -60,25 +60,25 @@ public class JsonConstants {
 	public static final String hotelReservationsInCartUserId1 = "[" + hotelReservationWithId4 + "]";
 	
 	public static final String newValidFlightReservationRequest = 	"{\"flightId\":5," + 
-																	"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																	"\"userEmail\":\"mariorossi@yahoo.it\"," + 
 																	"\"seatClass\":\"economy\"," + 
 																	"\"seatNumber\":2" + 
 																	"}";
 	
 	public static final String newInvalidFlightReservationRequest = "{\"flightId\":0," + 
-																	"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																	"\"userEmail\":\"mariorossi@yahoo.it\"," + 
 																	"\"seatClass\":\"\"," + 
 																	"\"seatNumber\":2" + 
 																	"}";
 	
 	public static final String newFlightReservationRequestForNotFoundFlight = 	"{\"flightId\":100000," + 
-																				"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																				"\"userEmail\":\"mariorossi@yahoo.it\"," + 
 																				"\"seatClass\":\"business\"," + 
 																				"\"seatNumber\":2" + 
 																				"}";
 	
 	public static final String newFlightReservationInCart = 	"{'reservationId': 5," + 
-																"'userEmail': 'elisabianchi@yahoo.it'," + 
+																"'userEmail': 'mariorossi@yahoo.it'," + 
 																"'flight': {" + 
 																	"'flightId': 5," + 
 																	"'company': 'easyJet'," + 
@@ -125,7 +125,7 @@ public class JsonConstants {
 																"}";
 	
 	public static final String newValidHotelReservationRequest = 	"{\"roomId\":5," + 
-																	"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																	"\"userEmail\":\"mariorossi@yahoo.it\"," + 
 																	"\"hostsNumber\":2," + 
 																	"\"reservationType\":\"with breakfast\"," + 
 																	"\"checkIn\":{" + 
@@ -141,7 +141,7 @@ public class JsonConstants {
 																	"}";
 	
 	public static final String newInvalidHotelReservationRequest = 	"{\"roomId\":5," + 
-																	"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																	"\"userEmail\":\"mariorossi@yahoo.it\"," + 
 																	"\"hostsNumber\":4," + 
 																	"\"reservationType\":\"with breakfast\"," + 
 																	"\"checkIn\":{" + 
@@ -157,7 +157,7 @@ public class JsonConstants {
 																	"}";
 
 	public static final String newHotelReservationRequestForNotFoundRoom = 	"{\"roomId\":10000," + 
-																				"\"userEmail\":\"elisabianchi@gmail.com\"," + 
+																				"\"userEmail\":\"mariorossi@yahoo.it\"," + 
 																				"\"hostsNumber\":2," + 
 																				"\"reservationType\":\"with breakfast\"," + 
 																				"\"checkIn\":{" + 
@@ -211,15 +211,79 @@ public class JsonConstants {
 															"}" + 
 															"}";
 	
-	public static final String validBankDetails = 	"{" + 
-													"\"cardType\": \"visa\"," + 
-													"\"accountNumber\": \"4625290368718596\", " + 
-													"\"cardOwner\": \"Giovanni Neri\", " + 
-													"\"expiryMonth\": 5, " + 
-													"\"expiryYear\": 2021, " + 
-													"\"securityCode\": 574" + 
+	public static final String validBankDetails1a = 	"{\r\n" + 
+													"	\"reservationId\": 4,\r\n" + 
+													"	\"bankDetails\": {\r\n" + 
+													"		\"cardType\": \"visa\",\r\n" + 
+													"		\"accountNumber\": \"4625290368718596\",\r\n" + 
+													"		\"cardOwner\": \"Mario Rossi\", \r\n" + 
+													"		\"expiryMonth\": 5,\r\n" + 
+													"		\"expiryYear\": 2021,\r\n" + 
+													"		\"securityCode\": 574\r\n" + 
+													"	}\r\n" + 
 													"}";
-											
+	
+	public static final String validBankDetails2a = 	"{\r\n" + 
+													"	\"reservationId\": 5,\r\n" + 
+													"	\"bankDetails\": {\r\n" + 
+													"		\"cardType\": \"visa\",\r\n" + 
+													"		\"accountNumber\": \"4625290368718596\",\r\n" + 
+													"		\"cardOwner\": \"Elisa Bianchi\", \r\n" + 
+													"		\"expiryMonth\": 5,\r\n" + 
+													"		\"expiryYear\": 2021,\r\n" + 
+													"		\"securityCode\": 574\r\n" + 
+													"	}\r\n" + 
+													"}";
+	
+	public static final String validBankDetails1b = 	"{\r\n" + 
+														"	\"reservationId\": -2,\r\n" + 
+														"	\"bankDetails\": {\r\n" + 
+														"		\"cardType\": \"visa\",\r\n" + 
+														"		\"accountNumber\": \"4625290368718596\",\r\n" + 
+														"		\"cardOwner\": \"Mario Rossi\", \r\n" + 
+														"		\"expiryMonth\": 5,\r\n" + 
+														"		\"expiryYear\": 2021,\r\n" + 
+														"		\"securityCode\": 574\r\n" + 
+														"	}\r\n" + 
+														"}";
+
+	public static final String validBankDetails2b = 	"{\r\n" + 
+														"	\"reservationId\": -2,\r\n" + 
+														"	\"bankDetails\": {\r\n" + 
+														"		\"cardType\": \"visa\",\r\n" + 
+														"		\"accountNumber\": \"4625290368718596\",\r\n" + 
+														"		\"cardOwner\": \"Elisa Bianchi\", \r\n" + 
+														"		\"expiryMonth\": 5,\r\n" + 
+														"		\"expiryYear\": 2021,\r\n" + 
+														"		\"securityCode\": 574\r\n" + 
+														"	}\r\n" + 
+														"}";
+
+	
+	public static final String validBankDetails1c = 	"{\r\n" + 
+													"	\"reservationId\": 10000,\r\n" + 
+													"	\"bankDetails\": {\r\n" + 
+													"		\"cardType\": \"visa\",\r\n" + 
+													"		\"accountNumber\": \"4625290368718596\",\r\n" + 
+													"		\"cardOwner\": \"Mario Rossi\", \r\n" + 
+													"		\"expiryMonth\": 5,\r\n" + 
+													"		\"expiryYear\": 2021,\r\n" + 
+													"		\"securityCode\": 574\r\n" + 
+													"	}\r\n" + 
+													"}";
+
+	public static final String validBankDetails2c = 	"{\r\n" + 
+													"	\"reservationId\": 10000,\r\n" + 
+													"	\"bankDetails\": {\r\n" + 
+													"		\"cardType\": \"visa\",\r\n" + 
+													"		\"accountNumber\": \"4625290368718596\",\r\n" + 
+													"		\"cardOwner\": \"Elisa Bianchi\", \r\n" + 
+													"		\"expiryMonth\": 5,\r\n" + 
+													"		\"expiryYear\": 2021,\r\n" + 
+													"		\"securityCode\": 574\r\n" + 
+													"	}\r\n" + 
+													"}";
+																					
 	public static final String flightReservationWithId2 =       "{'reservationId': 2,'userEmail': 'elisabianchi@gmail.com', " +
 																"'flight': {'flightId': 1, 'company': 'Ryanair', " +
 																	"'source': {'airportName': 'Malpensa Airport','airportCode': 'MPX','city': 'Milan','country': 'Italy'}, " +

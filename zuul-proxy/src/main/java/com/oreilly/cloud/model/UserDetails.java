@@ -31,6 +31,20 @@ public class UserDetails {
 	public UserDetails() {
 		
 	}
+	
+	public UserDetails(int userDetailsId, String name, String surname, LocalDateTime birthDate) {
+		this.userDetailsId = userDetailsId;
+		this.name = name;
+		this.surname = surname;
+		this.birthDate = birthDate;
+	}
+	
+	public UserDetails(int userDetailsId, String name, String surname) {
+		super();
+		this.userDetailsId = userDetailsId;
+		this.name = name;
+		this.surname = surname;
+	}
 
 	public UserDetails(String name, String surname, LocalDateTime birthDate) {
 		this.name = name;

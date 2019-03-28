@@ -9,6 +9,6 @@ import com.oreilly.cloud.model.ApplicationUser;
 @Repository
 public interface UserRepository extends JpaRepository<ApplicationUser, Integer> {
 	
-	ApplicationUser findByUsername(String username);
+	public ApplicationUser findByUsername(String username);
 
 }

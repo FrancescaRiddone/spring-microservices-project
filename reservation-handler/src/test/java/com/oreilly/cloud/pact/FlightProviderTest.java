@@ -29,7 +29,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 
-public class TestFlightProvider {
+public class FlightProviderTest {
 	
 	@Rule
     public PactProviderRuleMk2 mockFlightProvider = new PactProviderRuleMk2("FlightCatalog", "localhost", 8112, this);
@@ -64,42 +64,43 @@ public class TestFlightProvider {
                 
             .given("test GET")
             .uponReceiving("Test interaction in getCartFlights method")
-	            .path("/flights/reservations/3")
-	            .method("GET")
-	        .willRespondWith()
-	            .status(200)
-	            .body(listFlightReservationWithId3)
-	            .headers(headers)
+                .path("/flights/reservations/3")
+                .method("GET")
+            .willRespondWith()
+                .status(200)
+                .body(listFlightReservationWithId3)
+                .headers(headers)
             
             .given("test POST")
-		        .uponReceiving("Test interaction in addFlightToCart method")
-		        .method("POST")
-		        .body(newValidFlightReservationRequest)
-	            .path("/flights/reservations/new")
-	            .headers(headers1)
-	        .willRespondWith()
-	            .status(200)
-	            .headers(headers)
-	            .body(
-	        		new PactDslJsonBody()
-	                .numberValue("reservationId", 5)
-	                .stringValue("userEmail", "elisabianchi@gmail.com")
-	                .stringValue("seatsType", "economy")
-	                .numberValue("seatsNumber", 2)
-	                .object("flight")
-	                .numberValue("flightId", 5)
-	                .closeObject()
-	            )
-	            
-	        .given("test DELETE")
-		        .uponReceiving("Test interaction in deleteFlightFromCart method")
-		        .method("DELETE")
-	            .path("/flights/reservations/reservation/5")
-	        .willRespondWith()
-	            .status(200)
-	         
+                .uponReceiving("Test interaction in addFlightToCart method")
+                .method("POST")
+                .body(newValidFlightReservationRequest)
+                .path("/flights/reservations/new")
+                .headers(headers1)
+            .willRespondWith()
+                .status(200)
+                .headers(headers)
+                .body(
+            		new PactDslJsonBody()
+                    .numberValue("reservationId", 5)
+                    .stringValue("userEmail", "elisabianchi@gmail.com")
+                    .stringValue("seatsType", "economy")
+                    .numberValue("seatsNumber", 2)
+                    .object("flight")
+                    .numberValue("flightId", 5)
+                    .closeObject()
+                )
+                
+            .given("test DELETE")
+                .uponReceiving("Test interaction in deleteFlightFromCart method")
+                .method("DELETE")
+                .path("/flights/reservations/reservation/5")
+            .willRespondWith()
+                .status(200)
+                
             .toPact();
     }
+	
 	
 	@Test
     @PactVerification("FlightCatalog")

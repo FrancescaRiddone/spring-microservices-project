@@ -14,8 +14,7 @@ public class ReservationHandlerConfig {
 	@Bean
 	@LoadBalanced
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		System.out.println("restTemplate prod construction");
-	   return builder.build();
+		return builder.build();
 	}
 
 }

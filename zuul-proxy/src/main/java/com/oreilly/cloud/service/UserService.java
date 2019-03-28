@@ -1,6 +1,5 @@
 package com.oreilly.cloud.service;
 
-import java.util.List;
 
 import com.oreilly.cloud.model.ApplicationUser;
 import com.oreilly.cloud.object.BirthDate;
@@ -25,7 +24,5 @@ public interface UserService {
 	
 	public void changeBirthDate(int userId, BirthDate birthDate);
 	
-	
-	public List<ApplicationUser> getUsers();
 
 }

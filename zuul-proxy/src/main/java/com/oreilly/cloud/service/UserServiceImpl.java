@@ -3,7 +3,6 @@ package com.oreilly.cloud.service;
 import static com.oreilly.cloud.service.Converter.convertInUserResource;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +31,6 @@ public class UserServiceImpl implements UserService {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	
-	// DA RIMUOVERE --------------------------------------------------------------------------------------------------------
-	
-	@Override
-	public List<ApplicationUser> getUsers() {
-		List<ApplicationUser> users = userRepository.findAll();
-		
-		return users;
-	}
-	//-----------------------------------------------------------------------------------------------------------------------
-
 	@Override
 	@Transactional
 	public UserResource saveUser(UserCreationRequest userCreationRequest) throws ValidateException {

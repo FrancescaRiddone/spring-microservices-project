@@ -29,7 +29,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.model.RequestResponsePact;
 
-public class TestHotelProvider {
+public class HotelProviderTest {
 	
 	@Rule
     public PactProviderRuleMk2 mockHotelProvider = new PactProviderRuleMk2("HotelCatalog", "localhost", 8113, this);
