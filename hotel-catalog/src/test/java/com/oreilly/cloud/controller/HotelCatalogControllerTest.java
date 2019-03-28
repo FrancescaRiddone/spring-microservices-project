@@ -1,5 +1,6 @@
 package com.oreilly.cloud.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -320,7 +321,31 @@ public class HotelCatalogControllerTest {
                 .andExpect(status().is(400));
     }
     
+    /*
+     * TESTS on URI /hotels/reservations/reservation/{reservationId}
+     */
+    /*
+     */
     
+    @Test
+    public void hotelNotDeletedWithInvalidId() throws Exception {
+    	String URI = "/hotels/reservations/reservation/-2";
+
+        mockMvc.perform(delete(URI)
+                .accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().is(400));
+    }
+    
+    @Test
+    public void hotelNotDeletedWithNotPresentId() throws Exception {
+    	String URI = "/hotels/reservations/reservation/4000";
+
+        mockMvc.perform(delete(URI)
+                .accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().is(404));
+    }
+    
+
     private SearchHotelRequest createSearchHotelRequest(String requestType) {
     	SearchHotelRequest request = new SearchHotelRequest();
     	if(requestType != null) {

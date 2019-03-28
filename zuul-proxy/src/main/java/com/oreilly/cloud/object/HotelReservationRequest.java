@@ -84,5 +84,33 @@ public class HotelReservationRequest {
 				+ ", reservationType=" + reservationType + ", checkIn=" + checkIn + ", checkOut=" + checkOut + "]";
 	}
 
+	public String toJsonString() {
+		String checkInString = 
+			"{" +
+			"\"day\": " + checkIn.getDay() + ", " + 
+			"\"month\": " + checkIn.getMonth() + ", " +
+			"\"year\": " + checkIn.getYear() +
+			"}";
+		
+		String checkOutString = 
+				"{" +
+				"\"day\": " + checkOut.getDay() + ", " + 
+				"\"month\": " + checkOut.getMonth() + ", " +
+				"\"year\": " + checkOut.getYear() +
+				"}";
+		
+		String jsonString =
+		"{" +
+		"\"roomId\": " + roomId + ", " + 
+		"\"userEmail\": " + "\"" + userEmail + "\"" + ", " +
+		"\"hostsNumber\": " + hostsNumber + ", " +
+		"\"reservationType\": " + "\"" + reservationType + "\"" + ", " +
+		"\"checkIn\": " + checkInString + ", " +
+		"\"checkOut\": " + checkOutString + 
+		"}";
+		
+		return jsonString;
+	}
+
 	
 }

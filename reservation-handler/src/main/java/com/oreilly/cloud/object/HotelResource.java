@@ -207,11 +207,18 @@ public class HotelResource {
 
 	@Override
 	public String toString() {
-		return "HotelResource [hotelId=" + hotelId + ", hotelName=" + hotelName + ", city=" + city + ", country="
+		String hotelResource = "HotelResource [hotelId=" + hotelId + ", hotelName=" + hotelName + ", city=" + city + ", country="
 				+ country + ", address=" + address + ", stars=" + stars + ", wifi=" + wifi + ", parking=" + parking
 				+ ", restaurant=" + restaurant + ", forDisabledPeople=" + forDisabledPeople + ", gym=" + gym + ", spa="
 				+ spa + ", swimmingPool=" + swimmingPool + ", breakfastAvailable=" + breakfastAvailable
-				+ ", halfBoardAvailable=" + halfBoardAvailable + ", fullBoardAvailable=" + fullBoardAvailable + "]";
+				+ ", halfBoardAvailable=" + halfBoardAvailable + ", fullBoardAvailable=" + fullBoardAvailable 
+				+ ", availableRoomsIds=[ ";
+		
+		for(Integer i: availableRoomsIds) {
+			hotelResource = hotelResource + i + " ";
+		}
+					
+		return hotelResource + "]]";
 	}
 	
 	

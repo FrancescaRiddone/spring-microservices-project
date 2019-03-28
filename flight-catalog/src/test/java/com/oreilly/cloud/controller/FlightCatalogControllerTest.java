@@ -1,5 +1,6 @@
 package com.oreilly.cloud.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -254,6 +255,37 @@ public class FlightCatalogControllerTest {
         mockMvc.perform(put(URI)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(400));
+    }
+    
+    /*
+     * TESTS on URI /flights/reservations/reservation/{reservationId}
+     */
+    
+    @Test
+    public void deleteFlightReservationWithId() throws Exception {
+    	String URI = "/flights/reservations/reservation/4";
+
+        mockMvc.perform(delete(URI)
+                .accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk());
+    }
+    
+    @Test
+    public void flightNotDeletedWithInvalidId() throws Exception {
+    	String URI = "/flights/reservations/reservation/-2";
+
+        mockMvc.perform(delete(URI)
+                .accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().is(400));
+    }
+    
+    @Test
+    public void flightNotDeletedWithNotPresentId() throws Exception {
+    	String URI = "/flights/reservations/reservation/4000";
+
+        mockMvc.perform(delete(URI)
+                .accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().is(404));
     }
     
     

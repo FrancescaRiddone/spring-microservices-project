@@ -81,6 +81,8 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	@Transactional
 	public void deleteReservation(int reservationId) throws ResourceNotFoundException, ValidateException {
+		getReservation(reservationId);
+		
 		reservationRepository.deleteById(reservationId);
 	}
 	

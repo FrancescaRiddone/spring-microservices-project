@@ -37,10 +37,6 @@ public class UserController {
 	@GetMapping("/users/user/{userId}")
 	public UserResource getUser(@PathVariable int userId, Authentication authentication, Principal principal) {
 		
-		System.out.println(authentication.getName());
-        System.out.println("-----------------");
-        System.out.println(principal.getName());
-		
 		return userService.getUserResource(userId);
 	}
 	
