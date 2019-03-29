@@ -179,14 +179,14 @@ public class FunctionalTestUseCaseBuyHotel {
 	
 	private void buyHotelStep(String token, int reservationId) {
 		BookingConfirmation bookingConfirmation = new BookingConfirmation(reservationId, 
-																	new BankDetails("visa", "4625290368718596", "Maria Gialli", 5, 2021, 574));
+				new BankDetails("visa", "4625290368718596", "Maria Gialli", 5, 2021, 574));
 
-		String buyHotelResult = 	given().headers("Authorization",
-													"Bearer " + token,
-													"Content-Type", ContentType.JSON,
-													"Accept", ContentType.JSON).
-											body(bookingConfirmation).
-									when().post("http://localhost:8080/reservation-handler/cart/hotels/confirmation").asString();
+		String buyHotelResult = given().headers("Authorization",
+												"Bearer " + token,
+												"Content-Type", ContentType.JSON,
+												"Accept", ContentType.JSON).
+										body(bookingConfirmation).
+								when().post("http://localhost:8080/reservation-handler/cart/hotels/confirmation").asString();
 		
 		
 		System.out.println("RESULT OF BUYING OPERATION OF HOTEL WITH RESERVATION ID " + reservationId + ": " + buyHotelResult);

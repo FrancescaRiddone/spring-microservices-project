@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,15 +35,15 @@ public class UserServiceImplTest {
     
     
     /*
-	 * TESTS on method ApplicationUser getUser(int userId) of UserService
+	 * TESTS on method ApplicationUser getUser(String username) of UserService
 	 */
     @Test
-    public void findUserWithId() {
+    public void findUserWithUsername() {
         assertNotNull(userService);
-        int userId = 2;
+        String username = "elisabianchi@gmail.com";
         
-        when(userRepository.findById(userId)).thenReturn(createOptionalApplicationUser());
-        ApplicationUser user = userService.getUser(userId);
+        when(userRepository.findByUsername(username)).thenReturn(createApplicationUser());
+        ApplicationUser user = userService.getUser(username);
 
         assertEquals(user.getUsername(), "elisabianchi@gmail.com");
         assertEquals(user.getDetails().getName(), "Elisa");
@@ -52,32 +51,32 @@ public class UserServiceImplTest {
     }
     
     @Test(expected = ValidateException.class)
-    public void userNotFoundWithInvalidId() {
+    public void userNotFoundWithInvalidUsername() {
         assertNotNull(userService);
-        int userId = -1;
+        String username = null;
         
-        userService.getUser(userId);
+        userService.getUser(username);
     }
     
     @Test(expected = ResourceNotFoundException.class)
-    public void userNotFoundWithNotPresentId() {
+    public void userNotFoundWithNotPresentUsername() {
         assertNotNull(userService);
-        int userId = 100000;
+        String username = "elisaneri@gmail.com";
         
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        userService.getUser(userId);
+        when(userRepository.findByUsername(username)).thenReturn(null);
+        userService.getUser(username);
     }
     
     /*
-	 * TESTS on method UserResource getUserResource(int userId) of UserService
+	 * TESTS on method UserResource getUserResource(String username) of UserService
 	 */
     @Test
-    public void findUserResourceWithId() {
+    public void findUserResourceWithUsername() {
         assertNotNull(userService);
-        int userId = 2;
+        String username = "elisabianchi@gmail.com";
         
-        when(userRepository.findById(userId)).thenReturn(createOptionalApplicationUser());
-        UserResource user = userService.getUserResource(userId);
+        when(userRepository.findByUsername(username)).thenReturn(createApplicationUser());
+        UserResource user = userService.getUserResource(username);
 
         assertEquals(user.getUsername(), "elisabianchi@gmail.com");
         assertEquals(user.getName(), "Elisa");
@@ -85,20 +84,20 @@ public class UserServiceImplTest {
     }
     
     @Test(expected = ValidateException.class)
-    public void userResourceNotFoundWithInvalidId() {
+    public void userResourceNotFoundWithInvalidUsername() {
         assertNotNull(userService);
-        int userId = -1;
+        String username = "";
         
-        userService.getUser(userId);
+        userService.getUser(username);
     }
     
     @Test(expected = ResourceNotFoundException.class)
-    public void userResourceNotFoundWithNotPresentId() {
+    public void userResourceNotFoundWithNotPresentUsername() {
         assertNotNull(userService);
-        int userId = 100000;
+        String username = "elisaneri@gmail.com";
         
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-        userService.getUser(userId);
+        when(userRepository.findByUsername(username)).thenReturn(null);
+        userService.getUser(username);
     }
     
     
@@ -113,12 +112,6 @@ public class UserServiceImplTest {
     	
     	return user;
     }
-	
-	private Optional<ApplicationUser> createOptionalApplicationUser() {
-		Optional<ApplicationUser> theOptUser = Optional.of(createApplicationUser());
-    	
-    	return theOptUser;
-	}
 	
 	
 }

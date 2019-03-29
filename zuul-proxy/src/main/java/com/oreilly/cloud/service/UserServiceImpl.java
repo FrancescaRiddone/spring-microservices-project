@@ -3,7 +3,6 @@ package com.oreilly.cloud.service;
 import static com.oreilly.cloud.service.Converter.convertInUserResource;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,21 +49,21 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	@Transactional
-	public ApplicationUser getUser(int userId) throws ValidateException, ResourceNotFoundException {
-		checkGetUserParam(userId);
+	public ApplicationUser getUser(String username) throws ValidateException, ResourceNotFoundException {
+		checkUserParam(username);
 		
-		Optional<ApplicationUser> theUser = userRepository.findById(userId);
-		if(!theUser.isPresent()) {
+		ApplicationUser theUser = userRepository.findByUsername(username);
+		if(theUser == null) {
 			throw new ResourceNotFoundException();
 		}
 		
-		return theUser.get();
+		return theUser;
 	}
 	
 	@Override
 	@Transactional
-	public UserResource getUserResource(int userId) throws ValidateException, ResourceNotFoundException {
-		ApplicationUser theUser = getUser(userId);
+	public UserResource getUserResource(String username) throws ValidateException, ResourceNotFoundException {
+		ApplicationUser theUser = getUser(username);
 		
 		UserResource userResource = convertInUserResource(theUser);
 		
@@ -73,10 +72,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	@Transactional
-	public void changeUsername(int userId, String oldUsername, String newUsername) throws ValidateException, ResourceNotFoundException, PasswordValidationException {
-		checkChangeUsernameOrPasswordParams(userId, oldUsername, newUsername);
+	public void changeUsername(String username, String oldUsername, String newUsername) throws ValidateException, ResourceNotFoundException, PasswordValidationException {
+		checkChangeUsernameOrPasswordParams(username, oldUsername, newUsername);
 		
-		ApplicationUser theUser = getUser(userId);
+		ApplicationUser theUser = getUser(username);
 		if(!oldUsername.equals(theUser.getUsername()) || userRepository.findByUsername(newUsername) == null) {
 			throw new UsernameValidationException();
 		}
@@ -87,10 +86,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	@Transactional
-	public void changePassword(int userId, String oldPassword, String newPassword) throws ValidateException, ResourceNotFoundException, PasswordValidationException {
-		checkChangeUsernameOrPasswordParams(userId, oldPassword, newPassword);
+	public void changePassword(String username, String oldPassword, String newPassword) throws ValidateException, ResourceNotFoundException, PasswordValidationException {
+		checkChangeUsernameOrPasswordParams(username, oldPassword, newPassword);
 		
-		ApplicationUser theUser = getUser(userId);
+		ApplicationUser theUser = getUser(username);
 		if(!bCryptPasswordEncoder.matches(oldPassword, theUser.getPassword())) {
 			throw new PasswordValidationException();
 		}
@@ -101,10 +100,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	@Transactional
-	public void changeName(int userId, String newName) throws ValidateException, ResourceNotFoundException {
-		checkChangeNameOrSurnameParams(userId, newName);
+	public void changeName(String username, String newName) throws ValidateException, ResourceNotFoundException {
+		checkChangeNameOrSurnameParams(username, newName);
 		
-		ApplicationUser theUser = getUser(userId);
+		ApplicationUser theUser = getUser(username);
 		
 		theUser.getDetails().setName(newName);
 		userRepository.save(theUser);
@@ -112,10 +111,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	@Transactional
-	public void changeSurname(int userId, String newSurname) throws ValidateException, ResourceNotFoundException {
-		checkChangeNameOrSurnameParams(userId, newSurname);
+	public void changeSurname(String username, String newSurname) throws ValidateException, ResourceNotFoundException {
+		checkChangeNameOrSurnameParams(username, newSurname);
 		
-		ApplicationUser theUser = getUser(userId);
+		ApplicationUser theUser = getUser(username);
 		
 		theUser.getDetails().setSurname(newSurname);
 		userRepository.save(theUser);
@@ -123,15 +122,23 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	@Transactional
-	public void changeBirthDate(int userId, BirthDate birthDate) {
-		checkChangeBirthDateParams(userId, birthDate);
+	public void changeBirthDate(String username, BirthDate birthDate) throws ValidateException, ResourceNotFoundException {
+		checkChangeBirthDateParams(username, birthDate);
 		
-		ApplicationUser theUser = getUser(userId);
+		ApplicationUser theUser = getUser(username);
 		
 		theUser.getDetails().setBirthDate(convertInLocalDateTime(birthDate));
 		userRepository.save(theUser);
 	}
 	
+	@Override
+	@Transactional
+	public void deleteUser(String username) throws ValidateException, ResourceNotFoundException {
+		ApplicationUser user = getUser(username);
+		
+		userRepository.deleteById(user.getUserId());;
+	}
+
 	
 	private void checkParamForSaveUser(UserCreationRequest userCreationRequest) throws ValidateException {
 		if(userCreationRequest == null) {
@@ -163,14 +170,14 @@ public class UserServiceImpl implements UserService {
 		return date;
 	}
 	
-	private void checkGetUserParam(int userId) throws ValidateException {
-		if(userId < 1) {
+	private void checkUserParam(String username) throws ValidateException {
+		if(username == null || username.equals("")) {
 			throw new ValidateException();
 		}
 	}
 	
-	private void checkChangeUsernameOrPasswordParams(int userId, String oldValue, String newValue) throws ValidateException {
-		if(userId < 1 || oldValue == null || newValue == null) {
+	private void checkChangeUsernameOrPasswordParams(String username, String oldValue, String newValue) throws ValidateException {
+		if(username == null || username.equals("") || oldValue == null || newValue == null) {
 			throw new ValidateException();
 		}
 		if(oldValue.equals("") || newValue.equals("")) {
@@ -178,8 +185,8 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 	
-	private void checkChangeNameOrSurnameParams(int userId, String newValue) throws ValidateException {
-		if(userId < 1 || newValue == null) {
+	private void checkChangeNameOrSurnameParams(String username, String newValue) throws ValidateException {
+		if(username == null || username.equals("") || newValue == null) {
 			throw new ValidateException();
 		}
 		if(newValue.equals("")) {
@@ -187,8 +194,8 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 	
-	private void checkChangeBirthDateParams(int userId, BirthDate newDate) throws ValidateException {
-		if(userId < 1 || newDate == null) {
+	private void checkChangeBirthDateParams(String username, BirthDate newDate) throws ValidateException {
+		if(username == null || username.equals("") || newDate == null) {
 			throw new ValidateException();
 		}
 		if(newDate.getDay() < 1 || newDate.getDay() > 31 || 

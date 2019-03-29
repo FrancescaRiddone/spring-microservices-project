@@ -67,12 +67,12 @@ public class UserControllerTest {
     }
     
     /*
-	 * TESTS on URI /users/user/{userId}
+	 * TESTS on URI /users/user/{username}
 	 */
     
     @Test
-    public void foundUserWithId() throws Exception {
-    	String URI = "/users/user/1";
+    public void foundUserWithUsername() throws Exception {
+    	String URI = "/users/user/mariorossi@yahoo.it";
     	
         mockMvc.perform(get(URI))
 		        .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("mariorossi@yahoo.it"))
@@ -82,19 +82,11 @@ public class UserControllerTest {
     }
     
     @Test
-    public void userNotFoundWithValidId() throws Exception {
-    	String URI = "/users/user/100000";
+    public void userNotFoundWithValidUsername() throws Exception {
+    	String URI = "/users/user/mariobianchi@yahoo.it";
     	
         mockMvc.perform(get(URI))
         		.andExpect(status().is(404));     
-    }
-    
-    @Test
-    public void ruserNotFoundWithInvalidId() throws Exception {
-    	String URI = "/users/user/-2";
-    	
-        mockMvc.perform(get(URI))
-        		.andExpect(status().is(400));     
     }
     
     

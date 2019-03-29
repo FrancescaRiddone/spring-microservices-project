@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,18 +35,18 @@ public class UserController {
 		return userService.saveUser(userCreationRequest);
 	}
 	
-	@GetMapping("/users/user/{userId}")
-	public UserResource getUser(@PathVariable int userId, Authentication authentication, Principal principal) {
+	@GetMapping("/users/user/{username}")
+	public UserResource getUser(@PathVariable String username, Authentication authentication, Principal principal) {
 		
-		return userService.getUserResource(userId);
+		return userService.getUserResource(username);
 	}
 	
-	@PutMapping("/users/user/{userId}/changeUsername")
-	public String changeUsername(@PathVariable("userId") int userId, 
+	@PutMapping("/users/user/{username}/changeUsername")
+	public String changeUsername(@PathVariable("username") String username, 
 			@RequestParam("oldUsername") String oldUsername, @RequestParam("newUsername") String newUsername) {
 		
 		try {
-			userService.changeUsername(userId, oldUsername, newUsername);
+			userService.changeUsername(username, oldUsername, newUsername);
 		} catch(ValidateException ex1) {
 			return "Error! Please check the inserted parameters.";
 		} catch(ResourceNotFoundException ex2) {
@@ -57,12 +58,12 @@ public class UserController {
 		return "Your username has been modified with success!";
 	}
 	
-	@PutMapping("/users/user/{userId}/changePassword")
-	public String changePassword(@PathVariable("userId") int userId, 
+	@PutMapping("/users/user/{username}/changePassword")
+	public String changePassword(@PathVariable("username") String username, 
 			@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
 		
 		try {
-			userService.changePassword(userId, oldPassword, newPassword);
+			userService.changePassword(username, oldPassword, newPassword);
 		} catch(ValidateException ex1) {
 			return "Error! Please check the inserted parameters.";
 		} catch(ResourceNotFoundException ex2) {
@@ -74,10 +75,10 @@ public class UserController {
 		return "Your password has been modified with success!";
 	}
 	
-	@PutMapping("/users/user/{userId}/changeName")
-	public String changeName(@PathVariable("userId") int userId, @RequestParam("newName") String newName) {
+	@PutMapping("/users/user/{username}/changeName")
+	public String changeName(@PathVariable("username") String username, @RequestParam("newName") String newName) {
 		try {
-			userService.changeName(userId, newName);
+			userService.changeName(username, newName);
 		} catch(ValidateException ex1) {
 			return "Error! Please check the inserted parameters.";
 		} catch(ResourceNotFoundException ex2) {
@@ -87,10 +88,10 @@ public class UserController {
 		return "Your name has been modified with success!";
 	}
 	
-	@PutMapping("/users/user/{userId}/changeSurname")
-	public String changeSurname(@PathVariable("userId") int userId, @RequestParam("newSurname") String newSurname) {
+	@PutMapping("/users/user/{username}/changeSurname")
+	public String changeSurname(@PathVariable("username") String username, @RequestParam("newSurname") String newSurname) {
 		try {
-			userService.changeSurname(userId, newSurname);
+			userService.changeSurname(username, newSurname);
 		} catch(ValidateException ex1) {
 			return "Error! Please check the inserted parameters.";
 		} catch(ResourceNotFoundException ex2) {
@@ -100,10 +101,10 @@ public class UserController {
 		return "Your surname has been modified with success!";
 	}
 	
-	@PutMapping("/users/user/{userId}/changeBirthDate")
-	public String changeBirthDate(@PathVariable("userId") int userId, @RequestBody BirthDate birthDate) {
+	@PutMapping("/users/user/{username}/changeBirthDate")
+	public String changeBirthDate(@PathVariable("username") String username, @RequestBody BirthDate birthDate) {
 		try {
-			userService.changeBirthDate(userId, birthDate);
+			userService.changeBirthDate(username, birthDate);
 		} catch(ValidateException ex1) {
 			return "Error! Please check the inserted parameters.";
 		} catch(ResourceNotFoundException ex2) {
@@ -111,6 +112,19 @@ public class UserController {
 		} 
 		
 		return "Your birth date has been modified with success!";
+	}
+	
+	@DeleteMapping("/users/user/{username}")
+	public String deleteUser(@PathVariable("username") String username) {
+		try {
+			userService.deleteUser(username);
+		} catch(ValidateException ex1) {
+			return "Error! Please check the user id to be deleted.";
+		} catch(ResourceNotFoundException ex2) {
+			return "Error! Please check the user id to be deleted.";
+		} 
+		
+		return "Your account has been deleted with success!";
 	}
 	
 

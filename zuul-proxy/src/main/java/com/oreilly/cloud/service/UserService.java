@@ -10,19 +10,20 @@ public interface UserService {
 	
 	public UserResource saveUser(UserCreationRequest userCreationRequest);
 	
-	public ApplicationUser getUser(int userId);
+	public ApplicationUser getUser(String username);
 	
-	public UserResource getUserResource(int userId);
+	public UserResource getUserResource(String username);
 	
-	public void changeUsername(int userId, String oldUsername, String newUsername);
+	public void changeUsername(String username, String oldUsername, String newUsername);
 	
-	public void changePassword(int userId, String oldPassword, String newPassword);
+	public void changePassword(String username, String oldPassword, String newPassword);
 	
-	public void changeName(int userId, String newName);
+	public void changeName(String username, String newName);
 	
-	public void changeSurname(int userId, String newSurname);
+	public void changeSurname(String username, String newSurname);
 	
-	public void changeBirthDate(int userId, BirthDate birthDate);
+	public void changeBirthDate(String username, BirthDate birthDate);
 	
+	public void deleteUser(String username);
 
 }
